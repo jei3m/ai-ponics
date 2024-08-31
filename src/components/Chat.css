@@ -236,3 +236,27 @@
         width: 90%;
     }
 }
+
+.camera-toggle-button {
+    background: #3693f7;
+    border: none;
+    border-radius: 12px;
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px; /* Set a fixed height for buttons */
+    min-width: 60px;
+    padding: 0 10px;
+    margin-left: 8px; /* Adjust margin for spacing */
+}
+
+.camera-toggle-button svg {
+    font-size: 18px; /* Adjust icon size */
+    transition: transform 0.3s ease;
+}
+
+.camera-toggle-button:hover svg {
+    transform: rotate(180deg); /* Rotate icon on hover */
+}
