@@ -14,14 +14,14 @@
 }
 
 .App-header {
-  background-color: #282c34;
+  background-color: #e4e4e4;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
-  color: white;
+  color: rgb(0, 0, 0);
 }
 
 .App-link {
@@ -35,4 +35,40 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+/* Custom Styles for Temperature and Humidity Cards */
+.card {
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  width: 300px;
+  text-align: center;
+  margin: 20px 0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  font-size: large;
+}
+
+h2 {
+  margin-bottom: 20px;
+}
+
+p {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: #000000;
+}
+
+/* Adjustments for Gauge */
+.MuiCircularProgress-root {
+  color: #61dafb; /* Change gauge color */
+}
+
+.MuiTypography-caption {
+  font-size: 1.2em; /* Adjust label font size */
+  color: #000000; /* Adjust label color */
+}
+
+.loading-text {
+  color: darkgray; /* Set the color for loading text */
 }
