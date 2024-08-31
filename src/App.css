@@ -2,6 +2,16 @@
   text-align: center;
 }
 
+.Appnobg {
+  text-align: center;
+  display: flex;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  color: rgb(0, 0, 0);
+  background-color: #e4e4e4;
+}
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;
