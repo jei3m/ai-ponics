@@ -54,7 +54,6 @@ function Sensors() {
 
     useEffect(() => {
         const BLYNK_AUTH_TOKEN = process.env.REACT_APP_BLYNK_TOKEN;
-
         const fetchSensorData = async () => {
             try {
                 const temperatureResponse = await axios.get(`https://blynk.cloud/external/api/get?token=${BLYNK_AUTH_TOKEN}&V0`);
