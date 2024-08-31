@@ -19,16 +19,16 @@
 /* Header styles */
 .header {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     margin-bottom: 16px;
-    flex-wrap: wrap; /* Allow header items to wrap on smaller screens */
+    position: relative; /* Ensure the back button is positioned relative to this container */
 }
 
 .chat-title {
     text-align: center;
-    flex: 1 1 100%; /* Allow title to take full width on smaller screens */
     margin: 0;
+    flex: 1; /* Allow title to take remaining space */
 }
 
 .chat-title h2 {
@@ -38,6 +38,9 @@
 }
 
 .back-button {
+    position: absolute;
+    top: 16px; /* Adjust as needed */
+    right: 16px; /* Adjust as needed */
     background: transparent;
     border: none;
     color: #3f51b5;
