@@ -53,7 +53,7 @@ function Sensors() {
     const [humidity, setHumidity] = useState(null);
 
     useEffect(() => {
-        const BLYNK_AUTH_TOKEN = 'ZdFAot53B9KlRYLRIqw-eKWbfI8Ep80w';
+        const BLYNK_AUTH_TOKEN = process.env.REACT_APP_BLYNK_TOKEN;
 
         const fetchSensorData = async () => {
             try {
@@ -77,7 +77,7 @@ function Sensors() {
             <header className="App-header">
                 <Grid container spacing={2} justifyContent="center">
                     <Grid item xs={12} sm={6} md={4} lg={3}>
-                        <Card sx={{ width: '90%', maxWidth: 400, margin: 'auto', display: 'flex', flexDirection: 'column', borderRadius:'10px'}}>
+                        <Card sx={{ width: '90%', maxWidth: 400, margin: 'auto', display: 'flex', flexDirection: 'column', borderRadius: '10px' }}>
                             <CardHeader title="Temperature" />
                             <CardContent sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                                 {temperature !== null ? (
@@ -89,7 +89,7 @@ function Sensors() {
                         </Card>
                     </Grid>
                     <Grid item xs={12} sm={6} md={4} lg={3}>
-                        <Card sx={{ width: '90%', maxWidth: 400, margin: 'auto', display: 'flex', flexDirection: 'column', borderRadius:'10px' }}>
+                        <Card sx={{ width: '90%', maxWidth: 400, margin: 'auto', display: 'flex', flexDirection: 'column', borderRadius: '10px' }}>
                             <CardHeader title="Humidity" />
                             <CardContent sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                                 {humidity !== null ? (
