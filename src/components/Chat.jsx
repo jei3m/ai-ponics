@@ -165,8 +165,9 @@ const Chat = () => {
             value={userInput}
             onKeyDown={(e) => e.key === "Enter" && sendMessage()}
           />
-
-          <button className="camera-toggle-button" onClick={handleCameraToggle} disabled={loading}>
+        </div>
+        <div className="input-button-container">
+        <button className="camera-toggle-button" onClick={handleCameraToggle} disabled={loading}>
             <FontAwesomeIcon icon={faSyncAlt} />
           </button>
           <button
@@ -183,6 +184,7 @@ const Chat = () => {
             {loading ? <div className="loading-spinner"></div> : <FontAwesomeIcon icon={faSearch} />}
           </button>
         </div>
+
         {imagePreview && (
           <div className="image-preview-container">
             <img src={imagePreview} alt="preview" className="image-preview" />

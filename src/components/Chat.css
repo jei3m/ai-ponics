@@ -1,11 +1,12 @@
 /* Chat container */
 .chat-container {
     position: relative;
-    padding: 16px; /* Adjust padding for a better fit on smaller screens */
+    padding: 16px;
     background-color: #f0f0f0;
     height: 90vh;
-    max-width: 600px;
-    min-width: 300px; /* Adjust minimum width for smaller devices */
+    width: 94%; /* Set to 98% of the viewport width */
+    max-width: 40%; /* Ensure it doesn't exceed 98% of viewport width */
+    min-width: 320px; /* Set a reasonable minimum width */
     margin: 0 auto;
     display: flex;
     flex-direction: column;
@@ -22,25 +23,25 @@
     justify-content: center;
     align-items: center;
     margin-bottom: 16px;
-    position: relative; /* Ensure the back button is positioned relative to this container */
+    position: relative;
 }
 
 .chat-title {
     text-align: center;
     margin: 0;
-    flex: 1; /* Allow title to take remaining space */
+    flex: 1;
 }
 
 .chat-title h2 {
-    font-size: 24px; /* Adjust font size for better readability on mobile */
+    font-size: 24px;
     color: #333;
     margin: 0;
 }
 
 .back-button {
     position: absolute;
-    top: 16px; /* Adjust as needed */
-    right: 16px; /* Adjust as needed */
+    top: 16px;
+    right: 16px;
     background: transparent;
     border: none;
     color: #3f51b5;
@@ -63,29 +64,23 @@
 .messages-container {
     flex: 1;
     overflow-y: auto;
-    margin-bottom: 16px; /* Adjust margin for better spacing */
-    scrollbar-width: none; /* Hide scrollbar for Firefox */
-    -ms-overflow-style: none; /* Hide scrollbar for IE and Edge */
+    margin-bottom: 16px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
 
 .messages-container::-webkit-scrollbar {
-    display: none; /* Hide scrollbar for WebKit browsers */
+    display: none;
 }
 
 .message {
-    padding: 12px; /* Adjust padding for better fit on smaller screens */
-    margin: 8px 0; /* Adjust margin */
+    padding: 12px;
+    margin: 8px 0;
     border-radius: 12px;
-    font-size: 16px; /* Adjust font size for better readability */
+    font-size: 16px;
     width: fit-content;
-    max-width: 90%; /* Increase max-width for smaller screens */
+    max-width: 90%;
     word-wrap: break-word;
-}
-
-.message img {
-    max-width: 80%; /* Ensure the image doesn't exceed the message width */
-    height: auto; /* Maintain the image aspect ratio */
-    border-radius: 8px; /* Optional: Add some border-radius to the image */
 }
 
 .message.user {
@@ -93,7 +88,13 @@
     color: #fff;
     text-align: right;
     margin-left: auto;
-    max-width: 200px; /* Adjust max-width */
+    max-width: 80%;
+}
+
+.uploaded-image {
+    width: 80%;
+    border-radius: 8px;
+    align-self: right;
 }
 
 .message.ai {
@@ -105,24 +106,40 @@
 /* Input container */
 .input-container {
     display: flex;
-    flex-direction: row; /* Ensure buttons align as a row on smaller screens */
+    flex-direction: row; /* Stack input and buttons horizontally */
+    align-items: center; /* Center items vertically */
+    gap: 4px; /* Reduced gap between items */
+    padding-top: 8px; /* Reduced padding */
+    width: 100%; /* Ensure it takes full width of the chat-container */
+    box-sizing: border-box; /* Ensure padding is included in width */
+    height: 60px; /* Adjust height to fit two lines of text */
+}
+
+
+/* Button container - Flex evenly */
+.input-button-container {
+    display: flex;
+    flex-direction: row;
     align-items: center;
-    gap: 8px;
-    padding-top: 12px;
+    gap: 4px; /* Reduced gap */
+    padding-top: 8px; /* Reduced padding */
+    width: 100%; /* Ensure it takes full width of the input-container */
 }
 
 .message-input {
-    flex: 1;
-    padding: 12px;
+    padding: 10px; /* Reduced padding for a more compact appearance */
     background-color: #131314;
     border-radius: 12px;
     color: white;
     border: none;
     font-size: 16px;
+    width: 100%; /* Ensure it takes full width of the input-button-container */
 }
 
+/* Buttons */
 .camera-button,
-.send-button {
+.send-button,
+.camera-toggle-button {
     background: #3693f7;
     border: none;
     border-radius: 12px;
@@ -131,9 +148,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 40px; /* Set a fixed height for buttons */
-    min-width: 60px;
-    padding: 0 10px;
+    height: 36px; /* Reduced height */
+    flex: 1;
+    padding: 0 8px; /* Reduced padding */
+    margin: 0 4px; /* Reduced margin */
 }
 
 /* Loading spinner */
@@ -153,7 +171,7 @@
 
 /* Profile picture */
 .profile-pic {
-    width: 50px; /* Adjust size for better fit on mobile */
+    width: 50px;
     height: 50px;
     border-radius: 50%;
     margin-right: 10px;
@@ -167,7 +185,7 @@
 
 .image-preview {
     width: 100%;
-    max-height: 200px; /* Adjust max-height for mobile screens */
+    max-height: 400px;
     object-fit: cover;
     border-radius: 10px;
 }
@@ -192,17 +210,16 @@
 @media (max-width: 768px) {
     .chat-container {
         padding: 16px;
-        max-width: 90%;
+        max-width: 98% !important; /* Adjust for small screens */
     }
-
+    
     .header {
-        flex-direction: column; /* Stack header items vertically on smaller screens */
-        align-items: flex-start; /* Align items to the start */
+        flex-direction: column;
+        align-items: flex-start;
     }
 
     .input-container {
-        flex-direction: row; /* Ensure row direction for smaller screens */
-        gap: 4px;
+        gap: 2px; /* Reduced gap for smaller screens */
     }
 
     .message-input {
@@ -211,13 +228,14 @@
 
     .message {
         font-size: 16px;
-        max-width: 90%; /* Allow messages to take full width */
+        max-width: 90%;
     }
 }
 
 @media (max-width: 480px) {
+    
     .chat-title h2 {
-        font-size: 20px; /* Further reduce font size for extra small screens */
+        font-size: 20px;
     }
 
     .profile-pic {
@@ -226,17 +244,16 @@
     }
 
     .image-preview {
-        max-height: 180px; /* Further adjust max-height */
+        max-height: 180px;
     }
 
     .input-container {
-        flex-direction: row; /* Maintain row alignment on very small screens */
-        gap: 4px;
+        gap: 2px; /* Further reduced gap */
     }
 
     .message-input {
         font-size: 16px;
-        width: 90%;
+        width: 100%; /* Ensure full width */
     }
 }
 
@@ -249,17 +266,17 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 40px; /* Set a fixed height for buttons */
-    min-width: 60px;
-    padding: 0 10px;
-    margin-left: 8px; /* Adjust margin for spacing */
+    height: 36px; /* Reduced height */
+    flex: 1;
+    margin: 0 4px;
 }
 
 .camera-toggle-button svg {
-    font-size: 18px; /* Adjust icon size */
+    font-size: 18px;
     transition: transform 0.3s ease;
 }
 
 .camera-toggle-button:hover svg {
-    transform: rotate(180deg); /* Rotate icon on hover */
+    transform: rotate(180deg);
 }
+
