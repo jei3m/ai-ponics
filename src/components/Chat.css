@@ -95,6 +95,7 @@
     width: 80%;
     border-radius: 8px;
     align-self: right;
+    padding-top: 56.25%;
 }
 
 .message.ai {
@@ -183,6 +184,7 @@
 .image-preview-container {
     position: relative;
     margin-top: 10px;
+    padding-top: 56.25%;
 }
 
 .image-preview {
