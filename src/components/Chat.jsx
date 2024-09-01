@@ -1,10 +1,12 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import Webcam from "react-webcam";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch, faCamera, faArrowLeft, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import { ToastContainer, toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import Modal from '@mui/material/Modal';
+import Box from '@mui/material/Box';
 import "react-toastify/dist/ReactToastify.css";
 import "./Chat.css";
 
@@ -16,9 +18,6 @@ const Chat = () => {
   const [imagePreview, setImagePreview] = useState(null);
   const [isFrontCamera, setIsFrontCamera] = useState(true);
   const [showWebcam, setShowWebcam] = useState(false);
-  const [videoConstraints, setVideoConstraints] = useState({
-    facingMode: "user",
-  });
   const webcamRef = useRef(null);
 
   const API_KEY = process.env.REACT_APP_API_KEY;
@@ -31,32 +30,6 @@ const Chat = () => {
     text = text.replace(/\*([^\*]+)\*/g, "<br />$1<br />");
     return text;
   };
-
-  useEffect(() => {
-    const startChat = async () => {
-      if (messages.length === 0) {
-        try {
-          const genAI = new GoogleGenerativeAI(API_KEY);
-          const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-          const prompt = "hello!";
-          const result = await model.generateContent(prompt);
-          const response = result.response;
-          const text = await response.text();
-
-          setMessages([
-            {
-              text: sanitizeText(text),
-              user: false,
-            },
-          ]);
-        } catch (error) {
-          toast.error("Error starting chat.");
-        }
-      }
-    };
-
-    startChat();
-  }, [API_KEY, messages.length]);
 
   const sendMessage = async () => {
     if (!userInput.trim() && !image) {
@@ -94,10 +67,6 @@ const Chat = () => {
     }
   };
 
-  const clearMessages = () => {
-    setMessages([]);
-  };
-
   const goBack = () => {
     navigate(-1);
   };
@@ -106,19 +75,9 @@ const Chat = () => {
     setIsFrontCamera((prev) => !prev);
     const cameraType = isFrontCamera ? "Back Camera" : "Front Camera";
     toast.info(`Switched to ${cameraType}`);
-    setVideoConstraints({
-      facingMode: isFrontCamera ? "environment" : "user",
-    });
   };
 
   const toggleWebcam = () => {
-    if (!showWebcam) {
-      // Force re-render with updated constraints
-      setVideoConstraints((prev) => ({
-        ...prev,
-        facingMode: isFrontCamera ? "user" : "environment",
-      }));
-    }
     setShowWebcam((prev) => !prev);
   };
 
@@ -189,15 +148,39 @@ const Chat = () => {
           </div>
         )}
 
-        {showWebcam && (
-          <Webcam
-            audio={false}
-            ref={webcamRef}
-            screenshotFormat="image/png"
-            videoConstraints={videoConstraints}
-            className="webcam"
-          />
-        )}
+        <Modal
+          open={showWebcam}
+          onClose={toggleWebcam}
+          aria-labelledby="webcam-modal-title"
+          aria-describedby="webcam-modal-description"
+        >
+          <Box
+            sx={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              height: '90%',
+              width: '90%',
+              bgcolor: 'none',
+              p: 4,
+              display: 'flex',
+              justifyContent: 'center',
+            }}
+          >
+            {showWebcam && (
+              <Webcam
+                audio={false}
+                ref={webcamRef}
+                screenshotFormat="image/png"
+                videoConstraints={{
+                  facingMode: isFrontCamera ? "user" : "environment",
+                }}
+                className="webcam"
+              />
+            )}
+          </Box>
+        </Modal>
       </div>
     </div>
   );
