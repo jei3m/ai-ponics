@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { CircularProgress, Box, Typography, Card, CardContent, CardHeader, Grid } from '@mui/material';
 import '../App.css';
+import './Sensors.css';
 
 function Gauge({ value, max, label }) {
     const normalizedValue = (value / max) * 100;
@@ -100,8 +101,22 @@ function Sensors() {
                         </Card>
                     </Grid>
                 </Grid>
+                
             </header>
+            <div className="ask-aiponics-container"> {/* Container for the ask Aerobot section */}
+        <a href="/chat" className="ask-aiponics-button"> {/* Link to chat with Aerobot */}
+          <img
+            src="/img/aiponicsbot.png" // Path to the Aerobot image
+            alt="profile" // Alt text for the image
+            className="profile-pic" // Class for profile picture styling
+          />
+        </a>
+        <div className="text-bubble"> {/* Bubble text for asking Aerobot */}
+          Ask AI-Ponics!
         </div>
+      </div>
+        </div>
+        
     );
 }
 
