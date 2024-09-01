@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import Webcam from "react-webcam";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch, faCamera, faArrowLeft, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import { ToastContainer, toast } from "react-toastify";
@@ -14,6 +15,8 @@ const Chat = () => {
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [isFrontCamera, setIsFrontCamera] = useState(true);
+  const [showWebcam, setShowWebcam] = useState(false);
+  const webcamRef = useRef(null);
 
   const API_KEY = process.env.REACT_APP_API_KEY;
   const navigate = useNavigate();
@@ -102,36 +105,18 @@ const Chat = () => {
     toast.info(`Switched to ${cameraType}`);
   };
 
-  const handleCamera = async () => {
-    const constraints = {
-      video: {
-        facingMode: isFrontCamera ? "user" : "environment",
-      },
-    };
+  const toggleWebcam = () => {
+    setShowWebcam((prev) => !prev);
+  };
 
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
-      const video = document.createElement("video");
-      video.srcObject = stream;
-      video.play();
-
-      return new Promise((resolve) => {
-        const canvas = document.createElement("canvas");
-        const context = canvas.getContext("2d");
-
-        video.addEventListener("loadedmetadata", () => {
-          canvas.width = video.videoWidth;
-          canvas.height = video.videoHeight;
-          context.drawImage(video, 0, 0);
-          stream.getTracks().forEach((track) => track.stop());
-          video.remove();
-          const dataUrl = canvas.toDataURL("image/png");
-          setImagePreview(dataUrl);
-          resolve(dataUrl);
-        });
-      });
-    } catch (error) {
-      toast.error("Error accessing the camera.");
+  const capture = () => {
+    if (showWebcam) {
+      const imageSrc = webcamRef.current.getScreenshot();
+      setImagePreview(imageSrc);
+      setImage(imageSrc);
+      setShowWebcam(false);
+    } else {
+      toggleWebcam();
     }
   };
 
@@ -167,15 +152,12 @@ const Chat = () => {
           />
         </div>
         <div className="input-button-container">
-        <button className="camera-toggle-button" onClick={handleCameraToggle} disabled={loading}>
+          <button className="camera-toggle-button" onClick={handleCameraToggle} disabled={loading}>
             <FontAwesomeIcon icon={faSyncAlt} />
           </button>
           <button
             className="camera-button"
-            onClick={async () => {
-              const imageData = await handleCamera();
-              setImage(imageData);
-            }}
+            onClick={capture}
             disabled={loading}
           >
             <FontAwesomeIcon icon={faCamera} />
@@ -192,6 +174,18 @@ const Chat = () => {
               Remove
             </button>
           </div>
+        )}
+
+        {showWebcam && (
+          <Webcam
+            audio={false}
+            ref={webcamRef}
+            screenshotFormat="image/png"
+            videoConstraints={{
+              facingMode: isFrontCamera ? "user" : "environment",
+            }}
+            className="webcam"
+          />
         )}
       </div>
     </div>
