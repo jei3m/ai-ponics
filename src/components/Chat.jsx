@@ -173,16 +173,22 @@ const Chat = () => {
               borderRadius:'10px',
             }}
           >
-            <Webcam
-              audio={false}
-              ref={webcamRef}
-              screenshotFormat="image/png"
-              videoConstraints={{
-                facingMode: isFrontCamera ? "user" : "environment",
-              }}
-              className="webcam"
-              style={{ width: '100%', height: '100%' }}
-            />
+              <Webcam
+                audio={false}
+                ref={webcamRef}
+                screenshotFormat="image/png"
+                videoConstraints={{
+                  facingMode: isFrontCamera ? "user" : "environment",
+                }}
+                className="webcam"
+                style={{ 
+                  width: '100%', 
+                  height: 'auto',  // Ensure the height auto-adjusts
+                  aspectRatio: '16/9', // Maintain a common aspect ratio
+                  objectFit: 'cover',  // Ensure the video covers the container
+                  borderRadius: '10px', // Match the modal's border radius
+                }}
+              />
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 20, width: '100%' }}>
               <Button
                 variant="contained"
