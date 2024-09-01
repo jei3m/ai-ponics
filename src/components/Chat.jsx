@@ -181,7 +181,7 @@ const Chat = () => {
                 facingMode: isFrontCamera ? "user" : "environment",
               }}
               className="webcam"
-              style={{ width: '100%', height: 'auto' }}
+              style={{ width: '100%', height: '100%' }}
             />
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 20, width: '100%' }}>
               <Button
