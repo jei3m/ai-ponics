@@ -7,6 +7,7 @@ import { ToastContainer, toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import "react-toastify/dist/ReactToastify.css";
 import "./Chat.css";
 
@@ -160,25 +161,62 @@ const Chat = () => {
               top: '50%',
               left: '50%',
               transform: 'translate(-50%, -50%)',
-              height: '90%',
-              width: '90%',
-              bgcolor: 'none',
+              width: '78%',
+              maxWidth: 400,
+              bgcolor: 'background.paper',
+              boxShadow: 24,
               p: 4,
               display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
               justifyContent: 'center',
+              borderRadius:'10px',
             }}
           >
-            {showWebcam && (
-              <Webcam
-                audio={false}
-                ref={webcamRef}
-                screenshotFormat="image/png"
-                videoConstraints={{
-                  facingMode: isFrontCamera ? "user" : "environment",
+            <Webcam
+              audio={false}
+              ref={webcamRef}
+              screenshotFormat="image/png"
+              videoConstraints={{
+                facingMode: isFrontCamera ? "user" : "environment",
+              }}
+              className="webcam"
+              style={{ width: '100%', height: 'auto' }}
+            />
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 20, width: '100%' }}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleCameraToggle}
+                fullWidth
+                sx={{
+                  mr: 1,
+                  borderRadius: '8px', // Add border-radius here
+                  padding: '10px', // Add padding for a balanced look
+                  display: 'flex',
+                  justifyContent: 'center', // Center the icon
+                  alignItems: 'center', // Center the icon vertically
                 }}
-                className="webcam"
-              />
-            )}
+              >
+                <FontAwesomeIcon icon={faSyncAlt} />
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={capture}
+                fullWidth
+                sx={{
+                  ml: 1,
+                  borderRadius: '8px', // Add border-radius here
+                  padding: '10px', // Add padding for a balanced look
+                  display: 'flex',
+                  justifyContent: 'center', // Center the icon
+                  alignItems: 'center', // Center the icon vertically
+                }}
+              >
+                <FontAwesomeIcon icon={faCamera} />
+              </Button>
+            </div>
           </Box>
         </Modal>
       </div>
