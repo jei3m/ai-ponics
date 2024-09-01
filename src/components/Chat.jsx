@@ -184,7 +184,7 @@ const Chat = () => {
                 style={{ 
                   width: '100%', 
                   height: 'auto',  // Ensure the height auto-adjusts
-                  aspectRatio: '16/9', // Maintain a common aspect ratio
+                  //aspectRatio: '16/9', // Maintain a common aspect ratio
                   objectFit: 'cover',  // Ensure the video covers the container
                   borderRadius: '10px', // Match the modal's border radius
                 }}
