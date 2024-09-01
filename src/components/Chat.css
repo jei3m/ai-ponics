@@ -44,7 +44,7 @@
     right: 16px;
     background: transparent;
     border: none;
-    color: #3f51b5;
+    color: #3693f7;
     cursor: pointer;
     font-size: 16px;
     padding: 8px;
@@ -52,7 +52,7 @@
 }
 
 .back-button:hover {
-    color: #1a237e;
+    color: #1326ff;
 }
 
 .back-button svg {
@@ -128,15 +128,16 @@
 
 .message-input {
     padding: 10px; /* Reduced padding for a more compact appearance */
-    background-color: #131314;
+    background-color: #cfcfcf;
     border-radius: 12px;
-    color: white;
+    color: rgb(0, 0, 0);
     border: none;
     font-size: 16px;
     width: 100%; /* Ensure it takes full width of the input-button-container */
 }
 
 /* Buttons */
+.upload-button,
 .camera-button,
 .send-button,
 .camera-toggle-button {

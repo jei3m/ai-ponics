@@ -15,7 +15,7 @@ function Gauge({ value, max, label }) {
                 size={120}
                 thickness={4}
                 sx={{
-                    color: 'grey.300', // Color for the background (dark gray)
+                    color: 'grey.400', // Color for the background (dark gray)
                 }}
             />
             <CircularProgress
@@ -27,7 +27,7 @@ function Gauge({ value, max, label }) {
                     position: 'absolute',
                     top: 0,
                     left: 0,
-                    color: 'primary.main', // Color for the value (blue)
+                    color: '#3693f7', // Color for the value (blue)
                     borderRadius: '50%',
                 }}
             />
@@ -75,7 +75,7 @@ function Sensors() {
     return (
         <div className="App">
             <header className="App-header">
-                <Grid container spacing={2} justifyContent="center">
+                <Grid container spacing={4} justifyContent="center">
                     <Grid item xs={12} sm={6} md={4} lg={3}>
                         <Card sx={{ width: '90%', maxWidth: 400, margin: 'auto', display: 'flex', flexDirection: 'column', borderRadius: '10px' }}>
                             <CardHeader title="Temperature" />

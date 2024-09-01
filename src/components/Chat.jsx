@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import Webcam from "react-webcam";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch, faCamera, faArrowLeft, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
+import { faSearch, faCamera, faArrowLeft, faSyncAlt, faImage } from "@fortawesome/free-solid-svg-icons";
 import { ToastContainer, toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import Modal from '@mui/material/Modal';
@@ -93,6 +93,25 @@ const Chat = () => {
     }
   };
 
+  // Handle file selection
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        toast.error("Please select a valid image file.");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+        setImage(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
     <div className="Appnobg">
       <div className="chat-container">
@@ -125,8 +144,19 @@ const Chat = () => {
           />
         </div>
         <div className="input-button-container">
-          <button className="camera-toggle-button" onClick={handleCameraToggle} disabled={loading}>
-            <FontAwesomeIcon icon={faSyncAlt} />
+          <input
+            type="file"
+            id="file-upload"
+            style={{ display: 'none' }}
+            accept="image/*" // Restrict file types to images only
+            onChange={handleFileChange}
+          />
+          <button
+            className="upload-button"
+            onClick={() => document.getElementById('file-upload').click()}
+            disabled={loading}
+          >
+            <FontAwesomeIcon icon={faImage} />
           </button>
           <button
             className="camera-button"
