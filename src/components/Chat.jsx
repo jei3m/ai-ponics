@@ -16,6 +16,9 @@ const Chat = () => {
   const [imagePreview, setImagePreview] = useState(null);
   const [isFrontCamera, setIsFrontCamera] = useState(true);
   const [showWebcam, setShowWebcam] = useState(false);
+  const [videoConstraints, setVideoConstraints] = useState({
+    facingMode: "user",
+  });
   const webcamRef = useRef(null);
 
   const API_KEY = process.env.REACT_APP_API_KEY;
@@ -103,9 +106,19 @@ const Chat = () => {
     setIsFrontCamera((prev) => !prev);
     const cameraType = isFrontCamera ? "Back Camera" : "Front Camera";
     toast.info(`Switched to ${cameraType}`);
+    setVideoConstraints({
+      facingMode: isFrontCamera ? "environment" : "user",
+    });
   };
 
   const toggleWebcam = () => {
+    if (!showWebcam) {
+      // Force re-render with updated constraints
+      setVideoConstraints((prev) => ({
+        ...prev,
+        facingMode: isFrontCamera ? "user" : "environment",
+      }));
+    }
     setShowWebcam((prev) => !prev);
   };
 
@@ -181,9 +194,7 @@ const Chat = () => {
             audio={false}
             ref={webcamRef}
             screenshotFormat="image/png"
-            videoConstraints={{
-              facingMode: isFrontCamera ? "user" : "environment",
-            }}
+            videoConstraints={videoConstraints}
             className="webcam"
           />
         )}
