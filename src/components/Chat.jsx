@@ -161,8 +161,8 @@ const Chat = () => {
               top: '50%',
               left: '50%',
               transform: 'translate(-50%, -50%)',
-              width: '78%',
-              maxWidth: 400,
+              width: '80%', // Adjust width to fit the modal
+              maxWidth: 600, // Set a max-width for larger screens
               bgcolor: 'background.paper',
               boxShadow: 24,
               p: 4,
@@ -170,24 +170,25 @@ const Chat = () => {
               flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
-              borderRadius:'10px',
+              borderRadius: '10px',
+              overflow: 'hidden' // Ensure content does not overflow
             }}
           >
-              <Webcam
-                audio={false}
-                ref={webcamRef}
-                screenshotFormat="image/png"
-                videoConstraints={{
-                  facingMode: isFrontCamera ? "user" : "environment",
-                }}
-                className="webcam"
-                style={{ 
-                  width: '100%', 
-                  height: '100%',  // Ensure the height auto-adjusts
-                  objectFit: 'cover',  // Ensure the video covers the container
-                  borderRadius: '10px', // Match the modal's border radius
-                }}
-              />
+            <Webcam
+              audio={false}
+              ref={webcamRef}
+              screenshotFormat="image/png"
+              videoConstraints={{
+                facingMode: isFrontCamera ? "user" : "environment",
+              }}
+              className="webcam"
+              style={{ 
+                width: '100%', 
+                height: 'auto', // Allow height to adjust based on width
+                objectFit: 'cover', // Ensure the video covers the container
+                borderRadius: '10px', // Match the modal's border radius
+              }}
+            />
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 20, width: '100%' }}>
               <Button
                 variant="contained"
