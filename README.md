@@ -59,14 +59,3 @@ To set up AI-Ponics locally, follow these steps:
 - **Upload Plant Images**: Use the interface to upload images of plants. Gemini AI will analyze the images and provide insights into plant health.
 - **View Sensor Data**: Access live updates from your aeroponic system's sensors to monitor environmental conditions and make adjustments as needed.
 
-## Contributing
-
-Contributions are welcome! If you have suggestions or improvements, please fork the repository and submit a pull request.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Contact
-
-For any questions or support, please reach out to [your.email@example.com](mailto:your.email@example.com).
