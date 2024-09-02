@@ -2,7 +2,7 @@
 
 ## Overview
 
-AI-Ponics is an advanced web application built with React JS, designed to monitor and manage plants in an aeroponic system using cutting-edge technology. The website integrates Gemini AI for image detection and analysis, providing insights into the state of the plants. Additionally, it utilizes the Blynk API for live updates from sensor monitoring, ensuring real-time data for optimal plant care.
+AI-Ponics is an advanced web application built with React JS, designed to monitor and manage plants in an aeroponic system using technology. The website integrates Gemini AI for image detection and analysis, providing insights into the state of the plants. Additionally, it utilizes the Blynk API for live updates from sensor monitoring, ensuring real-time data for optimal plant care.
 
 ## Features
 
