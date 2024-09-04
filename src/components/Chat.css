@@ -26,6 +26,7 @@
     position: relative;
 }
 
+
 .chat-title {
     text-align: center;
     margin: 0;
@@ -40,7 +41,7 @@
 
 .back-button {
     position: absolute;
-    top: 16px;
+    top: 20px;
     right: 16px;
     background: transparent;
     border: none;

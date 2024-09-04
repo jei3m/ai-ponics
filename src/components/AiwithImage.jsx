@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faImage, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { getBase64 } from '../helpers/imageHelper';
-import './ChatBox.css';
+import './Chat.css';
 
 // Initialize the Google Generative AI with API key from environment variables
 const apiKey = process.env.REACT_APP_API_KEY;
