@@ -15,7 +15,7 @@ AI-Ponics is an advanced web application built with React JS, designed to monito
 ## Technologies Used
 
 - **React JS**: For building a dynamic and responsive user interface.
-- **Gemini AI**: For advanced image detection and analysis tailored to aeroponic systems.
+- **Gemini AI**: For image and text prompt analysis tailored to aeroponic systems.
 - **Blynk API**: For real-time sensor data integration and monitoring.
 
 ## Installation
@@ -56,6 +56,6 @@ To set up AI-Ponics locally, follow these steps:
 
 ## Usage
 
-- **Upload Plant Images**: Use the interface to upload images of plants. Gemini AI will analyze the images and provide insights into plant health.
+- **Upload Plant Images**: Use the interface to upload images of plants. The AI will analyze the images and provide insights into plant health.
 - **View Sensor Data**: Access live updates from your aeroponic system's sensors to monitor environmental conditions and make adjustments as needed.
 
