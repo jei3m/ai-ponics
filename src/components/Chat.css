@@ -20,10 +20,11 @@
 /* Header styles */
 .header {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start; /* Align children to the left */
     align-items: center;
     margin-bottom: 16px;
     position: relative;
+    margin-top: -14px;
 }
 
 
@@ -41,7 +42,7 @@
 
 .back-button {
     position: absolute;
-    top: 20px;
+    top: 22px;
     right: 16px;
     background: transparent;
     border: none;
