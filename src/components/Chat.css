@@ -5,7 +5,7 @@
     background-color: #f0f0f0;
     height: 90vh;
     width: 94%; /* Set to 98% of the viewport width */
-    max-width: 40%; /* Ensure it doesn't exceed 98% of viewport width */
+    max-width: 50%; /* Ensure it doesn't exceed 98% of viewport width */
     min-width: 320px; /* Set a reasonable minimum width */
     margin: 0 auto;
     display: flex;
