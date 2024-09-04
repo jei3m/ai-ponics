@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Modal, Box, Button } from '@mui/material';
 import { ToastContainer, toast } from 'react-toastify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faImage, faSearch } from '@fortawesome/free-solid-svg-icons';
@@ -25,7 +24,7 @@ const AiwithImage = () => {
     setLoading(true);
     const model = genAI.getGenerativeModel({
       model: "gemini-1.5-flash",
-      systemInstruction: "You are now AI-Ponics, the plant assistant.",
+      systemInstruction: "You are now AI-Ponics, the plant assistant.", // Determined instructions for the behavior of the AI
     });
     const result = await model.generateContent([textPrompt, imageInlineData]);
     const response = await result.response;
@@ -34,7 +33,7 @@ const AiwithImage = () => {
     setMessages((prevMessages) => [
       ...prevMessages,
       { user: true, text: textPrompt, image: imagePreview }, // User message with image preview
-      { user: false, text: sanitizeText(text) } // AI response with generated image
+      { user: false, text: sanitizeText(text) } // AI response
     ]);
   }
 
@@ -48,10 +47,10 @@ const AiwithImage = () => {
   const sendMessage = () => {
     if (textPrompt || imageInlineData) {
       aiRun();
-      setTextPrompt(''); // Clear text input
-      setImagePreview(null); // Clear image preview
-      setImage(''); // Clear image state
-      setImageInlineData(''); // Clear image inline data
+      setTextPrompt(''); 
+      setImagePreview(null); 
+      setImage(''); 
+      setImageInlineData(''); 
     } else {
       toast.error('Please provide at least an image or text prompt.');
     }
