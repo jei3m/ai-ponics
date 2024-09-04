@@ -45,9 +45,9 @@
 .text-bubble {
   background-color: #3693f7; 
   color: white;
-  padding: 15px; 
+  padding: 12px; 
   border-radius: 20px; 
-  margin-left: -18px;  /* Adjust positioning */
+  margin-left: -20px;  /* Adjust positioning */
   font-size: 15px; 
   position: relative;
   max-width: 220px; 
