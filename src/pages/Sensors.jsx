@@ -26,7 +26,7 @@ function Sensors() {
                 setHumidity(humidityResponse.data);
 
                 // Check temperature and set alert
-                if (temperatureResponse.data > 72) {
+                if (temperatureResponse.data > 33) {
                     setTemperatureAlert('Temperature too high!');
                     sendEmail(temperatureResponse.data); // Send email if temperature is too high
                 } else if (temperatureResponse.data < 15) {
