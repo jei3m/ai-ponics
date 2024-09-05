@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Typography, Card, CardContent, CardHeader, Box, TextField } from '@mui/material';
 import { differenceInDays } from 'date-fns';
-import emailjs from 'emailjs-com';
 import '../App.css';
 import './css/Sensors.css';
 import { Gauge } from '../components/Gauge';
@@ -26,9 +25,8 @@ function Sensors() {
                 setHumidity(humidityResponse.data);
 
                 // Check temperature and set alert
-                if (temperatureResponse.data > 33) {
+                if (temperatureResponse.data > 30) {
                     setTemperatureAlert('Temperature too high!');
-                    sendEmail(temperatureResponse.data); // Send email if temperature is too high
                 } else if (temperatureResponse.data < 15) {
                     setTemperatureAlert('Temperature too low!');
                 } else {
@@ -65,31 +63,6 @@ function Sensors() {
 
     const handlePlantingDateChange = (event) => {
         setPlantingDate(event.target.value);
-    };
-
-    const sendEmail = (temperature) => {
-        const lastEmailTimestamp = localStorage.getItem('lastEmailTimestamp');
-        const now = new Date().getTime();
-
-        // Check if 20 minutes have passed since the last email
-        if (!lastEmailTimestamp || now - lastEmailTimestamp > 20 * 60 * 1000) {
-            const templateParams = {
-                to_name: 'Justin Miguel',
-                message: `The temperature is too high: ${temperature}°C`,
-                user_email: 'justinmigue.rys03@gmail.com',
-            };
-
-            emailjs.send('service_pi7nkwk', 'template_vbew415', templateParams, 'bEbXHpJFHd2SXPU0N')
-                .then((response) => {
-                    console.log('Email successfully sent!', response.status, response.text);
-                    // Store the current timestamp after successfully sending an email
-                    localStorage.setItem('lastEmailTimestamp', now);
-                }, (err) => {
-                    console.error('Failed to send email:', err);
-                });
-        } else {
-            console.log('Email not sent: 20 minutes have not passed yet.');
-        }
     };
 
     return (
@@ -143,6 +116,19 @@ function Sensors() {
                             )}
                         </CardContent>
                     </Card>
+                    {/* <Card className="sensor-card">
+                        <CardHeader 
+                            title={
+                                <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                                    Plant Information
+                                </Typography>
+                            }
+                        />
+                        <CardContent>
+                            <Typography variant="body1">Plant: {plantName}</Typography>
+                            <img src={plantImage} alt={plantName} style={{ width: '100%', maxHeight: '200px', objectFit: 'cover' }} />
+                        </CardContent>
+                    </Card> */}
                     <Card className="sensor-card">
                         <CardHeader 
                             title={
