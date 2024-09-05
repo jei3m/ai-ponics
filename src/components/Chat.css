@@ -276,7 +276,6 @@
     object-fit: cover; /* Ensures the video fits nicely within the rounded corners */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow for consistency */
     margin-top: 12px; /* Adds spacing below the video feed */
-    display: block; /* Ensures that the video block behaves properly */
 }
 
 /* Responsive Design */
