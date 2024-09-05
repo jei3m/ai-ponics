@@ -3,8 +3,8 @@
     position: relative;
     padding: 16px;
     background-color: #f0f0f0;
-    height: 90vh;
-    width: 94%; /* Maintain responsive width */
+    height: 80vh;
+    width: 100%; /* Maintain responsive width */
     max-width: 500px; /* Adjusted max-width for a better fit on larger screens */
     min-width: 320px; /* Set a reasonable minimum width */
     margin: 0 auto;
