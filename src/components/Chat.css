@@ -5,7 +5,7 @@
     background-color: #f0f0f0;
     height: 90vh;
     width: 94%; /* Maintain responsive width */
-    max-width: 600px; /* Adjusted max-width for a better fit on larger screens */
+    max-width: 500px; /* Adjusted max-width for a better fit on larger screens */
     min-width: 320px; /* Set a reasonable minimum width */
     margin: 0 auto;
     display: flex;
@@ -13,7 +13,7 @@
     justify-content: space-between;
     box-sizing: border-box;
     border-radius: 12px;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.24);
     overflow: hidden;
 }
 
