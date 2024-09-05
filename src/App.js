@@ -14,6 +14,7 @@ function App() {
       <Route index element={<Sensors/>}/>
       <Route path="/sensors" element={<Sensors/>}/>
       <Route path="/chat" element={<AiwithImage/>}/>
+      <Route path="/una" element={<Chat/>}/>
       </Routes>
       </BrowserRouter>
       
