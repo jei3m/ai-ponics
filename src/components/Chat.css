@@ -1,5 +1,4 @@
 /* Chat container */
-/* Chat container */
 .chat-container {
     position: relative;
     padding: 16px;
@@ -8,7 +7,7 @@
     width: 94%; /* Maintain responsive width */
     max-width: 600px; /* Adjusted max-width for a better fit on larger screens */
     min-width: 320px; /* Set a reasonable minimum width */
-    margin: 0 auto; /* Horizontally center */
+    margin: 0 auto;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -16,12 +15,7 @@
     border-radius: 12px;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
     overflow: hidden;
-    position: absolute; /* Make positioning relative to parent */
-    top: 50%; /* Center vertically */
-    left: 50%; /* Center horizontally */
-    transform: translate(-50%, -50%); /* Adjust for exact center alignment */
 }
-
 
 /* Header styles */
 .header {
