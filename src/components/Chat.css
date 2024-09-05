@@ -220,13 +220,13 @@
     align-items: center;
     justify-content: center;
     padding: 16px;
-    z-index: 1000; 
+  
 }
 
 .camera-controls {
     display: flex;
     justify-content: space-between;
-    width: 100%;
+    width: 96%;
     max-width: 600px; /* Consistent with chat container width */
     margin-top: 10px;
 }
@@ -269,12 +269,11 @@
 
 /* Video feed styles */
 .video-feed {
-    width: 100%; /* Ensures the video takes up full width of the container */
+    width: 90%; /* Ensures the video takes up full width of the container */
     max-height: none;
     border-radius: 12px; /* Same rounded corners as other elements */
     object-fit: cover; /* Ensures the video fits nicely within the rounded corners */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow for consistency */
-    margin-top: 12px; /* Adds spacing below the video feed */
 }
 
 /* Responsive Design */
