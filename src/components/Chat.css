@@ -293,9 +293,6 @@
         font-size: 14px;
     }
 
-    .video-feed {
-        max-height: 100vh; /* Restricts video height to 60% of viewport height */
-    }
 }
 
 @media (max-width: 480px) {
@@ -313,7 +310,5 @@
         width: 100%; /* Ensure full width */
     }
 
-    .video-feed {
-        max-height: 100vh; /* Restricts video height to 50% of viewport height */
-    }
+
 }
