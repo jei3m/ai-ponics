@@ -10,8 +10,6 @@ import { Gauge } from '../components/Gauge';
 function Sensors() {
     const [temperature, setTemperature] = useState(null);
     const [humidity, setHumidity] = useState(null);
-    const [plantName, setPlantName] = useState('Tomato');
-    const [plantImage, setPlantImage] = useState('/img/tomato-plant.jpg');
     const [plantingDate, setPlantingDate] = useState('');
     const [daysSincePlanting, setDaysSincePlanting] = useState(0);
     const [temperatureAlert, setTemperatureAlert] = useState('');
@@ -26,7 +24,7 @@ function Sensors() {
                 setHumidity(humidityResponse.data);
 
                 // Check temperature and set alert
-                if (temperatureResponse.data > 33) {
+                if (temperatureResponse.data > 73) {
                     setTemperatureAlert('Temperature too high!');
                     sendEmail(temperatureResponse.data); // Send email if temperature is too high
                 } else if (temperatureResponse.data < 15) {
@@ -68,19 +66,35 @@ function Sensors() {
     };
 
     const sendEmail = (temperature) => {
-        const templateParams = {
-            to_name: 'Justin Miguel', // Your name
-            message: `The temperature is too high: ${temperature}°C`,
-            user_email: 'justinmigue.rys03@gmail.com', // Your email
-        };
-
-        emailjs.send('service_pi7nkwk', 'template_vbew415', templateParams, 'bEbXHpJFHd2SXPU0N')
+        const lastEmailTimestamp = localStorage.getItem('lastEmailTimestamp');
+        const now = new Date().getTime();
+    
+        // Check if 20 minutes have passed since the last email
+        if (!lastEmailTimestamp || now - lastEmailTimestamp > 10 * 60 * 1000) {
+            const templateParams = {
+                to_name: 'Justin Miguel',
+                message: `The temperature is too high: ${temperature}°C`,
+                user_email: 'justinmiguel.rys03@gmail.com',
+            };
+    
+            emailjs.send(
+                process.env.REACT_APP_EMAILJS_SERVICE_ID,
+                process.env.REACT_APP_EMAILJS_TEMPLATE_ID,
+                templateParams,
+                process.env.REACT_APP_EMAILJS_USER_ID
+            )
             .then((response) => {
                 console.log('Email successfully sent!', response.status, response.text);
+                // Store the current timestamp after successfully sending an email
+                localStorage.setItem('lastEmailTimestamp', now);
             }, (err) => {
                 console.error('Failed to send email:', err);
             });
+        } else {
+            console.log('Email not sent: 10 minutes have not passed yet.');
+        }
     };
+    
 
     return (
         <div className="Appsensor">
@@ -117,7 +131,22 @@ function Sensors() {
                             )}
                         </CardContent>
                     </Card>
-
+                    <Card className="sensor-card">
+                        <CardHeader 
+                            title={
+                                <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                                    Humidity
+                                </Typography>
+                            }
+                        />
+                        <CardContent sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '2px' }}>
+                            {humidity !== null ? (
+                                <Gauge value={humidity} max={100} label="%" />
+                            ) : (
+                                <Typography variant="h6" className="loading-text">Loading...</Typography>
+                            )}
+                        </CardContent>
+                    </Card>
                     <Card className="sensor-card">
                         <CardHeader 
                             title={
