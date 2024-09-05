@@ -14,7 +14,7 @@ body {
   min-height: 100vh;
   align-items: center;
   justify-content: center;
-  background-color: #dbdbdb;
+  background-color:  #F1F8E9;
 }
 
 .App-logo {
@@ -55,7 +55,6 @@ body {
 
 h2 {
   margin-bottom: 10px;
-  font-size: 30px;
 }
 
 p {

@@ -2,7 +2,7 @@
 .chat-container {
     position: relative;
     padding: 16px;
-    background-color: #f0f0f0;
+    background-color: #f0f0f0; /* Light green background */
     height: 88vh;
     width: 100%; /* Maintain responsive width */
     max-width: 500px; /* Adjusted max-width for a better fit on larger screens */
@@ -35,8 +35,8 @@
 }
 
 .chat-title h2 {
-    font-size: 24px;
-    color: #333;
+    font-size: 20px;
+    color: #000000; 
     margin: 0;
 }
 
@@ -46,16 +46,16 @@
     right: 16px;
     background: transparent;
     border: none;
-    color: #3693f7;
+    color: #006400; /* Darker green */
     cursor: pointer;
     font-size: 16px;
     padding: 8px;
     transition: color 0.3s;
-    margin-top: 10px;
+    margin-top: -4px;
 }
 
 .back-button:hover {
-    color: #1326ff;
+    color: #004d00; /* Dark green */
 }
 
 .back-button svg {
@@ -87,7 +87,7 @@
 }
 
 .message.user {
-    background-color: #3693f7;
+    background-color: #004d00; /* Dark green */
     color: #fff;
     text-align: right;
     margin-left: auto;
@@ -101,8 +101,8 @@
 }
 
 .message.ai {
-    background-color: #fff;
-    color: #000;
+    background-color: #c8e6c9; /* Light green */
+    color: #004d00; /* Dark green text */
     text-align: left;
 }
 
@@ -130,9 +130,9 @@
 
 .message-input {
     padding: 10px; /* Reduced padding for a more compact appearance */
-    background-color: #cfcfcf;
+    background-color: #c8e6c9; /* Light green */
     border-radius: 12px;
-    color: rgb(0, 0, 0);
+    color: #004d00; /* Dark green text */
     border: none;
     font-size: 16px;
     width: 100%; /* Ensure it takes full width of the input-button-container */
@@ -142,7 +142,7 @@
 .upload-button,
 .camera-button,
 .send-button {
-    background: #3693f7;
+    background: #096609; /* Dark green background */
     border: none;
     border-radius: 12px;
     color: #fff;
@@ -158,15 +158,15 @@
 }
 
 .camera-button.disabled {
-    background-color: darkgray;
+    background-color: #a5d6a7; /* Lighter green for disabled state */
     cursor: not-allowed;
     /* Optionally add more styling to indicate it's disabled */
-  }
+}
 
 /* Loading spinner */
 .loading-spinner {
     border: 4px solid rgba(0, 0, 0, 0.1);
-    border-left: 4px solid #fff;
+    border-left: 4px solid #004d00; /* Dark green spinner */
     border-radius: 50%;
     width: 1em;
     height: 1em;
@@ -246,7 +246,7 @@
 .capture-button,
 .exit-button,
 .camera-toggle-button {
-    background: #3693f7; /* Default blue background */
+    background: #096609; /* Dark green background */
     border: none;
     border-radius: 12px;
     color: #fff;
@@ -303,7 +303,6 @@
     .message-input {
         font-size: 14px;
     }
-
 }
 
 @media (max-width: 480px) {
@@ -320,6 +319,4 @@
         font-size: 16px;
         width: 100%; /* Ensure full width */
     }
-
-
 }

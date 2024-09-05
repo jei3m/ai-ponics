@@ -29,7 +29,7 @@ function Sensors() {
     }, []);
 
     return (
-        <div className="Appbg">
+        <div className="Appsensor">
             <header className="App-header">
                 <h2>Sensor Dashboard</h2>
                 <Box className="sensor-container">

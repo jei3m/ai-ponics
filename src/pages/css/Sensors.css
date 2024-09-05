@@ -1,25 +1,76 @@
 /* Sensors.css */
+:root {
+  --primary-green: #4CAF50;
+  --light-green: #8BC34A;
+  --dark-green: #388E3C;
+  --background-green: #E8F5E9;
+  --text-color: #212121;
+  --card-background: #FFFFFF;
+}
+
+body {
+  background-color: var(--background-green);
+  color: var(--text-color);
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.Appsensor {
+  min-height: 100vh;
+  padding: 20px;
+  box-sizing: border-box;
+  background-color:  #F1F8E9;
+  margin-top: -20px;
+}
+
+.App-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.App-header h2 {
+  color: var(--dark-green);
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+}
+
 .sensor-container {
   display: flex;
-  flex-direction: row; /* Default to row on larger screens */
-  flex-wrap: wrap; /* Allow items to wrap to the next line if necessary */
+  flex-wrap: wrap;
   justify-content: center;
-  gap: 16px;
+  gap: 24px;
   margin-bottom: 80px;
 }
 
 .sensor-card {
-  width: 230px;
-  margin: 10px;
-  border-radius: 12px !important;
-  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.301) !important;
+  width: calc(50% - 12px);
+  max-width: 400px;
+  min-width: 280px;
+  border-radius: 16px !important;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1) !important;
+  background-color: var(--card-background) !important;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Media query for mobile devices */
-@media (max-width: 600px) {
-  .sensor-container {
-    flex-direction: column; /* Stack items in a column on smaller screens */
-  }
+.sensor-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15) !important;
+}
+
+.sensor-card .MuiCardHeader-root {
+  background-color: var(--primary-green);
+  color: white;
+  padding: 16px;
+}
+
+.sensor-card .MuiCardHeader-title {
+  font-size: 1.2rem !important;
+  font-weight: 600 !important;
+}
+
+.sensor-card .MuiCardContent-root {
+  padding: 24px 16px;
 }
 
 .ask-aiponics-container {
@@ -67,7 +118,7 @@
 }
 
 .text-bubble {
-  background-color: #3693f7; 
+  background-color: #096609; 
   color: white;
   padding: 12px; 
   border-radius: 20px; 
@@ -82,4 +133,56 @@
   content: none;
 }
 
+.gauge-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
+.gauge-label {
+  margin-top: 10px;
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: var(--primary-green);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .App-header h2 {
+    font-size: 2rem;
+  }
+
+  .sensor-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .sensor-card {
+    width: 100%;
+    max-width: none;
+  }
+
+}
+
+@media (max-width: 480px) {
+  .App-header h2 {
+    font-size: 1.8rem;
+  }
+
+  .sensor-card .MuiCardHeader-title {
+    font-size: 1rem !important;
+  }
+
+  .gauge-label {
+    font-size: 1rem;
+  }
+
+  .ask-aiponics-button {
+    width: 70px;
+    height: 70px;
+  }
+
+  .text-bubble {
+    font-size: 11px
+  }
+}
