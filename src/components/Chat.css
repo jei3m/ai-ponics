@@ -155,6 +155,12 @@
     font-size: 18px;
 }
 
+.camera-button.disabled {
+    background-color: darkgray;
+    cursor: not-allowed;
+    /* Optionally add more styling to indicate it's disabled */
+  }
+
 /* Loading spinner */
 .loading-spinner {
     border: 4px solid rgba(0, 0, 0, 0.1);

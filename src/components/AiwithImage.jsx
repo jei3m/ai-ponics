@@ -163,9 +163,9 @@ const AiwithImage = () => {
             <FontAwesomeIcon icon={faImage} />
           </button>
           <button
-            className={`camera-button ${isCameraOpen ? 'capture-button' : ''}`}
+            className={`camera-button ${imagePreview ? 'disabled' : ''}`}
             onClick={openCamera}
-            disabled={loading}
+            disabled={imagePreview || loading}
           >
             <FontAwesomeIcon icon={faCamera} />
           </button>
