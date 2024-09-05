@@ -1,8 +1,8 @@
 
 import {BrowserRouter, Routes, Route} from 'react-router-dom';
-import Sensors from './pages/Sensors';
+import Sensors from './pahina/Sensors';
 import './App.css';
-import AiwithImage from './pages/AiwithImage';
+import AiwithImage from './pahina/AiwithImage';
 
 
 function App() {
