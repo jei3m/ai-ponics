@@ -4,8 +4,8 @@
     padding: 16px;
     background-color: #f0f0f0;
     height: 90vh;
-    width: 94%; /* Set to 98% of the viewport width */
-    max-width: 50%; /* Ensure it doesn't exceed 98% of viewport width */
+    width: 94%; /* Maintain responsive width */
+    max-width: 600px; /* Adjusted max-width for a better fit on larger screens */
     min-width: 320px; /* Set a reasonable minimum width */
     margin: 0 auto;
     display: flex;
@@ -17,6 +17,7 @@
     overflow: hidden;
 }
 
+
 /* Header styles */
 .header {
     display: flex;
@@ -26,7 +27,6 @@
     position: relative;
     margin-top: -14px;
 }
-
 
 .chat-title {
     text-align: center;
@@ -117,7 +117,6 @@
     height: 60px; /* Adjust height to fit two lines of text */
 }
 
-
 /* Button container - Flex evenly */
 .input-button-container {
     display: flex;
@@ -139,10 +138,10 @@
 }
 
 /* Buttons */
+.capture-button,
 .upload-button,
 .camera-button,
-.send-button,
-.camera-toggle-button {
+.send-button{
     background: #3693f7;
     border: none;
     border-radius: 12px;
@@ -156,7 +155,6 @@
     padding: 0 8px; /* Reduced padding */
     margin: 0 4px; /* Reduced margin */
     font-size: 18px;
-
 }
 
 /* Loading spinner */
@@ -195,14 +193,6 @@
     border-radius: 10px;
 }
 
-.webcam {
-    margin-top: 10px;
-    width: 100%;
-    max-height: 100%;
-    object-fit: cover;
-    border-radius: 10px;
-}
-
 .remove-image-button {
     position: absolute;
     top: 10px;
@@ -219,16 +209,78 @@
     background-color: rgba(0, 0, 0, 0.7);
 }
 
+/* Camera controls - Capture and Switch Camera in a row */
+.camera-controls {
+    display: flex;
+    justify-content: space-between; /* Ensure buttons are spaced out */
+    align-items: center;
+    gap: 10px; /* Adjust gap between buttons */
+    margin-top: 10px;
+    width: 100%; /* Ensure the container spans the entire width */
+}
+
+.exit-button,
+.camera-toggle-button {
+    background: #3693f7; /* Default blue background */
+    border: none;
+    border-radius: 12px;
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 36px; /* Consistent height */
+    padding: 0 12px; /* Consistent padding */
+    margin: 0; /* Remove margin */
+    font-size: 14px; /* Consistent font size */
+    width: 100%; /* Make buttons span full width of their container */
+    box-sizing: border-box; /* Include padding and border in width */
+}
+
+.exit-button {
+    background: #ff4d4d; /* Red color for exit button */
+}
+
+.exit-button:hover {
+    background: #e03a3a; /* Darker red for hover effect */
+}
+
+
+.camera-toggle-button svg {
+    font-size: 14px; /* Smaller icon size */
+    transition: transform 0.3s ease;
+}
+
+.camera-toggle-button:hover svg {
+    transform: rotate(180deg);
+}
+
+.camera-toggle-button svg {
+    font-size: 14px; /* Smaller icon size */
+    transition: transform 0.3s ease;
+}
+
+.camera-toggle-button:hover svg {
+    transform: rotate(180deg);
+}
+
+/* Video feed styles */
+.video-feed {
+    width: 100%; /* Ensures the video takes up full width of the container */
+    height: auto; /* Adjusts height automatically while maintaining aspect ratio */
+    max-height: 100%; /* Ensures the video doesn't exceed the container height */
+    max-width: 100%; /* Ensures the video doesn't exceed the container width */
+    border-radius: 12px; /* Same rounded corners as other elements */
+    object-fit: cover; /* Ensures the video fits nicely within the rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow for consistency */
+    margin-top: 12px; /* Adds spacing below the video feed */
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .chat-container {
         padding: 16px;
-        max-width: 98% !important; /* Adjust for small screens */
-    }
-    
-    .header {
-        flex-direction: column;
-        align-items: flex-start;
+        max-width: 98%; /* Adjust for small screens */
     }
 
     .input-container {
@@ -239,14 +291,12 @@
         font-size: 14px;
     }
 
-    .message {
-        font-size: 16px;
-        max-width: 90%;
+    .video-feed {
+        max-height: 50vh; /* Restricts video height to 50% of viewport height */
     }
 }
 
 @media (max-width: 480px) {
-    
     .chat-title h2 {
         font-size: 20px;
     }
@@ -256,40 +306,12 @@
         height: 45px;
     }
 
-    .image-preview {
-        max-height: 100%;
-    }
-
-    .input-container {
-        gap: 2px; /* Further reduced gap */
-    }
-
     .message-input {
         font-size: 16px;
         width: 100%; /* Ensure full width */
     }
-}
 
-.camera-toggle-button {
-    background: #3693f7;
-    border: none;
-    border-radius: 12px;
-    color: #fff;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 36px; /* Reduced height */
-    flex: 1;
-    margin: 0 4px;
+    .video-feed {
+        max-height: 40vh; /* Restricts video height to 40% of viewport height */
+    }
 }
-
-.camera-toggle-button svg {
-    font-size: 18px;
-    transition: transform 0.3s ease;
-}
-
-.camera-toggle-button:hover svg {
-    transform: rotate(180deg);
-}
-

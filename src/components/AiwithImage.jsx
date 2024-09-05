@@ -1,13 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft, faImage, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faImage, faCamera, faSearch, faSyncAlt, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { getBase64 } from '../helpers/imageHelper';
 import './Chat.css';
 
-// Initialize the Google Generative AI with API key from environment variables
 const apiKey = process.env.REACT_APP_API_KEY;
 const genAI = new GoogleGenerativeAI(apiKey);
 
@@ -18,13 +17,17 @@ const AiwithImage = () => {
   const [textPrompt, setTextPrompt] = useState('');
   const [imagePreview, setImagePreview] = useState(null);
   const [messages, setMessages] = useState([]);
-  const navigate = useNavigate(); // Use the useNavigate hook
+  const [isCameraOpen, setIsCameraOpen] = useState(false);
+  const [currentFacingMode, setCurrentFacingMode] = useState('user'); // Front camera by default
+  const videoRef = useRef(null); // Reference to the video element
+  const canvasRef = useRef(null); // Reference to the canvas for capturing photo
+  const navigate = useNavigate();
 
   async function aiRun() {
     setLoading(true);
     const model = genAI.getGenerativeModel({
       model: "gemini-1.5-flash",
-      systemInstruction: "You are now AI-Ponics, the plant assistant.", // Determined instructions for the behavior of the AI
+      systemInstruction: "Analyze anything is sent to you.",
     });
     const result = await model.generateContent([textPrompt, imageInlineData]);
     const response = await result.response;
@@ -32,25 +35,24 @@ const AiwithImage = () => {
     setLoading(false);
     setMessages((prevMessages) => [
       ...prevMessages,
-      { user: true, text: textPrompt, image: imagePreview }, // User message with image preview
-      { user: false, text: sanitizeText(text) } // AI response
+      { user: true, text: textPrompt, image: imagePreview },
+      { user: false, text: sanitizeText(text) },
     ]);
   }
 
   const sanitizeText = (text) => {
-    // Replace ** with <strong> tags and * with <br /> for new lines
     return text
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // Bold text
-      .replace(/\*/g, '<br />'); // New line
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*/g, '<br />');
   };
 
   const sendMessage = () => {
     if (textPrompt || imageInlineData) {
       aiRun();
-      setTextPrompt(''); 
-      setImagePreview(null); 
-      setImage(''); 
-      setImageInlineData(''); 
+      setTextPrompt('');
+      setImagePreview(null);
+      setImage('');
+      setImageInlineData('');
     } else {
       toast.error('Please provide at least an image or text prompt.');
     }
@@ -64,7 +66,7 @@ const AiwithImage = () => {
 
       const imageData = await fileToGenerativePart(file);
       setImageInlineData(imageData);
-      setImagePreview(URL.createObjectURL(file)); // Update preview
+      setImagePreview(URL.createObjectURL(file));
     }
   };
 
@@ -84,9 +86,49 @@ const AiwithImage = () => {
     setTextPrompt(e.target.value);
   };
 
-  // Implement the goBack function
   const goBack = () => {
-    navigate(-1); // Go back to the previous page
+    navigate(-1);
+  };
+
+  const openCamera = async () => {
+    setIsCameraOpen(true);
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: currentFacingMode },
+    });
+    videoRef.current.srcObject = stream;
+    videoRef.current.play();
+  };
+
+  const switchCamera = () => {
+    const newFacingMode = currentFacingMode === 'user' ? 'environment' : 'user';
+    setCurrentFacingMode(newFacingMode);
+    openCamera(); // Reopen the camera with the new facing mode
+  };
+
+  const capturePhoto = () => {
+    const canvas = canvasRef.current;
+    const context = canvas.getContext('2d');
+    context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+
+    const dataUrl = canvas.toDataURL('image/png');
+    setImagePreview(dataUrl);
+    setIsCameraOpen(false);
+
+    // Stop camera stream
+    const stream = videoRef.current.srcObject;
+    const tracks = stream.getTracks();
+    tracks.forEach(track => track.stop());
+
+    setImageInlineData({
+      inlineData: { data: dataUrl.split(',')[1], mimeType: 'image/png' },
+    });
+  };
+
+  const exitCamera = () => {
+    setIsCameraOpen(false);
+    const stream = videoRef.current.srcObject;
+    const tracks = stream.getTracks();
+    tracks.forEach(track => track.stop());
   };
 
   return (
@@ -120,25 +162,46 @@ const AiwithImage = () => {
             onKeyDown={(e) => e.key === "Enter" && sendMessage()}
           />
         </div>
-        <div className="input-button-container">
-          <input
-            type="file"
-            id="file-upload"
-            style={{ display: 'none' }}
-            accept="image/*"
-            onChange={handleFileChange}
-          />
-          <button
-            className="upload-button"
-            onClick={() => document.getElementById('file-upload').click()}
-            disabled={loading}
-          >
-            <FontAwesomeIcon icon={faImage} />
-          </button>
-          <button className="send-button" onClick={sendMessage} disabled={loading}>
-            {loading ? <div className="loading-spinner"></div> : <FontAwesomeIcon icon={faSearch} />}
-          </button>
-        </div>
+          <div className="input-button-container">
+            <input
+              type="file"
+              id="file-upload"
+              style={{ display: 'none' }}
+              accept="image/*"
+              onChange={handleFileChange}
+            />
+            <button
+              className="upload-button"
+              onClick={() => document.getElementById('file-upload').click()}
+              disabled={loading}
+            >
+              <FontAwesomeIcon icon={faImage} />
+            </button>
+            <button
+              className={`camera-button ${isCameraOpen ? 'capture-button' : ''}`}
+              onClick={isCameraOpen ? capturePhoto : openCamera}
+              disabled={loading}
+            >
+              <FontAwesomeIcon icon={faCamera} />
+            </button>
+            <button className="send-button" onClick={sendMessage} disabled={loading}>
+              {loading ? <div className="loading-spinner"></div> : <FontAwesomeIcon icon={faSearch} />}
+            </button>
+          </div>
+
+        {isCameraOpen && (
+          <div className="camera-container">
+            <video ref={videoRef} className="video-feed" />
+            <div className="camera-controls">
+              <button className="camera-toggle-button" onClick={switchCamera}>
+                <FontAwesomeIcon icon={faSyncAlt} />
+              </button>
+              <button className="exit-button" onClick={exitCamera}>
+                <FontAwesomeIcon icon={faTimes} />
+              </button>
+            </div>
+          </div>
+        )}
 
         {imagePreview && (
           <div className="image-preview-container">
@@ -148,6 +211,8 @@ const AiwithImage = () => {
             </button>
           </div>
         )}
+
+        <canvas ref={canvasRef} style={{ display: 'none' }} width="640" height="480" />
       </div>
     </div>
   );
