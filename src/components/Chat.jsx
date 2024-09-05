@@ -5,6 +5,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch, faCamera, faArrowLeft, faSyncAlt, faImage } from "@fortawesome/free-solid-svg-icons";
 import { ToastContainer, toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import Modal from '@mui/material/Modal';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import "react-toastify/dist/ReactToastify.css";
 import "./Chat.css";
 
@@ -114,7 +117,7 @@ const Chat = () => {
       <div className="chat-container">
         <ToastContainer />
         <div className="header">
-          <h2>Ask AI-Ponics! Una</h2>
+          <h2>Ask AI-Ponics!</h2>
           <button className="back-button" onClick={goBack}>
             <FontAwesomeIcon icon={faArrowLeft} />
             Back
@@ -176,8 +179,31 @@ const Chat = () => {
           </div>
         )}
 
-        {showWebcam && (
-          <div className="webcam-container">
+        <Modal
+          open={showWebcam}
+          onClose={toggleWebcam}
+          aria-labelledby="webcam-modal-title"
+          aria-describedby="webcam-modal-description"
+        >
+          <Box
+            sx={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: '80%', // Adjust width to fit the modal
+              maxWidth: 600, // Set a max-width for larger screens
+              bgcolor: 'background.paper',
+              boxShadow: 24,
+              p: 4,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: '10px',
+              overflow: 'hidden' // Ensure content does not overflow
+            }}
+          >
             <Webcam
               audio={false}
               ref={webcamRef}
@@ -190,27 +216,45 @@ const Chat = () => {
                 width: '100%', 
                 height: 'auto', // Allow height to adjust based on width
                 objectFit: 'cover', // Ensure the video covers the container
-                borderRadius: '10px', // Match the container's border radius
+                borderRadius: '10px', // Match the modal's border radius
               }}
             />
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 20, width: '100%' }}>
-              <button
-                className="camera-toggle-button"
+              <Button
+                variant="contained"
+                color="primary"
                 onClick={handleCameraToggle}
-                style={{ flex: 1, marginRight: 10 }}
+                fullWidth
+                sx={{
+                  mr: 1,
+                  borderRadius: '8px', // Add border-radius here
+                  padding: '10px', // Add padding for a balanced look
+                  display: 'flex',
+                  justifyContent: 'center', // Center the icon
+                  alignItems: 'center', // Center the icon vertically
+                }}
               >
                 <FontAwesomeIcon icon={faSyncAlt} />
-              </button>
-              <button
-                className="capture-button"
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
                 onClick={capture}
-                style={{ flex: 1, marginLeft: 10 }}
+                fullWidth
+                sx={{
+                  ml: 1,
+                  borderRadius: '8px', // Add border-radius here
+                  padding: '10px', // Add padding for a balanced look
+                  display: 'flex',
+                  justifyContent: 'center', // Center the icon
+                  alignItems: 'center', // Center the icon vertically
+                }}
               >
                 <FontAwesomeIcon icon={faCamera} />
-              </button>
+              </Button>
             </div>
-          </div>
-        )}
+          </Box>
+        </Modal>
       </div>
     </div>
   );
