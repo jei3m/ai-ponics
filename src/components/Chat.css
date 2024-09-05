@@ -271,7 +271,7 @@
 .video-feed {
     width: 100%; /* Ensures the video takes up full width of the container */
     height: auto; /* Automatically adjusts height based on width and aspect ratio */
-    max-height: 100vh; /* Restricts video height to 80% of viewport height */
+    max-height: none;
     border-radius: 12px; /* Same rounded corners as other elements */
     object-fit: cover; /* Ensures the video fits nicely within the rounded corners */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow for consistency */
