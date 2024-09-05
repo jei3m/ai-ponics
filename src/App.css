@@ -17,12 +17,6 @@ body {
   background-color: #dbdbdb;
 }
 
-.App-header {
-  padding: 20px;
-  flex-direction: row;
-}
-
-
 .App-logo {
   height: 40vmin;
   pointer-events: none;
@@ -42,6 +36,7 @@ body {
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: rgb(0, 0, 0);
+  padding: 20px;
 }
 
 .App-link {
@@ -59,7 +54,8 @@ body {
 
 
 h2 {
-  margin-bottom: 20px;
+  margin-bottom: 10px;
+  font-size: 30px;
 }
 
 p {

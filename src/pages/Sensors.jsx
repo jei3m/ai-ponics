@@ -31,7 +31,7 @@ function Sensors() {
     return (
         <div className="Appbg">
             <header className="App-header">
-                <h3 style={{marginBottom:'10px'}}>Sensor Dashboard</h3>
+                <h2>Sensor Dashboard</h2>
                 <Box className="sensor-container">
                     <Card className="sensor-card">
                         <CardHeader 
