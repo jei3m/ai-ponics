@@ -29,19 +29,11 @@ function Sensors() {
     }, []);
 
     return (
-        <div className="Appnobg">
+        <div className="Appbg">
             <header className="App-header">
-                <Box
-                    sx={{
-                        display: 'flex',
-                        flexDirection: 'row',
-                        flexWrap: 'wrap',
-                        justifyContent: 'center',
-                        gap: 4,
-                        padding: 4,
-                    }}
-                >
-                    <Card sx={{ flex: '1 1 300px', maxWidth: 260, margin: '2px', display: 'flex', flexDirection: 'column', borderRadius: '10px' }}>
+                <h3 style={{marginBottom:'10px'}}>Sensor Dashboard</h3>
+                <Box className="sensor-container">
+                    <Card className="sensor-card">
                         <CardHeader 
                             title={
                                 <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
@@ -49,7 +41,7 @@ function Sensors() {
                                 </Typography>
                             }
                         />
-                        <CardContent sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        <CardContent sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '2px' }}>
                             {temperature !== null ? (
                                 <Gauge value={temperature} max={50} label="°C" />
                             ) : (
@@ -57,7 +49,7 @@ function Sensors() {
                             )}
                         </CardContent>
                     </Card>
-                    <Card sx={{ flex: '1 1 300px', maxWidth: 260, margin: '2px', display: 'flex', flexDirection: 'column', borderRadius: '10px' }}>
+                    <Card className="sensor-card">
                         <CardHeader 
                             title={
                                 <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
@@ -65,7 +57,7 @@ function Sensors() {
                                 </Typography>
                             }
                         />
-                        <CardContent sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        <CardContent sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '2px' }}>
                             {humidity !== null ? (
                                 <Gauge value={humidity} max={100} label="%" />
                             ) : (

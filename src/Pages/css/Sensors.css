@@ -1,3 +1,27 @@
+/* Sensors.css */
+.sensor-container {
+  display: flex;
+  flex-direction: row; /* Default to row on larger screens */
+  flex-wrap: wrap; /* Allow items to wrap to the next line if necessary */
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 80px;
+}
+
+.sensor-card {
+  width: 230px;
+  margin: 10px;
+  border-radius: 12px !important;
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.301) !important;
+}
+
+/* Media query for mobile devices */
+@media (max-width: 600px) {
+  .sensor-container {
+    flex-direction: column; /* Stack items in a column on smaller screens */
+  }
+}
+
 .ask-aiponics-container {
   position: fixed; 
   bottom: 15px;  /* Move container lower on the screen */
@@ -57,3 +81,5 @@
 .text-bubble::before {
   content: none;
 }
+
+

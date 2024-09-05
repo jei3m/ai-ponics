@@ -113,7 +113,7 @@ const Chat = () => {
   };
 
   return (
-    <div className="Appnobg">
+    <div className="Appbg">
       <div className="chat-container">
         <ToastContainer />
         <div className="header">
