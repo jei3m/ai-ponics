@@ -164,7 +164,7 @@ const AiwithImage = () => {
           </button>
           <button
             className={`camera-button ${isCameraOpen ? 'capture-button' : ''}`}
-            onClick={isCameraOpen ? capturePhoto : openCamera}
+            onClick={openCamera}
             disabled={loading}
           >
             <FontAwesomeIcon icon={faCamera} />
@@ -185,11 +185,14 @@ const AiwithImage = () => {
               className="video-feed"
             />
             <div className="camera-controls">
+              <button className="exit-button" onClick={exitCamera}>
+                <FontAwesomeIcon icon={faTimes} />
+              </button>
               <button className="camera-toggle-button" onClick={switchCamera}>
                 <FontAwesomeIcon icon={faSyncAlt} />
               </button>
-              <button className="exit-button" onClick={exitCamera}>
-                <FontAwesomeIcon icon={faTimes} />
+              <button className="capture-button" onClick={capturePhoto}>
+                <FontAwesomeIcon icon={faCamera} />
               </button>
             </div>
           </div>

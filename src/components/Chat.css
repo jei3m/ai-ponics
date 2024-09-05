@@ -17,7 +17,6 @@
     overflow: hidden;
 }
 
-
 /* Header styles */
 .header {
     display: flex;
@@ -138,10 +137,9 @@
 }
 
 /* Buttons */
-.capture-button,
 .upload-button,
 .camera-button,
-.send-button{
+.send-button {
     background: #3693f7;
     border: none;
     border-radius: 12px;
@@ -209,16 +207,31 @@
     background-color: rgba(0, 0, 0, 0.7);
 }
 
-/* Camera controls - Capture and Switch Camera in a row */
-.camera-controls {
+/* Camera container styles */
+.camera-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7); 
     display: flex;
-    justify-content: space-between; /* Ensure buttons are spaced out */
+    flex-direction: column;
     align-items: center;
-    gap: 10px; /* Adjust gap between buttons */
-    margin-top: 10px;
-    width: 100%; /* Ensure the container spans the entire width */
+    justify-content: center;
+    padding: 16px;
+    z-index: 1000; 
 }
 
+.camera-controls {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 600px; /* Consistent with chat container width */
+    margin-top: 10px;
+}
+
+.capture-button,
 .exit-button,
 .camera-toggle-button {
     background: #3693f7; /* Default blue background */
@@ -231,7 +244,7 @@
     justify-content: center;
     height: 36px; /* Consistent height */
     padding: 0 12px; /* Consistent padding */
-    margin: 0; /* Remove margin */
+    margin: 10px; /* Remove margin */
     font-size: 14px; /* Consistent font size */
     width: 100%; /* Make buttons span full width of their container */
     box-sizing: border-box; /* Include padding and border in width */
@@ -243,16 +256,6 @@
 
 .exit-button:hover {
     background: #e03a3a; /* Darker red for hover effect */
-}
-
-
-.camera-toggle-button svg {
-    font-size: 14px; /* Smaller icon size */
-    transition: transform 0.3s ease;
-}
-
-.camera-toggle-button:hover svg {
-    transform: rotate(180deg);
 }
 
 .camera-toggle-button svg {
@@ -268,16 +271,13 @@
 .video-feed {
     width: 100%; /* Ensures the video takes up full width of the container */
     height: auto; /* Automatically adjusts height based on width and aspect ratio */
-    max-height: 100%; /* Ensures the video doesn't exceed the container height */
-    max-width: 100%; /* Ensures the video doesn't exceed the container width */
+    max-height: 80vh; /* Restricts video height to 80% of viewport height */
     border-radius: 12px; /* Same rounded corners as other elements */
     object-fit: cover; /* Ensures the video fits nicely within the rounded corners */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow for consistency */
     margin-top: 12px; /* Adds spacing below the video feed */
     display: block; /* Ensures that the video block behaves properly */
 }
-
-
 
 /* Responsive Design */
 @media (max-width: 768px) {
@@ -295,7 +295,7 @@
     }
 
     .video-feed {
-        max-height: 50vh; /* Restricts video height to 50% of viewport height */
+        max-height: 60vh; /* Restricts video height to 60% of viewport height */
     }
 }
 
@@ -315,6 +315,6 @@
     }
 
     .video-feed {
-        max-height: 40vh; /* Restricts video height to 40% of viewport height */
+        max-height: 50vh; /* Restricts video height to 50% of viewport height */
     }
 }
