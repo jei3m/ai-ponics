@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Typography, Card, CardContent, CardHeader, Box } from '@mui/material';
 import '../App.css';
 import './css/Sensors.css';
-import { Gauge } from '../sinokaba/Gauge';
+import { Gauge } from '../components/Gauge';
 
 function Sensors() {
     const [temperature, setTemperature] = useState(null);
