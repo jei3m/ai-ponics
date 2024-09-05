@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { CircularProgress, Box, Typography, Card, CardContent, CardHeader, Grid } from '@mui/material';
+import { CircularProgress, Box, Typography, Card, CardContent, CardHeader} from '@mui/material';
 import '../App.css';
 import './Sensors.css';
 
