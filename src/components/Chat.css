@@ -294,7 +294,7 @@
     }
 
     .video-feed {
-        max-height: 60vh; /* Restricts video height to 60% of viewport height */
+        max-height: 100vh; /* Restricts video height to 60% of viewport height */
     }
 }
 
@@ -314,6 +314,6 @@
     }
 
     .video-feed {
-        max-height: 50vh; /* Restricts video height to 50% of viewport height */
+        max-height: 100vh; /* Restricts video height to 50% of viewport height */
     }
 }
