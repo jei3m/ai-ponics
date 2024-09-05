@@ -6,8 +6,9 @@ import { faArrowLeft, faImage, faCamera, faSearch, faSyncAlt, faTimes } from '@f
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { getBase64 } from '../helpers/imageHelper';
 import Webcam from 'react-webcam';
-import './Chat.css';
+import './css/Chat.css';
 
+// Setting constants to process environment variables (API Keys)
 const apiKey = process.env.REACT_APP_API_KEY;
 const genAI = new GoogleGenerativeAI(apiKey);
 
@@ -20,10 +21,11 @@ const AiwithImage = () => {
   const [messages, setMessages] = useState([]);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [currentFacingMode, setCurrentFacingMode] = useState('environment'); // Back camera by default
-  const [webcamRef, setWebcamRef] = useState(null); // Reference to the webcam component
+  const [webcamRef, setWebcamRef] = useState(null); 
   const navigate = useNavigate();
 
-  async function aiRun() {
+  
+  async function aiRun() { 
     setLoading(true);
     const model = genAI.getGenerativeModel({
       model: "gemini-1.5-flash",
@@ -40,12 +42,14 @@ const AiwithImage = () => {
     ]);
   }
 
+  // Replacing asterisks from the output of AI
   const sanitizeText = (text) => {
     return text
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
       .replace(/\*/g, '<br />');
   };
 
+  // Error when sending a prompt with cleared fields
   const sendMessage = () => {
     if (textPrompt || imageInlineData) {
       aiRun();
@@ -58,6 +62,7 @@ const AiwithImage = () => {
     }
   };
 
+  // It extracts the first selected file, converts it to Base64 format,
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -70,6 +75,7 @@ const AiwithImage = () => {
     }
   };
 
+  // Converts a file (blob) into a format that can be passed to the generative AI model
   async function fileToGenerativePart(blob) {
     const base64EncodedDataPromise = new Promise((resolve) => {
       const reader = new FileReader();
