@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { CircularProgress, Box, Typography, Card, CardContent, CardHeader, Grid2} from '@mui/material';
+import { CircularProgress, Box, Typography, Card, CardContent, CardHeader, Grid} from '@mui/material';
 import '../App.css';
 import './Sensors.css';
 
@@ -75,8 +75,8 @@ function Sensors() {
     return (
         <div className="App">
             <header className="App-header">
-                <Grid2 container spacing={4} justifyContent="center">
-                    <Grid2 item xs={12} sm={6} md={4} lg={3}>
+                <Grid container spacing={4} justifyContent="center">
+                    <Grid item xs={12} sm={6} md={4} lg={3}>
                         <Card sx={{ width: '90%', maxWidth: 400, margin: 'auto', display: 'flex', flexDirection: 'column', borderRadius: '10px' }}>
                             <CardHeader title="Temperature" />
                             <CardContent sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -87,8 +87,8 @@ function Sensors() {
                                 )}
                             </CardContent>
                         </Card>
-                    </Grid2>
-                    <Grid2 item xs={12} sm={6} md={4} lg={3}>
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={4} lg={3}>
                         <Card sx={{ width: '90%', maxWidth: 400, margin: 'auto', display: 'flex', flexDirection: 'column', borderRadius: '10px' }}>
                             <CardHeader title="Humidity" />
                             <CardContent sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -99,8 +99,8 @@ function Sensors() {
                                 )}
                             </CardContent>
                         </Card>
-                    </Grid2>
-                </Grid2>
+                    </Grid>
+                </Grid>
                 
             </header>
             <div className="ask-aiponics-container"> {/* Container for the ask Aerobot section */}
