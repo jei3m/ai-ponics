@@ -267,7 +267,7 @@
 /* Video feed styles */
 .video-feed {
     width: 100%; /* Ensures the video takes up full width of the container */
-    height: auto; /* Adjusts height automatically while maintaining aspect ratio */
+    /* height: auto;  */
     max-height: 100%; /* Ensures the video doesn't exceed the container height */
     max-width: 100%; /* Ensures the video doesn't exceed the container width */
     border-radius: 12px; /* Same rounded corners as other elements */

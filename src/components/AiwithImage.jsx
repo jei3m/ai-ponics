@@ -19,7 +19,7 @@ const AiwithImage = () => {
   const [imagePreview, setImagePreview] = useState(null);
   const [messages, setMessages] = useState([]);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
-  const [currentFacingMode, setCurrentFacingMode] = useState('user'); // Front camera by default
+  const [currentFacingMode, setCurrentFacingMode] = useState('environment'); // Back camera by default
   const [webcamRef, setWebcamRef] = useState(null); // Reference to the webcam component
   const navigate = useNavigate();
 
