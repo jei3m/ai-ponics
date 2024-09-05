@@ -2,7 +2,7 @@
 import {BrowserRouter, Routes, Route} from 'react-router-dom';
 import Sensors from './Pages/Sensors';
 import './App.css';
-import AiwithImage from './Pages/AiwithImage';
+import AiwithImage from './pages/AiwithImage';
 
 
 function App() {
