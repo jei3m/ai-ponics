@@ -1,6 +1,6 @@
 
 import {BrowserRouter, Routes, Route} from 'react-router-dom';
-import Sensors from './Pages/Sensors';
+import Sensors from './pages/Sensors';
 import './App.css';
 import AiwithImage from './pages/AiwithImage';
 

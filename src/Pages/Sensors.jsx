@@ -31,7 +31,6 @@ function Sensors() {
     return (
         <div className="Appnobg">
             <header className="App-header">
-
                 <Box
                     sx={{
                         display: 'flex',
