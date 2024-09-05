@@ -270,7 +270,6 @@
 /* Video feed styles */
 .video-feed {
     width: 100%; /* Ensures the video takes up full width of the container */
-    height: auto; /* Automatically adjusts height based on width and aspect ratio */
     max-height: none;
     border-radius: 12px; /* Same rounded corners as other elements */
     object-fit: cover; /* Ensures the video fits nicely within the rounded corners */
