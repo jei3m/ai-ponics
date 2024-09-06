@@ -1,13 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faImage, faCamera, faSearch, faSyncAlt, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { UserAuth } from '../context/AuthContext';
 import { getBase64 } from '../helpers/imageHelper';
-import { db } from '../firebase'; // Make sure this points to your Firebase config
-import { doc, getDoc } from 'firebase/firestore'; // Firestore methods
 import Webcam from 'react-webcam';
 import './css/Chat.css';
 
@@ -25,39 +22,14 @@ const AiwithImage = () => {
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [currentFacingMode, setCurrentFacingMode] = useState('environment'); // Back camera by default
   const [webcamRef, setWebcamRef] = useState(null); 
-  const [plantName, setPlantName] = useState('AI-Ponics');
-  const [daysSincePlanting, setDaysSincePlanting] = useState(0);
   const navigate = useNavigate();
-  const { currentUser } = UserAuth();
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      if (currentUser) {
-        try {
-          const docRef = doc(db, 'users', currentUser.uid); // Adjust collection path if necessary
-          const docSnap = await getDoc(docRef);
-
-          if (docSnap.exists()) {
-            const userData = docSnap.data();
-            setPlantName(userData.plantName || 'AI-Ponics'); // Default to 'AI-Ponics' if no plantName
-            setDaysSincePlanting(userData.daysSincePlanting || 0); // Default to 0 if no daysSincePlanting
-          } else {
-            console.log('No such document!');
-          }
-        } catch (error) {
-          console.error('Error fetching user data:', error);
-        }
-      }
-    };
-
-    fetchUserData();
-  }, [currentUser]);
-
+  
   async function aiRun() { 
     setLoading(true);
     const model = genAI.getGenerativeModel({
       model: "gemini-1.5-flash",
-      systemInstruction: `Even with less context, try answer with the best you can. You are AI-Ponics, Aeroponics expert. Take note of plant name is ${plantName} and it has been ${daysSincePlanting} days since planting.`,
+      systemInstruction: "Even with less context, try answer with the best you can. You are AI-Ponics, not Gemini.",
     });
     const result = await model.generateContent([textPrompt, imageInlineData]);
     const response = await result.response;
@@ -69,21 +41,6 @@ const AiwithImage = () => {
       { user: false, text: sanitizeText(text) },
     ]);
   }
-
-  async function greetUser() {
-    const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash",
-      systemInstruction: "You are AI-Ponics, an Aeroponics expert. Greet the user warmly and offer assistance.",
-    });
-    const result = await model.generateContent(`Greet the user and introduce yourself as AI-Ponics. The user's plant name is ${plantName} and it has been ${daysSincePlanting} days since planting.`);
-    const response = await result.response;
-    const text = response.text();
-    setMessages([{ user: false, text: sanitizeText(text) }]);
-  }
-
-  useEffect(() => {
-    greetUser();
-  }, [plantName, daysSincePlanting]);
 
   // Replacing asterisks from the output of AI
   const sanitizeText = (text) => {

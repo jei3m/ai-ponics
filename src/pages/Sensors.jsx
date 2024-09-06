@@ -115,18 +115,15 @@ function Sensors() {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
 
-            if (isAfter(selectedDate, today)) {
-                setDaysSincePlanting('INVALID DATE');
-            } else {
-                const days = differenceInDays(today, selectedDate);
-                setDaysSincePlanting(days);
-            }
+            const days = differenceInDays(today, selectedDate);
+            setDaysSincePlanting(days >= 0 ? days : 0);
 
-            // Save planting date to Firestore when it changes
+            // Save planting date and days since planting to Firestore when it changes
             const currentUser = auth.currentUser;
             if (currentUser) {
                 setDoc(doc(db, 'users', currentUser.uid), {
-                    plantingDate: plantingDate
+                    plantingDate: plantingDate,
+                    daysSincePlanting: days >= 0 ? days : 0
                 }, { merge: true });
             }
         }
@@ -193,7 +190,11 @@ function Sensors() {
         if (currentUser) {
             let dataToUpdate = {};
             if (field === 'plantInfo') {
-                dataToUpdate = { plantName, plantingDate };
+                dataToUpdate = { 
+                    plantName, 
+                    plantingDate,
+                    daysSincePlanting // Add this line to include daysSincePlanting
+                };
                 setIsPlantInfoChanged(false);
             } else if (field === 'blynkApiKey') {
                 dataToUpdate = { blynkApiKey };
