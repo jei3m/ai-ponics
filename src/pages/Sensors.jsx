@@ -234,7 +234,7 @@ function Sensors() {
                                 onChange={handlePlantingDateChange}
                                 fullWidth
                                 variant="outlined"
-                                label="Planting Date"
+                                label=""
                                 placeholder=''
                                 className="plant-info-input"
                                 sx={{ marginBottom: 1 }}
