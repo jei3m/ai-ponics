@@ -57,7 +57,7 @@ const AiwithImage = () => {
     setLoading(true);
     const model = genAI.getGenerativeModel({
       model: "gemini-1.5-flash",
-      systemInstruction: `Even with less context, try answer with the best you can. You are AI-Ponics, Aeroponics expert. Take note of plant name is ${plantName} and it has been ${daysSincePlanting} days since planting.`,
+      systemInstruction: `Even with less context, answer with the best you can. You are AI-Ponics, Aeroponics expert. Take note of plant name is ${plantName} and it has been ${daysSincePlanting} days since planting.`,
     });
     const result = await model.generateContent([textPrompt, imageInlineData]);
     const response = await result.response;
