@@ -23,7 +23,7 @@ function Login() {
         <Container className="login-container" maxWidth="sm">
             <Box className="login-box">
                 <Typography variant="h4" component="h1" gutterBottom>
-                    Welcome to AI-Ponics
+                    Welcome to <br/> AI-Ponics
                 </Typography>
                 <Typography variant="body1" gutterBottom>
                     Sign in to access your plant monitoring dashboard
