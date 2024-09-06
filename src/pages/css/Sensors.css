@@ -46,7 +46,7 @@ body {
 
 .sensor-card {
   width: calc(50% - 12px);
-  max-width: 350px;
+  max-width: 300px;
   min-width: 280px;
   border-radius: 16px !important;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1) !important;

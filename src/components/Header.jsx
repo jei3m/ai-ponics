@@ -52,14 +52,19 @@ function Header() {
       width: '100%',
       zIndex: 1000
     }}>
-      <a href='/' style={{
-        textDecoration: 'none',
-        color: '#000',
-        fontWeight: 'bold',
-        fontSize: '1.8rem',
+      <div style={{
+        display: 'flex',
+        alignItems: 'center'
       }}>
-        <span style={{ color: '#006400' }}>{plantName || 'AI-Ponics'}</span> Dashboard
-      </a>
+        <a href='' style={{
+          textDecoration: 'none',
+          color: '#000',
+          fontWeight: 'bold',
+          fontSize: '1.8rem',
+        }}>
+          <span style={{ color: '#006400' }}>{plantName || 'AI-Ponics'}</span> Dashboard
+        </a>
+      </div>
       <div style={{
         display: 'flex',
         alignItems: 'center'

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Typography, Card, CardContent, CardHeader, Box, TextField, InputAdornment, Button } from '@mui/material';
-import { differenceInDays, format } from 'date-fns';
+import { differenceInDays, format, isAfter } from 'date-fns';
 import emailjs from 'emailjs-com';
 import { Gauge } from '../components/Gauge';
 import Header from '../components/Header';
@@ -73,8 +73,16 @@ function Sensors() {
 
     useEffect(() => {
         if (plantingDate) {
-            const days = differenceInDays(new Date(), new Date(plantingDate));
-            setDaysSincePlanting(days);
+            const selectedDate = new Date(plantingDate);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            if (isAfter(selectedDate, today)) {
+                setDaysSincePlanting('INVALID DATE');
+            } else {
+                const days = differenceInDays(today, selectedDate);
+                setDaysSincePlanting(days);
+            }
 
             // Save planting date to Firestore when it changes
             const currentUser = auth.currentUser;
@@ -87,15 +95,7 @@ function Sensors() {
     }, [plantingDate]);
 
     const handlePlantingDateChange = (event) => {
-        const selectedDate = new Date(event.target.value);
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        if (selectedDate <= today) {
-            setPlantingDate(event.target.value);
-        } else {
-            setPlantingDate(format(today, 'yyyy-MM-dd'));
-        }
+        setPlantingDate(event.target.value);
     };
 
     const handlePlantNameChange = (event) => {

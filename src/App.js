@@ -35,7 +35,7 @@ function App() {
 				}
 			/>
       <Route
-				path='/sensors'
+				path='/home'
 				element={
 					<PrivateRoutes>
 						<Sensors />
