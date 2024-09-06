@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Typography, Card, CardContent, CardHeader, Box, TextField, InputAdornment } from '@mui/material';
+import { Typography, Card, CardContent, CardHeader, Box, TextField, InputAdornment, Button } from '@mui/material';
 import { differenceInDays, format } from 'date-fns';
 import emailjs from 'emailjs-com';
 import { Gauge } from '../components/Gauge';
 import Header from '../components/Header';
 import { db, auth } from '../firebase';  // Import Firebase
 import { doc, setDoc, getDoc } from 'firebase/firestore';  // Firestore methods
-import { Button } from '@mui/material'; 
 import './css/Sensors.css'
 
 function Sensors() {
@@ -17,6 +16,7 @@ function Sensors() {
     const [daysSincePlanting, setDaysSincePlanting] = useState(0);
     const [temperatureAlert, setTemperatureAlert] = useState('');
     const [plantName, setPlantName] = useState('');
+    const [user, setUser] = useState(null); // Add user state
 
     useEffect(() => {
         const BLYNK_AUTH_TOKEN = process.env.REACT_APP_BLYNK_TOKEN;
@@ -48,9 +48,10 @@ function Sensors() {
 
     useEffect(() => {
         const fetchUserData = async () => {
-            const user = auth.currentUser;
-            if (user) {
-                const docRef = doc(db, 'users', user.uid);
+            const currentUser = auth.currentUser;
+            if (currentUser) {
+                setUser(currentUser); // Set user state
+                const docRef = doc(db, 'users', currentUser.uid);
                 const docSnap = await getDoc(docRef);
 
                 if (docSnap.exists()) {
@@ -76,9 +77,9 @@ function Sensors() {
             setDaysSincePlanting(days);
 
             // Save planting date to Firestore when it changes
-            const user = auth.currentUser;
-            if (user) {
-                setDoc(doc(db, 'users', user.uid), {
+            const currentUser = auth.currentUser;
+            if (currentUser) {
+                setDoc(doc(db, 'users', currentUser.uid), {
                     plantingDate: plantingDate
                 }, { merge: true });
             }
@@ -100,9 +101,9 @@ function Sensors() {
     const handlePlantNameChange = (event) => {
         setPlantName(event.target.value);
 
-        const user = auth.currentUser;
-        if (user) {
-            setDoc(doc(db, 'users', user.uid), {
+        const currentUser = auth.currentUser;
+        if (currentUser) {
+            setDoc(doc(db, 'users', currentUser.uid), {
                 plantName: event.target.value
             }, { merge: true });
         }
@@ -113,29 +114,30 @@ function Sensors() {
         const now = new Date().getTime();
 
         if (!lastEmailTimestamp || now - lastEmailTimestamp > 10 * 60 * 1000) {
-            const templateParams = {
-                to_name: 'Justin Miguel',
-                message: `The temperature is too high: ${temperature}°C`,
-                user_email: `${currentUser.email}`,
-            };
+            if (user) { // Ensure user is defined
+                const templateParams = {
+                    to_name: 'Justin Miguel',
+                    message: `The temperature is too high: ${temperature}°C`,
+                    user_email: user.email, // Use user.email
+                };
 
-            emailjs.send(
-                process.env.REACT_APP_EMAILJS_SERVICE_ID,
-                process.env.REACT_APP_EMAILJS_TEMPLATE_ID,
-                templateParams,
-                process.env.REACT_APP_EMAILJS_USER_ID
-            )
-            .then((response) => {
-                console.log('Email successfully sent!', response.status, response.text);
-                localStorage.setItem('lastEmailTimestamp', now);
-            }, (err) => {
-                console.error('Failed to send email:', err);
-            });
+                emailjs.send(
+                    process.env.REACT_APP_EMAILJS_SERVICE_ID,
+                    process.env.REACT_APP_EMAILJS_TEMPLATE_ID,
+                    templateParams,
+                    process.env.REACT_APP_EMAILJS_USER_ID
+                )
+                .then((response) => {
+                    console.log('Email successfully sent!', response.status, response.text);
+                    localStorage.setItem('lastEmailTimestamp', now);
+                }, (err) => {
+                    console.error('Failed to send email:', err);
+                });
+            }
         } else {
             console.log('Email not sent: 10 minutes have not passed yet.');
         }
     };
-
 
     return (
         <div className="Appsensor">
