@@ -10,6 +10,7 @@ import { db } from '../firebase'; // Make sure this points to your Firebase conf
 import { doc, getDoc } from 'firebase/firestore'; // Firestore methods
 import Webcam from 'react-webcam';
 import './css/Chat.css';
+import axios from 'axios';
 
 // Setting constants to process environment variables (API Keys)
 const apiKey = process.env.REACT_APP_API_KEY;
@@ -27,6 +28,9 @@ const AiwithImage = () => {
   const [webcamRef, setWebcamRef] = useState(null); 
   const [plantName, setPlantName] = useState('AI-Ponics');
   const [daysSincePlanting, setDaysSincePlanting] = useState(0);
+  const [temperature, setTemperature] = useState(null);
+  const [humidity, setHumidity] = useState(null);
+  const [blynkApiKey, setBlynkApiKey] = useState('');
   const navigate = useNavigate();
   const { currentUser } = UserAuth();
 
@@ -41,6 +45,7 @@ const AiwithImage = () => {
             const userData = docSnap.data();
             setPlantName(userData.plantName || 'AI-Ponics'); // Default to 'AI-Ponics' if no plantName
             setDaysSincePlanting(userData.daysSincePlanting || 0); // Default to 0 if no daysSincePlanting
+            setBlynkApiKey(userData.blynkApiKey || '');
           } else {
             console.log('No such document!');
           }
@@ -53,11 +58,31 @@ const AiwithImage = () => {
     fetchUserData();
   }, [currentUser]);
 
+  useEffect(() => {
+    const fetchSensorData = async () => {
+      if (blynkApiKey) {
+        try {
+          const temperatureResponse = await axios.get(`https://blynk.cloud/external/api/get?token=${blynkApiKey}&V0`);
+          const humidityResponse = await axios.get(`https://blynk.cloud/external/api/get?token=${blynkApiKey}&V1`);
+          setTemperature(temperatureResponse.data);
+          setHumidity(humidityResponse.data);
+        } catch (error) {
+          console.error('Error fetching sensor data:', error);
+        }
+      }
+    };
+
+    fetchSensorData();
+    const interval = setInterval(fetchSensorData, 60000); // Update every minute
+
+    return () => clearInterval(interval);
+  }, [blynkApiKey]);
+
   async function aiRun() { 
     setLoading(true);
     const model = genAI.getGenerativeModel({
       model: "gemini-1.5-flash",
-      systemInstruction: `Even with less context, answer with the best you can. You are AI-Ponics, Aeroponics expert. Take note of plant name is ${plantName} and it has been ${daysSincePlanting} days since planting.`,
+      systemInstruction: `You are AI-Ponics, Aeroponics assistant, answer concisely. Take note of plant name is ${plantName} and it has been ${daysSincePlanting} days since planting. Sensor readings: temperature is ${temperature}°C and humidity ${humidity}%.`,
     });
     const result = await model.generateContent([textPrompt, imageInlineData]);
     const response = await result.response;
@@ -75,7 +100,7 @@ const AiwithImage = () => {
       model: "gemini-1.5-flash",
       systemInstruction: "You are AI-Ponics, an Aeroponics expert. Greet the user warmly and offer assistance.",
     });
-    const result = await model.generateContent(`Greet the user and introduce yourself as AI-Ponics. The user's plant name is ${plantName} and it has been ${daysSincePlanting} days since planting.`);
+    const result = await model.generateContent(`Greet the user and introduce yourself as AI-Ponics concisely. The user's plant name is ${plantName} and it has been ${daysSincePlanting} days since planting. Sensor readings: temperature is ${temperature}°C and humidity ${humidity}%.`);
     const response = await result.response;
     const text = response.text();
     setMessages([{ user: false, text: sanitizeText(text) }]);

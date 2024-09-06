@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Typography, Card, CardContent, CardHeader, Box, TextField, Button } from '@mui/material';
-import { differenceInDays, format, isAfter } from 'date-fns';
+import { differenceInDays, format} from 'date-fns';
 import emailjs from 'emailjs-com';
 import { Gauge } from '../components/Gauge';
 import Header from '../components/Header';
@@ -18,7 +18,7 @@ function Sensors() {
     const [daysSincePlanting, setDaysSincePlanting] = useState(0);
     const [temperatureAlert, setTemperatureAlert] = useState('');
     const [plantName, setPlantName] = useState('');
-    const [user, setUser] = useState(null); // Add user state
+    const [user, setUser] = useState(null); 
     const [isDataChanged, setIsDataChanged] = useState(false);
     const [blynkApiKey, setBlynkApiKey] = useState('');
     const [showBlynkApiKey, setShowBlynkApiKey] = useState(false);
