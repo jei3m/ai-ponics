@@ -115,8 +115,8 @@ function Header() {
                   marginTop: '5px' // Reduced margin
                 }}
               />
-              <p>Name: {currentUser.displayName || 'No name provided'}</p>
-              <p>Email: {currentUser.email}</p>
+                <p style={{ fontSize: '18px', fontWeight: 'normal', marginBottom:'-10px' }}>Name: {currentUser.displayName || 'No name provided'}</p>
+                <p style={{ fontSize: '18px', fontWeight: 'normal' }}>Email: {currentUser.email}</p>
               <div style={{ marginTop: '1rem' }}>
                 <button
                   onClick={closeModal}
