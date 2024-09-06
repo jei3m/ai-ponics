@@ -47,40 +47,52 @@ const AiwithImage = () => {
             setPlantName(userData.plantName || 'AI-Ponics'); // Default to 'AI-Ponics' if no plantName
             setDaysSincePlanting(userData.daysSincePlanting || 0); // Default to 0 if no daysSincePlanting
             setBlynkApiKey(userData.blynkApiKey || '');
+            
+            // Start fetching sensor data immediately after getting the API key
+            if (userData.blynkApiKey) {
+              fetchSensorData(userData.blynkApiKey);
+            } else {
+              setSensorDataLoaded(true);
+            }
           } else {
             console.log('No such document!');
+            setSensorDataLoaded(true);
           }
         } catch (error) {
           console.error('Error fetching user data:', error);
+          setSensorDataLoaded(true);
         }
+      } else {
+        setSensorDataLoaded(true);
       }
     };
 
     fetchUserData();
   }, [currentUser]);
 
+  const fetchSensorData = async (apiKey) => {
+    try {
+      const temperatureResponse = await axios.get(`https://blynk.cloud/external/api/get?token=${apiKey}&V0`);
+      const humidityResponse = await axios.get(`https://blynk.cloud/external/api/get?token=${apiKey}&V1`);
+      setTemperature(temperatureResponse.data);
+      setHumidity(humidityResponse.data);
+      setSensorDataLoaded(true);
+    } catch (error) {
+      console.error('Error fetching sensor data:', error);
+      setSensorDataLoaded(true);
+    }
+  };
+
   useEffect(() => {
-    const fetchSensorData = async () => {
-      if (blynkApiKey) {
-        try {
-          const temperatureResponse = await axios.get(`https://blynk.cloud/external/api/get?token=${blynkApiKey}&V0`);
-          const humidityResponse = await axios.get(`https://blynk.cloud/external/api/get?token=${blynkApiKey}&V1`);
-          setTemperature(temperatureResponse.data);
-          setHumidity(humidityResponse.data);
-          setSensorDataLoaded(true);
-        } catch (error) {
-          console.error('Error fetching sensor data:', error);
-          setSensorDataLoaded(true); // Set to true even on error to allow AI interactions
-        }
-      } else {
-        setSensorDataLoaded(true); // Set to true if no API key to allow AI interactions
-      }
+    let interval;
+    if (blynkApiKey) {
+      fetchSensorData(blynkApiKey);
+      interval = setInterval(() => fetchSensorData(blynkApiKey), 8000);
+    }
+
+    return () => {
+      if (interval) clearInterval(interval);
     };
-
-    fetchSensorData();
-    const interval = setInterval(fetchSensorData, 60000); // Update every minute
-
-    return () => clearInterval(interval);
   }, [blynkApiKey]);
 
   async function aiRun() {
