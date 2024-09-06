@@ -17,6 +17,7 @@ function Sensors() {
     const [temperatureAlert, setTemperatureAlert] = useState('');
     const [plantName, setPlantName] = useState('');
     const [user, setUser] = useState(null); // Add user state
+    const [isDataChanged, setIsDataChanged] = useState(false);
 
     useEffect(() => {
         const BLYNK_AUTH_TOKEN = process.env.REACT_APP_BLYNK_TOKEN;
@@ -96,10 +97,12 @@ function Sensors() {
 
     const handlePlantingDateChange = (event) => {
         setPlantingDate(event.target.value);
+        setIsDataChanged(true);
     };
 
     const handlePlantNameChange = (event) => {
         setPlantName(event.target.value);
+        setIsDataChanged(true);
 
         const currentUser = auth.currentUser;
         if (currentUser) {
@@ -136,6 +139,21 @@ function Sensors() {
             }
         } else {
             console.log('Email not sent: 10 minutes have not passed yet.');
+        }
+    };
+
+    const handleSave = () => {
+        const currentUser = auth.currentUser;
+        if (currentUser) {
+            setDoc(doc(db, 'users', currentUser.uid), {
+                plantName: plantName,
+                plantingDate: plantingDate
+            }, { merge: true }).then(() => {
+                setIsDataChanged(false);
+                window.location.reload();
+            }).catch((error) => {
+                console.error("Error saving data: ", error);
+            });
         }
     };
 
@@ -255,19 +273,20 @@ function Sensors() {
                                         Days planted: {daysSincePlanting}
                                     </Typography>
                                     
-                                    {/* Save button aligned to the right */}
-                                    <Button
-                                        variant="contained"
-                                        sx={{
-                                            backgroundColor: '#388E3C', // Custom color
-                                            '&:hover': {
-                                                backgroundColor: '#2E7D32', // Darker shade for hover
-                                            }
-                                        }}
-                                        onClick={() => window.location.reload()}
-                                    >
-                                        Save
-                                    </Button>
+                                    {isDataChanged && (
+                                        <Button
+                                            variant="contained"
+                                            sx={{
+                                                backgroundColor: '#388E3C', // Custom color
+                                                '&:hover': {
+                                                    backgroundColor: '#2E7D32', // Darker shade for hover
+                                                }
+                                            }}
+                                            onClick={handleSave}
+                                        >
+                                            Save
+                                        </Button>
+                                    )}
                                 </Box>
                             )}
                         </CardContent>
