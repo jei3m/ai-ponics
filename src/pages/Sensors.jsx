@@ -151,11 +151,11 @@ function Sensors() {
         const now = new Date().getTime();
 
         if (!lastEmailTimestamp || now - lastEmailTimestamp > 10 * 60 * 1000) {
-            if (user) { // Ensure user is defined
+            if (user) { 
                 const templateParams = {
-                    to_name: user.displayName || 'User', // Use user's display name or fallback to 'User'
+                    to_name: user.displayName || 'User', 
                     message: `The temperature is too high: ${temperature}°C`,
-                    user_email: user.email, // Use user.email
+                    user_email: user.email, 
                 };
 
                 emailjs.send(
