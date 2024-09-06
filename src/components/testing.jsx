@@ -1,19 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Typography, Card, CardContent, CardHeader, Box, TextField } from '@mui/material';
-import { differenceInDays } from 'date-fns';
-import '../App.css';
-import './css/Sensors.css';
+import { Typography, Card, CardContent, CardHeader, Box, TextField, Button } from '@mui/material';
+import { differenceInDays, format, isAfter } from 'date-fns';
+import emailjs from 'emailjs-com';
 import { Gauge } from '../components/Gauge';
+import Header from '../components/Header';
+import { db, auth } from '../firebase';  // Import Firebase
+import { doc, setDoc, getDoc } from 'firebase/firestore';  // Firestore methods
+import './css/Sensors.css'
 
 function Sensors() {
     const [temperature, setTemperature] = useState(null);
     const [humidity, setHumidity] = useState(null);
-    const [plantName, setPlantName] = useState('Tomato');
-    const [plantImage, setPlantImage] = useState('/img/tomato-plant.jpg');
     const [plantingDate, setPlantingDate] = useState('');
     const [daysSincePlanting, setDaysSincePlanting] = useState(0);
     const [temperatureAlert, setTemperatureAlert] = useState('');
+    const [plantName, setPlantName] = useState('');
+    const [user, setUser] = useState(null); // Add user state
+    const [isDataChanged, setIsDataChanged] = useState(false);
 
     useEffect(() => {
         const BLYNK_AUTH_TOKEN = process.env.REACT_APP_BLYNK_TOKEN;
@@ -24,9 +28,9 @@ function Sensors() {
                 setTemperature(temperatureResponse.data);
                 setHumidity(humidityResponse.data);
 
-                // Check temperature and set alert
-                if (temperatureResponse.data > 30) {
+                if (temperatureResponse.data > 73) {
                     setTemperatureAlert('Temperature too high!');
+                    sendEmail(temperatureResponse.data);
                 } else if (temperatureResponse.data < 15) {
                     setTemperatureAlert('Temperature too low!');
                 } else {
@@ -44,55 +48,161 @@ function Sensors() {
     }, []);
 
     useEffect(() => {
-        // Retrieve planting date from localStorage on component mount
-        const storedPlantingDate = localStorage.getItem('plantingDate');
-        if (storedPlantingDate) {
-            setPlantingDate(storedPlantingDate);
-        }
+        const fetchUserData = async () => {
+            const currentUser = auth.currentUser;
+            if (currentUser) {
+                setUser(currentUser); // Set user state
+                const docRef = doc(db, 'users', currentUser.uid);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    if (data.plantingDate) {
+                        setPlantingDate(data.plantingDate);
+                    }
+                    if (data.plantName) {
+                        setPlantName(data.plantName);
+                    }
+                } else {
+                    console.log("No such document!");
+                }
+            }
+        };
+
+        fetchUserData();
     }, []);
 
     useEffect(() => {
         if (plantingDate) {
-            const days = differenceInDays(new Date(), new Date(plantingDate));
-            setDaysSincePlanting(days);
+            const selectedDate = new Date(plantingDate);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
 
-            // Store planting date in localStorage whenever it changes
-            localStorage.setItem('plantingDate', plantingDate);
+            if (isAfter(selectedDate, today)) {
+                setDaysSincePlanting('INVALID DATE');
+            } else {
+                const days = differenceInDays(today, selectedDate);
+                setDaysSincePlanting(days);
+            }
+
+            // Save planting date to Firestore when it changes
+            const currentUser = auth.currentUser;
+            if (currentUser) {
+                setDoc(doc(db, 'users', currentUser.uid), {
+                    plantingDate: plantingDate
+                }, { merge: true });
+            }
         }
     }, [plantingDate]);
 
     const handlePlantingDateChange = (event) => {
         setPlantingDate(event.target.value);
+        setIsDataChanged(true);
+    };
+
+    const handlePlantNameChange = (event) => {
+        setPlantName(event.target.value);
+        setIsDataChanged(true);
+
+        const currentUser = auth.currentUser;
+        if (currentUser) {
+            setDoc(doc(db, 'users', currentUser.uid), {
+                plantName: event.target.value
+            }, { merge: true });
+        }
+    };
+
+    const sendEmail = (temperature) => {
+        const lastEmailTimestamp = localStorage.getItem('lastEmailTimestamp');
+        const now = new Date().getTime();
+
+        if (!lastEmailTimestamp || now - lastEmailTimestamp > 10 * 60 * 1000) {
+            if (user) { // Ensure user is defined
+                const templateParams = {
+                    to_name: user.displayName || 'User', // Use user's display name or fallback to 'User'
+                    message: `The temperature is too high: ${temperature}°C`,
+                    user_email: user.email, // Use user.email
+                };
+
+                emailjs.send(
+                    process.env.REACT_APP_EMAILJS_SERVICE_ID,
+                    process.env.REACT_APP_EMAILJS_TEMPLATE_ID,
+                    templateParams,
+                    process.env.REACT_APP_EMAILJS_USER_ID
+                )
+                .then((response) => {
+                    console.log('Email successfully sent!', response.status, response.text);
+                    localStorage.setItem('lastEmailTimestamp', now);
+                }, (err) => {
+                    console.error('Failed to send email:', err);
+                });
+            }
+        } else {
+            console.log('Email not sent: 10 minutes have not passed yet.');
+        }
+    };
+
+    const handleSave = () => {
+        const currentUser = auth.currentUser;
+        if (currentUser) {
+            setDoc(doc(db, 'users', currentUser.uid), {
+                plantName: plantName,
+                plantingDate: plantingDate
+            }, { merge: true }).then(() => {
+                setIsDataChanged(false);
+                window.location.reload();
+            }).catch((error) => {
+                console.error("Error saving data: ", error);
+            });
+        }
     };
 
     return (
         <div className="Appsensor">
-            <header className="App-header">
-                <h2>Plant Monitoring Dashboard</h2>
+            <Header />
+            <br/>
+            <div className="sensor-content">
                 <Box className="sensor-container">
-                <Card className="sensor-card">
+                    <Card className="sensor-card">
                         <CardHeader 
                             title={
-                                <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                                <Typography variant="h6" sx={{ fontWeight: 'bold', fontFamily: 'Nunito, sans-serif' }}>
                                     Temperature Alert
                                 </Typography>
                             }
                         />
                         <CardContent>
-                            <Typography variant="body1" color={temperatureAlert ? 'error' : 'textPrimary'} sx={{ fontWeight: 'bold' }}>
-                                {temperatureAlert || 'Temperature is normal'}
-                            </Typography>
+                            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                {temperature > 73 && (
+                                    <Box sx={{ textAlign: 'center', margin: '0 16px' }}>
+                                        <Typography component="div" className="temperature-alert-icon">🔥</Typography>
+                                        <Typography variant="body2" className="temperature-alert-text">Too Hot</Typography>
+                                    </Box>
+                                )}
+                                {temperature >= 15 && temperature <= 73 && (
+                                    <Box sx={{ textAlign: 'center', margin: '0 16px' }}>
+                                        <Typography component="div" className="temperature-alert-icon">✅</Typography>
+                                        <Typography variant="body2" className="temperature-alert-text">Normal</Typography>
+                                    </Box>
+                                )}
+                                {temperature < 15 && (
+                                    <Box sx={{ textAlign: 'center', margin: '0 16px' }}>
+                                        <Typography component="div" className="temperature-alert-icon">❄️</Typography>
+                                        <Typography variant="body2" className="temperature-alert-text">Too Cold</Typography>
+                                    </Box>
+                                )}
+                            </Box>
                         </CardContent>
                     </Card>
                     <Card className="sensor-card">
                         <CardHeader 
                             title={
-                                <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                                <Typography variant="h6" sx={{ fontWeight: 'bold', fontFamily: 'Nunito, sans-serif' }}>
                                     Temperature
                                 </Typography>
                             }
                         />
-                        <CardContent sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '2px' }}>
+                        <CardContent className="gauge-container">
                             {temperature !== null ? (
                                 <Gauge value={temperature} max={50} label="°C" />
                             ) : (
@@ -103,12 +213,12 @@ function Sensors() {
                     <Card className="sensor-card">
                         <CardHeader 
                             title={
-                                <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                                <Typography variant="h6" sx={{ fontWeight: 'bold', fontFamily: 'Nunito, sans-serif' }}>
                                     Humidity
                                 </Typography>
                             }
                         />
-                        <CardContent sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '2px' }}>
+                        <CardContent className="gauge-container">
                             {humidity !== null ? (
                                 <Gauge value={humidity} max={100} label="%" />
                             ) : (
@@ -116,45 +226,73 @@ function Sensors() {
                             )}
                         </CardContent>
                     </Card>
-                    {/* <Card className="sensor-card">
+                    <Card className="sensor-card">
                         <CardHeader 
                             title={
-                                <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                                <Typography variant="h6" sx={{ fontWeight: 'bold', fontFamily: 'Nunito, sans-serif' }}>
                                     Plant Information
                                 </Typography>
                             }
                         />
                         <CardContent>
-                            <Typography variant="body1">Plant: {plantName}</Typography>
-                            <img src={plantImage} alt={plantName} style={{ width: '100%', maxHeight: '200px', objectFit: 'cover' }} />
-                        </CardContent>
-                    </Card> */}
-                    <Card className="sensor-card">
-                        <CardHeader 
-                            title={
-                                <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                                    Planting Date
-                                </Typography>
-                            }
-                        />
-                        <CardContent>
+                            <TextField
+                                type="text"
+                                value={plantName}
+                                onChange={handlePlantNameChange}
+                                fullWidth
+                                variant="outlined"
+                                label="Plant Name"
+                                placeholder="Enter plant name"
+                                className="plant-info-input"
+                                sx={{ marginBottom: 2 }} // Add margin to the bottom
+                            />
                             <TextField
                                 type="date"
                                 value={plantingDate}
                                 onChange={handlePlantingDateChange}
                                 fullWidth
-                                margin="normal"
+                                variant="outlined"
+                                label=""
+                                placeholder=''
+                                className="plant-info-input"
+                                sx={{ marginBottom: 1 }}
+                                InputProps={{
+                                    inputProps: { max: format(new Date(), 'yyyy-MM-dd') }
+                                }}
                             />
                             {plantingDate && (
-                                <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                                    Days since planting: {daysSincePlanting}
-                                </Typography>
+                                <Box
+                                    sx={{
+                                        display: 'flex',
+                                        justifyContent: 'space-between', // Align items on both sides
+                                        alignItems: 'center',
+                                        marginTop: 1,
+                                    }}
+                                >
+                                    <Typography variant="body1" className="days-planted-text">
+                                        Days planted: {daysSincePlanting}
+                                    </Typography>
+                                    
+                                    {isDataChanged && (
+                                        <Button
+                                            variant="contained"
+                                            sx={{
+                                                backgroundColor: '#388E3C', // Custom color
+                                                '&:hover': {
+                                                    backgroundColor: '#2E7D32', // Darker shade for hover
+                                                }
+                                            }}
+                                            onClick={handleSave}
+                                        >
+                                            Save
+                                        </Button>
+                                    )}
+                                </Box>
                             )}
                         </CardContent>
                     </Card>
-
                 </Box>
-            </header>
+            </div>
             <div className="ask-aiponics-container">
                 <a href="/chat" className="ask-aiponics-button">
                     <img src="/img/aiponicsbot.png" alt="AI-Ponics Bot" className="profile-pic" />
