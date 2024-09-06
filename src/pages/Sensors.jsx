@@ -49,6 +49,7 @@ function Sensors() {
                     sendEmail(temperatureResponse.data);
                 } else if (temperatureResponse.data < 15) {
                     setTemperatureAlert('Temperature too low!');
+                    sendEmail(temperatureResponse.data);
                 } else {
                     setTemperatureAlert('');
                 }
