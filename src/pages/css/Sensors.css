@@ -1,6 +1,6 @@
 /* Sensors.css */
-/* Import Roboto font */
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+/* Import Nunito font instead of Roboto */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;700&display=swap');
 
 /* Existing CSS rules */
 :root {
@@ -13,7 +13,6 @@
 }
 
 body {
-  font-family: 'Roboto', sans-serif;
   background-color: var(--background-green);
   color: var(--text-color);
   margin: 0;

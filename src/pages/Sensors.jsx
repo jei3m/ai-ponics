@@ -166,7 +166,7 @@ function Sensors() {
                     <Card className="sensor-card">
                         <CardHeader 
                             title={
-                                <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                                <Typography variant="h6" sx={{ fontWeight: 'bold', fontFamily: 'Nunito, sans-serif' }}>
                                     Temperature Alert
                                 </Typography>
                             }
@@ -197,7 +197,7 @@ function Sensors() {
                     <Card className="sensor-card">
                         <CardHeader 
                             title={
-                                <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                                <Typography variant="h6" sx={{ fontWeight: 'bold', fontFamily: 'Nunito, sans-serif' }}>
                                     Temperature
                                 </Typography>
                             }
@@ -213,7 +213,7 @@ function Sensors() {
                     <Card className="sensor-card">
                         <CardHeader 
                             title={
-                                <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                                <Typography variant="h6" sx={{ fontWeight: 'bold', fontFamily: 'Nunito, sans-serif' }}>
                                     Humidity
                                 </Typography>
                             }
@@ -229,7 +229,7 @@ function Sensors() {
                     <Card className="sensor-card">
                         <CardHeader 
                             title={
-                                <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                                <Typography variant="h6" sx={{ fontWeight: 'bold', fontFamily: 'Nunito, sans-serif' }}>
                                     Plant Information
                                 </Typography>
                             }

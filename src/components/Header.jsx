@@ -5,6 +5,9 @@ import { db } from '../firebase'; // Make sure this points to your Firebase conf
 import { doc, getDoc } from 'firebase/firestore'; // Firestore methods
 import '../pages/css/Header.css'
 
+// Import Nunito font
+import '@fontsource/nunito';
+
 // Set app element for accessibility (optional)
 Modal.setAppElement('#root');
 
@@ -50,7 +53,7 @@ function Header() {
       top: 0,
       left: 0,
       width: '100%',
-      zIndex: 1000
+      zIndex: 1000,
     }}>
       <div style={{
         display: 'flex',
