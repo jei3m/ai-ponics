@@ -14,5 +14,26 @@
 }
 
 .google-signin-button {
-    margin-top: 1rem !important;
+	display: flex;
+	align-items: center;
+	background-color: #d3d3d3;
+	color: rgb(8, 8, 8);
+    border: 2px solid #bbbbbb;
+	border-radius: 10px;
+	padding: 0.75rem 1.5rem;
+	font-size: 1rem;
+	cursor: pointer;
+	transition: background-color 0.3s, transform 0.2s;
+	margin-top: 10px;
+	margin-bottom: 8px;
+	justify-content: center; /* Center content horizontally */
+	width: 100%; /* Full width of the form container */
+    padding: 10px;
 }
+
+.google-logo {
+	width: 24px;
+	height: 24px;
+	margin-right: 0.5rem;
+}
+

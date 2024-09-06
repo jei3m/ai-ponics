@@ -1,8 +1,9 @@
 import React from 'react';
-import { Button, Typography, Box, Container } from '@mui/material';
+import {Typography, Box, Container } from '@mui/material';
 import { signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from '../firebase';
 import { useNavigate } from 'react-router-dom';
+import '../App.css';
 import './css/Login.css';
 
 function Login() {
@@ -18,7 +19,7 @@ function Login() {
     };
 
     return (
-        <div className='App'>
+        <div className='Appbg'>
         <Container className="login-container" maxWidth="sm">
             <Box className="login-box">
                 <Typography variant="h4" component="h1" gutterBottom>
@@ -27,14 +28,19 @@ function Login() {
                 <Typography variant="body1" gutterBottom>
                     Sign in to access your plant monitoring dashboard
                 </Typography>
-                <Button
+                <button
                     variant="contained"
                     color="primary"
                     onClick={handleGoogleSignIn}
                     className="google-signin-button"
                 >
+                                        <img 
+                        src='https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/768px-Google_%22G%22_logo.svg.png' 
+                        alt='Google logo' 
+                        className='google-logo' 
+                    />
                     Sign in with Google
-                </Button>
+                </button>
             </Box>
         </Container>
         </div>

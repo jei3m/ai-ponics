@@ -116,7 +116,7 @@ function Sensors() {
             const templateParams = {
                 to_name: 'Justin Miguel',
                 message: `The temperature is too high: ${temperature}°C`,
-                user_email: 'justinmiguel.rys03@gmail.com',
+                user_email: `${currentUser.email}`,
             };
 
             emailjs.send(
