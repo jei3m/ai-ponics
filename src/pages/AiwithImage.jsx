@@ -33,6 +33,7 @@ const AiwithImage = () => {
   const [blynkApiKey, setBlynkApiKey] = useState('');
   const navigate = useNavigate();
   const { currentUser } = UserAuth();
+  const [sensorDataLoaded, setSensorDataLoaded] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -66,9 +67,13 @@ const AiwithImage = () => {
           const humidityResponse = await axios.get(`https://blynk.cloud/external/api/get?token=${blynkApiKey}&V1`);
           setTemperature(temperatureResponse.data);
           setHumidity(humidityResponse.data);
+          setSensorDataLoaded(true);
         } catch (error) {
           console.error('Error fetching sensor data:', error);
+          setSensorDataLoaded(true); // Set to true even on error to allow AI interactions
         }
+      } else {
+        setSensorDataLoaded(true); // Set to true if no API key to allow AI interactions
       }
     };
 
@@ -78,11 +83,15 @@ const AiwithImage = () => {
     return () => clearInterval(interval);
   }, [blynkApiKey]);
 
-  async function aiRun() { 
+  async function aiRun() {
+    if (!sensorDataLoaded) {
+      toast.error('Sensor data is still loading. Please wait.');
+      return;
+    }
     setLoading(true);
     const model = genAI.getGenerativeModel({
       model: "gemini-1.5-flash",
-      systemInstruction: `You are AI-Ponics, Aeroponics assistant, answer concisely. Take note of plant name is ${plantName} and it has been ${daysSincePlanting} days since planting. Sensor readings: temperature is ${temperature}°C and humidity ${humidity}%.`,
+      systemInstruction: `You are AI-Ponics, Aeroponics assistant, answer concisely. Take note of plant name is ${plantName} and it has been ${daysSincePlanting} days since planting. Sensor readings: temperature is ${temperature !== null ? temperature + '°C' : 'unavailable'} and humidity ${humidity !== null ? humidity + '%' : 'unavailable'}.`,
     });
     const result = await model.generateContent([textPrompt, imageInlineData]);
     const response = await result.response;
@@ -96,19 +105,24 @@ const AiwithImage = () => {
   }
 
   async function greetUser() {
+    if (!sensorDataLoaded) {
+      return; // Don't greet until sensor data is loaded
+    }
     const model = genAI.getGenerativeModel({
       model: "gemini-1.5-flash",
       systemInstruction: "You are AI-Ponics, an Aeroponics expert. Greet the user warmly and offer assistance.",
     });
-    const result = await model.generateContent(`Introduce yourself as AI-Ponics concisely. Tell plant name is ${plantName} and it has been ${daysSincePlanting} days since planting, and sensor readings: temperature is ${temperature}°C and humidity ${humidity}%.`);
+    const result = await model.generateContent(`Introduce yourself as AI-Ponics concisely. Tell plant name is ${plantName} and it has been ${daysSincePlanting} days since planting, and sensor readings: temperature is ${temperature !== null ? temperature + '°C' : 'unavailable'} and humidity ${humidity !== null ? humidity + '%' : 'unavailable'}.`);
     const response = await result.response;
     const text = response.text();
     setMessages([{ user: false, text: sanitizeText(text) }]);
   }
 
   useEffect(() => {
-    greetUser();
-  }, [plantName, daysSincePlanting]);
+    if (sensorDataLoaded) {
+      greetUser();
+    }
+  }, [plantName, daysSincePlanting, sensorDataLoaded]);
 
   // Replacing asterisks from the output of AI
   const sanitizeText = (text) => {
