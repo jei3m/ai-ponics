@@ -91,7 +91,7 @@ const AiwithImage = () => {
     setLoading(true);
     const model = genAI.getGenerativeModel({
       model: "gemini-1.5-flash",
-      systemInstruction: `You are AI-Ponics, Aeroponics assistant, answer concisely. Take note of plant name is ${plantName} and it has been ${daysSincePlanting} days since planting. Sensor readings: temperature is ${temperature !== null ? temperature + '°C' : 'unavailable'} and humidity ${humidity !== null ? humidity + '%' : 'unavailable'}.`,
+      systemInstruction: `You are AI-Ponics, Aeroponics assistant, answer concisely. Take note of plant name is ${plantName} and it has been ${daysSincePlanting} days since planting, sensor readings: temperature is ${temperature !== null ? temperature + '°C' : 'unavailable'} and humidity ${humidity !== null ? humidity + '%' : 'unavailable'}.`,
     });
     const result = await model.generateContent([textPrompt, imageInlineData]);
     const response = await result.response;
