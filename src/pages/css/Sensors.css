@@ -18,10 +18,11 @@ body {
 
 .Appsensor {
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   padding: 20px;
   box-sizing: border-box;
   background-color:  #F1F8E9;
-  margin-top: -20px;
 }
 
 .App-header {
@@ -45,17 +46,12 @@ body {
 
 .sensor-card {
   width: calc(50% - 12px);
-  max-width: 400px;
+  max-width: 350px;
   min-width: 280px;
   border-radius: 16px !important;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1) !important;
   background-color: var(--card-background) !important;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.sensor-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15) !important;
 }
 
 .sensor-card .MuiCardHeader-root {
@@ -185,4 +181,51 @@ body {
   .text-bubble {
     font-size: 11px
   }
+}
+
+/* New styles */
+.temperature-alert-icon {
+  font-size: 50px !important;
+}
+
+.temperature-alert-text {
+  font-weight: bold !important;
+  font-size: 1.2rem !important;
+}
+
+.gauge-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2px;
+}
+
+.plant-info-input {
+  margin-bottom: 16px;
+}
+
+.plant-info-input .MuiOutlinedInput-root {
+  border-radius: 12px;
+}
+
+.plant-info-input .MuiOutlinedInput-root fieldset {
+  border-color: rgba(0, 0, 0, 0.23);
+}
+
+.plant-info-input .MuiOutlinedInput-root:hover fieldset {
+  border-color: rgba(0, 0, 0, 0.87);
+}
+
+.plant-info-input .MuiOutlinedInput-root.Mui-focused fieldset {
+  border-color: #1976d2;
+}
+
+.days-planted-text {
+  font-weight: bold;
+  margin-top: 0px;
+}
+
+.sensor-content {
+  padding-top: 80px; /* Adjust this value based on your header height */
+  flex-grow: 1;
 }

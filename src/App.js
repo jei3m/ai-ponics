@@ -1,22 +1,48 @@
-
-import {BrowserRouter, Routes, Route} from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { auth } from './firebase';
 import Sensors from './pages/Sensors';
-import './App.css';
-import AiwithImage from './pages/AiwithImage';
-
+import Chat from './pages/AiwithImage';
+import Login from './pages/Login';
+import PrivateRoutes from './routes/PrivateRoutes'
 
 function App() {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setUser(user);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   return (
-    <div className="App">
-      <BrowserRouter>
-      <Routes>
-      <Route index element={<Sensors/>}/>
-      <Route path="/sensors" element={<Sensors/>}/>
-      <Route path="/chat" element={<AiwithImage/>}/>
-      </Routes>
-      </BrowserRouter>
-      
-    </div>
+		<Routes>
+			<Route path='/' element={<Login />} />
+			<Route
+				path='/chat'
+				element={
+					<PrivateRoutes>
+						<Chat />
+					</PrivateRoutes>
+				}
+			/>
+      <Route
+				path='/sensors'
+				element={
+					<PrivateRoutes>
+						<Sensors />
+					</PrivateRoutes>
+				}
+			/>
+		</Routes>
   );
 }
 
