@@ -7,6 +7,7 @@ import { Gauge } from '../components/Gauge';
 import Header from '../components/Header';
 import { db, auth } from '../firebase';  // Import Firebase
 import { doc, setDoc, getDoc } from 'firebase/firestore';  // Firestore methods
+import { Button } from '@mui/material'; 
 import './css/Sensors.css'
 
 function Sensors() {
@@ -240,9 +241,32 @@ function Sensors() {
                                 }}
                             />
                             {plantingDate && (
-                                <Typography variant="body1" className="days-planted-text">
-                                    Days planted: {daysSincePlanting}
-                                </Typography>
+                                <Box
+                                    sx={{
+                                        display: 'flex',
+                                        justifyContent: 'space-between', // Align items on both sides
+                                        alignItems: 'center',
+                                        marginTop: 1,
+                                    }}
+                                >
+                                    <Typography variant="body1" className="days-planted-text">
+                                        Days planted: {daysSincePlanting}
+                                    </Typography>
+                                    
+                                    {/* Save button aligned to the right */}
+                                    <Button
+                                        variant="contained"
+                                        sx={{
+                                            backgroundColor: '#388E3C', // Custom color
+                                            '&:hover': {
+                                                backgroundColor: '#2E7D32', // Darker shade for hover
+                                            }
+                                        }}
+                                        onClick={() => window.location.reload()}
+                                    >
+                                        Save
+                                    </Button>
+                                </Box>
                             )}
                         </CardContent>
                     </Card>
