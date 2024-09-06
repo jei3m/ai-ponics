@@ -231,7 +231,7 @@ function Sensors() {
                                 ) : isLoading ? (
                                     <Typography variant="h6" className="loading-text">Loading...</Typography>
                                 ) : !isApiKeyValid ? (
-                                    <Typography variant="h6" className="error-text">Invalid API Key</Typography>
+                                    <Typography variant="h6" className="error-text">Invalid API Token</Typography>
                                 ) : temperature > 73 ? (
                                     <Box sx={{ textAlign: 'center', margin: '0 16px' }}>
                                         <Typography component="div" className="temperature-alert-icon">🔥</Typography>
@@ -263,7 +263,7 @@ function Sensors() {
                             {!blynkApiKey ? (
                                 <Typography variant="h6" className="loading-text">Add API Token</Typography>
                             ) : !isApiKeyValid ? (
-                                <Typography variant="h6" className="error-text">Invalid API Key</Typography>
+                                <Typography variant="h6" className="error-text">Invalid API Token</Typography>
                             ) : temperature !== null ? (
                                 <Gauge value={temperature} max={50} label="°C" />
                             ) : (
@@ -283,7 +283,7 @@ function Sensors() {
                             {!blynkApiKey ? (
                                 <Typography variant="h6" className="loading-text">Add API Token</Typography>
                             ) : !isApiKeyValid ? (
-                                <Typography variant="h6" className="error-text">Invalid API Key</Typography>
+                                <Typography variant="h6" className="error-text">Invalid API Token</Typography>
                             ) : humidity !== null ? (
                                 <Gauge value={humidity} max={100} label="%" />
                             ) : (
@@ -303,7 +303,7 @@ function Sensors() {
                             {!blynkApiKey ? (
                                 <Typography variant="h6" className="loading-text" sx={{ textAlign: 'center' }}>Add API Token</Typography>
                             ) : !isApiKeyValid ? (
-                                <Typography variant="h6" className="error-text" sx={{ textAlign: 'center' }}>Invalid API Key</Typography>
+                                <Typography variant="h6" className="error-text" sx={{ textAlign: 'center' }}>Invalid API Token</Typography>
                             ) : (
                                 <>
                                     <TextField
