@@ -100,7 +100,7 @@ const AiwithImage = () => {
       model: "gemini-1.5-flash",
       systemInstruction: "You are AI-Ponics, an Aeroponics expert. Greet the user warmly and offer assistance.",
     });
-    const result = await model.generateContent(`Greet the user and introduce yourself as AI-Ponics concisely. The user's plant name is ${plantName} and it has been ${daysSincePlanting} days since planting. Sensor readings: temperature is ${temperature}°C and humidity ${humidity}%.`);
+    const result = await model.generateContent(`Introduce yourself as AI-Ponics concisely. Tell plant name is ${plantName} and it has been ${daysSincePlanting} days since planting, and sensor readings: temperature is ${temperature}°C and humidity ${humidity}%.`);
     const response = await result.response;
     const text = response.text();
     setMessages([{ user: false, text: sanitizeText(text) }]);
