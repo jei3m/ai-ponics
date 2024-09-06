@@ -1,4 +1,8 @@
 /* Sensors.css */
+/* Import Roboto font */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+
+/* Existing CSS rules */
 :root {
   --primary-green: #4CAF50;
   --light-green: #8BC34A;
@@ -9,9 +13,9 @@
 }
 
 body {
+  font-family: 'Roboto', sans-serif;
   background-color: var(--background-green);
   color: var(--text-color);
-  font-family: 'Roboto', sans-serif;
   margin: 0;
   padding: 0;
 }

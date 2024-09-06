@@ -13,7 +13,7 @@ body {
   min-height: 100vh;
   align-items: center;
   justify-content: center;
-  background-color:  #d6d6d5;
+  background: linear-gradient(to bottom, #e6f7e6, #c8e6c8);
 }
 
 .App-logo {

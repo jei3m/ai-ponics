@@ -2,7 +2,7 @@
 .chat-container {
     position: relative;
     padding: 16px;
-    background-color: #f0f0f0; /* Light green background */
+    background-color: white; /* Light green background */
     height: 88vh;
     width: 100%; /* Maintain responsive width */
     max-width: 500px; /* Adjusted max-width for a better fit on larger screens */
@@ -116,6 +116,7 @@
     width: 100%; /* Ensure it takes full width of the chat-container */
     box-sizing: border-box; /* Ensure padding is included in width */
     height: 60px; /* Adjust height to fit two lines of text */
+    
 }
 
 /* Button container - Flex evenly */
@@ -130,9 +131,9 @@
 
 .message-input {
     padding: 10px; /* Reduced padding for a more compact appearance */
-    background-color: #c8e6c9; /* Light green */
+    background-color: #a2d3a4; /* Light green */
     border-radius: 12px;
-    color: #004d00; /* Dark green text */
+    color: #000000; /* Black Text */
     border: none;
     font-size: 16px;
     width: 100%; /* Ensure it takes full width of the input-button-container */

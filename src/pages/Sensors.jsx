@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Typography, Card, CardContent, CardHeader, Box, TextField, InputAdornment, Button } from '@mui/material';
+import { Typography, Card, CardContent, CardHeader, Box, TextField, Button } from '@mui/material';
 import { differenceInDays, format, isAfter } from 'date-fns';
 import emailjs from 'emailjs-com';
 import { Gauge } from '../components/Gauge';
@@ -116,7 +116,7 @@ function Sensors() {
         if (!lastEmailTimestamp || now - lastEmailTimestamp > 10 * 60 * 1000) {
             if (user) { // Ensure user is defined
                 const templateParams = {
-                    to_name: 'Justin Miguel',
+                    to_name: user.displayName || 'User', // Use user's display name or fallback to 'User'
                     message: `The temperature is too high: ${temperature}°C`,
                     user_email: user.email, // Use user.email
                 };
