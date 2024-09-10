@@ -5,6 +5,7 @@ import Sensors from './pages/Sensors';
 import Chat from './pages/AiwithImage';
 import Login from './pages/Login';
 import PrivateRoutes from './routes/PrivateRoutes'
+import AiwithImage2 from './pages/AiwithImage2';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -42,6 +43,7 @@ function App() {
 					</PrivateRoutes>
 				}
 			/>
+		<Route path='/chat2' element={<AiwithImage2 />}	/>
 		</Routes>
   );
 }
