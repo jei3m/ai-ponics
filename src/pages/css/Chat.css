@@ -295,6 +295,7 @@
     .chat-container {
         padding: 16px;
         max-width: 98%; /* Adjust for small screens */
+        max-height: 98%;
     }
 
     .input-container {
@@ -307,6 +308,13 @@
 }
 
 @media (max-width: 480px) {
+
+    .chat-container {
+        padding: 16px;
+        max-width: 98%; /* Adjust for small screens */
+        max-height: 98%;
+    }
+
     .chat-title h2 {
         font-size: 20px;
     }

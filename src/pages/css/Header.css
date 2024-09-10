@@ -1,0 +1,184 @@
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1.5rem;
+  background-color: #FAF9F6;
+  border-bottom: 1px solid #dee2e6;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+}
+
+.header-logo {
+  display: flex;
+  align-items: center;
+}
+
+.header-logo a {
+  text-decoration: none;
+  color: #000;
+  font-weight: bold;
+  font-size: 1.5rem;
+}
+
+.header-logo .fa-leaf {
+  color: #006400;
+  margin-right: 0.5rem;
+}
+
+.header-logo-icon {
+  color: #006400;
+  margin-right: 0.5rem;
+}
+
+.header-logo span {
+  color: #006400;
+}
+
+.header-user {
+  display: flex;
+  align-items: center;
+}
+
+.header-user-icon {
+  width: 28px;
+  height: 28px;
+  margin-right: 2.5rem;
+  cursor: pointer;
+  padding: 8px;
+  color: #006400;
+}
+
+.modal-overlay {
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+}
+
+.modal-content {
+  top: 50%;
+  left: 50%;
+  right: auto;
+  bottom: auto;
+  transform: translate(-50%, -50%);
+  border-radius: 8px;
+  padding: 1.5rem;
+  width: 280px;
+  text-align: center;
+  background-color: #F8F8FF;
+  border: none;
+}
+
+.modal-title {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+.user-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin-bottom: 0.5rem;
+  margin-top: 5px;
+  border: 3px solid #006400;
+}
+
+.user-info p {
+  font-size: 18px;
+  font-weight: normal;
+}
+
+.user-info p:first-child {
+  margin-bottom: -10px;
+}
+
+.blynk-api-section {
+  margin-top: 1rem;
+  text-align: left;
+}
+
+.blynk-api-label {
+  font-size: 16px;
+  font-weight: normal;
+  margin-bottom: 5px;
+  margin-left: 2px;
+}
+
+.blynk-api-input-container {
+  display: flex;
+  align-items: center;
+}
+
+.blynk-api-input {
+  width: 100%;
+  padding: 5px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+.toggle-visibility-button {
+  margin-left: 5px;
+  padding: 5px;
+  cursor: pointer;
+  background-color: transparent;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.save-api-key-button {
+  margin-top: 6px;
+  background: #1877F2;
+  border: none;
+  color: #ffffff;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 0.3rem 0.7rem;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.save-api-key-button:hover {
+  background-color: #166FE5;
+  transform: scale(1.05);
+}
+
+.modal-buttons {
+  margin-top: 2rem;
+}
+
+.close-button, .logout-button {
+  border: none;
+  color: #ffffff;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  display: inline-block;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.close-button {
+  background: #6c757d;
+  margin-right: 0.5rem;
+}
+
+.close-button:hover {
+  background-color: #5a6268;
+  transform: scale(1.05);
+}
+
+.logout-button {
+  background: #006400;
+  margin-left: 0.5rem;
+}
+
+.logout-button:hover {
+  background-color: #004d00;
+  transform: scale(1.05);
+}

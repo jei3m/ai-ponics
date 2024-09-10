@@ -177,14 +177,14 @@ function Sensors() {
         }
     };
 
-    const handleBlynkApiKeyChange = (event) => {
-        setBlynkApiKey(event.target.value);
-        setIsBlynkApiKeyChanged(true);
-    };
+    // const handleBlynkApiKeyChange = (event) => {
+    //     setBlynkApiKey(event.target.value);
+    //     setIsBlynkApiKeyChanged(true);
+    // };
 
-    const toggleBlynkApiKeyVisibility = () => {
-        setShowBlynkApiKey(!showBlynkApiKey);
-    };
+    // const toggleBlynkApiKeyVisibility = () => {
+    //     setShowBlynkApiKey(!showBlynkApiKey);
+    // };
 
     const handleSave = (field) => {
         const currentUser = auth.currentUser;
@@ -215,13 +215,12 @@ function Sensors() {
     return (
         <div className="Appsensor">
             <Header />
-            <br/>
             <div className="sensor-content">
                 <Box className="sensor-container">
                     <Card className="sensor-card">
                         <CardHeader 
                             title={
-                                <Typography variant="h6" sx={{ fontWeight: 'bold', fontFamily: 'Nunito, sans-serif' }}>
+                                <Typography variant="h6" sx={{ fontWeight: '540', fontFamily: 'Inter, sans-serif' }}>
                                     Temperature Alert
                                 </Typography>
                             }
@@ -256,7 +255,7 @@ function Sensors() {
                     <Card className="sensor-card">
                         <CardHeader 
                             title={
-                                <Typography variant="h6" sx={{ fontWeight: 'bold', fontFamily: 'Nunito, sans-serif' }}>
+                                <Typography variant="h6" sx={{ fontWeight: '540', fontFamily: 'Inter, sans-serif' }}>
                                     Temperature
                                 </Typography>
                             }
@@ -276,7 +275,7 @@ function Sensors() {
                     <Card className="sensor-card">
                         <CardHeader 
                             title={
-                                <Typography variant="h6" sx={{ fontWeight: 'bold', fontFamily: 'Nunito, sans-serif' }}>
+                                <Typography variant="h6" sx={{ fontWeight: '540', fontFamily: 'Inter, sans-serif' }}>
                                     Humidity
                                 </Typography>
                             }
@@ -296,7 +295,7 @@ function Sensors() {
                     <Card className="sensor-card">
                         <CardHeader 
                             title={
-                                <Typography variant="h6" sx={{ fontWeight: 'bold', fontFamily: 'Nunito, sans-serif' }}>
+                                <Typography variant="h6" sx={{ fontWeight: '540', fontFamily: 'Inter, sans-serif' }}>
                                     Plant Information
                                 </Typography>
                             }
@@ -342,7 +341,7 @@ function Sensors() {
                                                 marginTop: 1,
                                             }}
                                         >
-                                            <Typography variant="body1" className="days-planted-text">
+                                            <Typography variant="body1" className="days-planted-text" sx={{ fontWeight: '540', fontFamily: 'Inter, sans-serif', marginTop: '-10px !important' }}>
                                                 Days planted: {daysSincePlanting}
                                             </Typography>
                                             {isPlantInfoChanged && (
@@ -365,10 +364,10 @@ function Sensors() {
                             )}
                         </CardContent>
                     </Card>
-                    <Card className="sensor-card">
+                    {/* <Card className="sensor-card">
                         <CardHeader 
                             title={
-                                <Typography variant="h6" sx={{ fontWeight: 'bold', fontFamily: 'Nunito, sans-serif' }}>
+                                <Typography variant="h6" sx={{ fontWeight: '540', fontFamily: 'Inter, sans-serif' }}>
                                     Blynk API Token
                                 </Typography>
                             }
@@ -407,7 +406,7 @@ function Sensors() {
                                 </Button>
                             )}
                         </CardContent>
-                    </Card>
+                    </Card> */}
                 </Box>
             </div>
             <div className="ask-aiponics-container">
