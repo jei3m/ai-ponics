@@ -10,6 +10,8 @@ import { doc, setDoc, getDoc } from 'firebase/firestore';  // Firestore methods
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './css/Sensors.css'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faExclamationTriangle, faThermometerHalf, faTint, faLeaf } from '@fortawesome/free-solid-svg-icons';
 
 function Sensors() {
     const [temperature, setTemperature] = useState(null);
@@ -221,7 +223,7 @@ function Sensors() {
                         <CardHeader 
                             title={
                                 <Typography variant="h6" sx={{ fontWeight: '540', fontFamily: 'Inter, sans-serif' }}>
-                                    Temperature Alert
+                                    <FontAwesomeIcon icon={faExclamationTriangle} /> Temperature Alert
                                 </Typography>
                             }
                         />
@@ -256,7 +258,7 @@ function Sensors() {
                         <CardHeader 
                             title={
                                 <Typography variant="h6" sx={{ fontWeight: '540', fontFamily: 'Inter, sans-serif' }}>
-                                    Temperature
+                                    <FontAwesomeIcon icon={faThermometerHalf} /> Temperature
                                 </Typography>
                             }
                         />
@@ -276,7 +278,7 @@ function Sensors() {
                         <CardHeader 
                             title={
                                 <Typography variant="h6" sx={{ fontWeight: '540', fontFamily: 'Inter, sans-serif' }}>
-                                    Humidity
+                                    <FontAwesomeIcon icon={faTint} /> Humidity
                                 </Typography>
                             }
                         />
@@ -296,7 +298,7 @@ function Sensors() {
                         <CardHeader 
                             title={
                                 <Typography variant="h6" sx={{ fontWeight: '540', fontFamily: 'Inter, sans-serif' }}>
-                                    Plant Information
+                                    <FontAwesomeIcon icon={faLeaf} /> Plant Information
                                 </Typography>
                             }
                         />
