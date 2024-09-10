@@ -343,7 +343,7 @@ function Sensors() {
                                                 marginTop: 1,
                                             }}
                                         >
-                                            <Typography variant="body1" className="days-planted-text" sx={{ fontWeight: '540', fontFamily: 'Inter, sans-serif', marginTop: '-10px !important' }}>
+                                            <Typography variant="body1" className="days-planted-text" sx={{ fontWeight: '540', fontFamily: 'Inter, sans-serif', marginTop: '-10px !important', marginLeft: '2px' }}>
                                                 Days planted: {daysSincePlanting}
                                             </Typography>
                                             {isPlantInfoChanged && (
