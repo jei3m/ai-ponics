@@ -296,6 +296,7 @@
         max-width: 100%; /* Adjust for small screens */
         height: 100dvh;
         margin-top: 0px;
+        border-radius: 0px;
     }
 
     .input-container {
@@ -311,7 +312,9 @@
 
     .chat-container {
         padding: 16px;
-        max-width: 98%; /* Adjust for small screens */
+        max-width: 100%; /* Adjust for small screens */
+        height: 100dvh;
+        border-radius: 0px;
     }
 
     .chat-title h2 {
