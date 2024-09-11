@@ -3,7 +3,7 @@
     position: relative;
     padding: 16px;
     background-color: white; /* Light green background */
-    height: 99vh;
+    height: 92vh;
     width: 100%; /* Maintain responsive width */
     max-width: 500px; /* Adjusted max-width for a better fit on larger screens */
     min-width: 320px; /* Set a reasonable minimum width */
@@ -294,7 +294,8 @@
     .chat-container {
         padding: 16px;
         max-width: 98%; /* Adjust for small screens */
-        max-height: 98%;
+        height: 92vh;
+        margin-top: -40px;
     }
 
     .input-container {
