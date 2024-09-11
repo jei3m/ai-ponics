@@ -141,6 +141,7 @@ header {
   border-radius: 4px;
   padding: 0.3rem 0.7rem;
   transition: background-color 0.3s ease, transform 0.3s ease;
+  border-radius: 6px;
 }
 
 .save-api-key-button:hover {

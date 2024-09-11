@@ -3,7 +3,7 @@
     position: relative;
     padding: 16px;
     background-color: white; /* Light green background */
-    height: 88vh;
+    height: 99vh;
     width: 100%; /* Maintain responsive width */
     max-width: 500px; /* Adjusted max-width for a better fit on larger screens */
     min-width: 320px; /* Set a reasonable minimum width */
@@ -15,7 +15,6 @@
     border-radius: 12px;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.24);
     overflow: hidden;
-    bottom: 14px;
 }
 
 /* Header styles */
@@ -312,7 +311,6 @@
     .chat-container {
         padding: 16px;
         max-width: 98%; /* Adjust for small screens */
-        max-height: 98%;
     }
 
     .chat-title h2 {
