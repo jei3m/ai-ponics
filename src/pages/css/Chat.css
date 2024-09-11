@@ -293,9 +293,9 @@
 @media (max-width: 768px) {
     .chat-container {
         padding: 16px;
-        max-width: 98%; /* Adjust for small screens */
-        height: 92vh;
-        margin-top: -40px;
+        max-width: 100%; /* Adjust for small screens */
+        height: 100dvh;
+        margin-top: 0px;
     }
 
     .input-container {
