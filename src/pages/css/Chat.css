@@ -1,3 +1,14 @@
+.App-Chat {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(to bottom, #e6f7e6, #c8e6c8);
+    overflow: hidden;
+}
+
 /* Chat container */
 .chat-container {
     position: relative;
@@ -297,6 +308,7 @@
         height: 100dvh;
         margin-top: 0px;
         border-radius: 0px;
+        overflow: hidden;
     }
 
     .input-container {
@@ -315,6 +327,7 @@
         max-width: 100%; /* Adjust for small screens */
         height: 100dvh;
         border-radius: 0px;
+        overflow: hidden;
     }
 
     .chat-title h2 {

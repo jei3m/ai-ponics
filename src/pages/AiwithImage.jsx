@@ -217,7 +217,7 @@ const AiwithImage = () => {
   };
 
   return (
-    <div className="Appbg">
+    <div className="App-Chat">
       <div className="chat-container">
         <ToastContainer />
         <div className="header">
