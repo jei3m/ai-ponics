@@ -63,12 +63,12 @@ function Sensors() {
         setTemperature(temperatureResponse.data);
         setHumidity(humidityResponse.data);
 
-        if (temperatureResponse.data > 73) {
+        if (temperatureResponse.data > 60) {
           setTemperatureAlert("Temperature too high!");
-          sendEmail(temperatureResponse.data);
+          sendEmailHot(temperatureResponse.data);
         } else if (temperatureResponse.data < 15) {
           setTemperatureAlert("Temperature too low!");
-          // sendEmail(temperatureResponse.data);
+          sendEmailCold(temperatureResponse.data);
         } else {
           setTemperatureAlert("");
         }
@@ -177,7 +177,8 @@ function Sensors() {
     }
   };
 
-  const sendEmail = (temperature) => {
+  // Function to send email if the temperature is too hot
+  const sendEmailHot = (temperature) => {
     const lastEmailTimestamp = localStorage.getItem("lastEmailTimestamp");
     const now = new Date().getTime();
 
@@ -185,7 +186,46 @@ function Sensors() {
       if (user) {
         const templateParams = {
           to_name: user.displayName || "User",
-          message: `The temperature is too high: ${temperature}°C`,
+          message: `Temperature is too high! ${temperature}°C`,
+          user_email: user.email,
+        };
+
+        emailjs
+          .send(
+            process.env.REACT_APP_EMAILJS_SERVICE_ID,
+            process.env.REACT_APP_EMAILJS_TEMPLATE_ID,
+            templateParams,
+            process.env.REACT_APP_EMAILJS_USER_ID,
+          )
+          .then(
+            (response) => {
+              console.log(
+                "Email successfully sent!",
+                response.status,
+                response.text,
+              );
+              localStorage.setItem("lastEmailTimestamp", now);
+            },
+            (err) => {
+              console.error("Failed to send email:", err);
+            },
+          );
+      }
+    } else {
+      console.log("Email not sent: 10 minutes have not passed yet.");
+    }
+  };
+
+   // Function to send email if the temperature is too cold
+  const sendEmailCold = (temperature) => {
+    const lastEmailTimestamp = localStorage.getItem("lastEmailTimestamp");
+    const now = new Date().getTime();
+
+    if (!lastEmailTimestamp || now - lastEmailTimestamp > 10 * 60 * 1000) {
+      if (user) {
+        const templateParams = {
+          to_name: user.displayName || "User",
+          message: `Temperature is too cold! ${temperature}°C`,
           user_email: user.email,
         };
 
