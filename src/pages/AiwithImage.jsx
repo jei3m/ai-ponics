@@ -100,10 +100,12 @@ const AiwithImage = () => {
       toast.error('Sensor data is still loading. Please wait.');
       return;
     }
+    //gemini-1.5-pro-exp-0827 Pro Experimental
+    //gemini-1.5-flash Flash
     setLoading(true);
     const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash",
-      systemInstruction: `You are AI-Ponics, Aeroponics assistant, answer concisely. Take note of plant name is ${plantName} and it has been ${daysSincePlanting} days since planting, sensor readings: temperature is ${temperature !== null ? temperature + '°C' : 'unavailable'} and humidity ${humidity !== null ? humidity + '%' : 'unavailable'}.`,
+      model: "gemini-1.5-pro-exp-0827",
+      systemInstruction: `You are AI-Ponics, Aeroponics expert, answer concisely. Take note of plant name is ${plantName} and it has been ${daysSincePlanting} days since planting, sensor readings: temperature is ${temperature !== null ? temperature + '°C' : 'unavailable'} and humidity ${humidity !== null ? humidity + '%' : 'unavailable'}.`,
     });
     const result = await model.generateContent([textPrompt, imageInlineData]);
     const response = await result.response;
