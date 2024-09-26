@@ -142,7 +142,10 @@ function Forum() {
               onChange={setNewComment}
               placeholder="Comment on this forum"
             />
-            <button onClick={handleComment} className="forum-button">Comment</button>
+            <div className='button-group'> 
+            <button onClick={handleBackToForums} className="button-back">Back</button>
+            <button onClick={handleComment} className="forum-button-detailed">Comment</button>
+            </div>
           </div>
           <h3>Comments</h3>
           <ul className="comment-list">
@@ -156,8 +159,8 @@ function Forum() {
                 )}
               </li>
             ))}
+            
           </ul>
-          <button onClick={handleBackToForums} className="forum-button back-button">Back to Forums</button>
         </div>
       ) : (
         <div>
@@ -186,7 +189,7 @@ function Forum() {
                 <p className="forum-item-date">{new Date(forum.createdAt).toLocaleString()}</p>
                 <button onClick={() => handleSelectForum(forum)} className="forum-button">View</button>
                 {currentUser && forum.postedBy === currentUser && (
-                  <button onClick={() => handleDeleteForum(forum.id)} className="forum-button delete-button">Delete</button>
+                  <button onClick={() => handleDeleteForum(forum.id)} className="delete-button">Delete</button>
                 )}
               </li>
             ))}

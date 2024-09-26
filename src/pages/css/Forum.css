@@ -14,15 +14,39 @@
 }
 
 .forum-input {
-  margin-bottom: 20px;
+  margin: 0 auto;
+  text-align: center;
 }
 
+
 .forum-input-field {
-  width: 100%;
   padding: 10px;
   margin-bottom: 10px;
   border: 1px solid #ddd;
   border-radius: 4px;
+  margin: 0 auto;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.forum-button:hover {
+  background-color: #45a049;
+}
+
+.delete-button {
+  background-color: #f44336;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-right: 10px;
+  margin-top: 10px;
+}
+
+.delete-button:hover {
+  background-color: #d32f2f;
 }
 
 .forum-button {
@@ -34,26 +58,38 @@
   cursor: pointer;
   font-size: 16px;
   margin-right: 10px;
+  margin-top: 10px;
 }
 
-.forum-button:hover {
+.forum-button-detailed {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 10px;
+}
+
+.forum-button-detailed:hover {
   background-color: #45a049;
 }
 
-.delete-button {
-  background-color: #f44336;
-}
-
-.delete-button:hover {
-  background-color: #d32f2f;
-}
-
-.back-button {
+.button-back {
   background-color: #2196F3;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 10px;
 }
 
-.back-button:hover {
+.button-back:hover {
   background-color: #1976D2;
+  
 }
 
 .forum-list {
@@ -86,6 +122,7 @@
   border: 1px solid #ddd;
   border-radius: 4px;
   padding: 20px;
+  
 }
 
 .forum-author,
@@ -126,6 +163,12 @@
 
 .comment-text {
   margin-top: 10px;
+  font-weight: normal;
+}
+
+.comment-text p {
+  margin-top: 10px;
+  font-weight: normal;
 }
 
 /* Styles for Quill editor */
@@ -150,3 +193,17 @@
 .ql-editor p {
   font-weight: normal;
 }
+
+.button-group {
+  display: flex;
+  justify-content: space-between;
+}
+
+.button-group .forum-button {
+  margin-right: 10px;
+}
+
+.button-group .button-back {
+  margin-left: 0;
+}
+
