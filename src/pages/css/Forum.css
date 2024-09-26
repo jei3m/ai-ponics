@@ -1,0 +1,152 @@
+/* Forum.css */
+
+.forum-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.forum-title {
+  color: #333;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.forum-input {
+  margin-bottom: 20px;
+}
+
+.forum-input-field {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.forum-button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-right: 10px;
+}
+
+.forum-button:hover {
+  background-color: #45a049;
+}
+
+.delete-button {
+  background-color: #f44336;
+}
+
+.delete-button:hover {
+  background-color: #d32f2f;
+}
+
+.back-button {
+  background-color: #2196F3;
+}
+
+.back-button:hover {
+  background-color: #1976D2;
+}
+
+.forum-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.forum-item {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 15px;
+  margin-bottom: 15px;
+}
+
+.forum-item-title {
+  margin-top: 0;
+  color: #333;
+}
+
+.forum-item-author,
+.forum-item-date {
+  color: #666;
+  font-size: 0.9em;
+  margin: 5px 0;
+}
+
+.detailed-view {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 20px;
+}
+
+.forum-author,
+.forum-date {
+  color: #666;
+  font-size: 0.9em;
+  margin: 5px 0;
+}
+
+.forum-content {
+  margin: 20px 0;
+  line-height: 1.6;
+}
+
+.comment-input {
+  margin: 20px 0;
+}
+
+.comment-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.comment-item {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 15px;
+  margin-bottom: 15px;
+}
+
+.comment-author,
+.comment-date {
+  color: #666;
+  font-size: 0.9em;
+  margin: 5px 0;
+}
+
+.comment-text {
+  margin-top: 10px;
+}
+
+/* Styles for Quill editor */
+.ql-container {
+  border-bottom-left-radius: 0.5em;
+  border-bottom-right-radius: 0.5em;
+  background: #fefcfc;
+}
+
+.ql-snow.ql-toolbar {
+  display: block;
+  background: #eaecec;
+  border-top-left-radius: 0.5em;
+  border-top-right-radius: 0.5em;
+}
+
+.ql-editor {
+  min-height: 18em;
+  font-weight: normal;
+}
+
+.ql-editor p {
+  font-weight: normal;
+}

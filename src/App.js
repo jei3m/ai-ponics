@@ -6,6 +6,7 @@ import Chat from './pages/AiwithImage';
 import Login from './pages/Login';
 import PrivateRoutes from './routes/PrivateRoutes'
 import AiwithImage2 from './pages/AiwithImage2';
+import Forum from './pages/Forum';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -35,11 +36,19 @@ function App() {
 					</PrivateRoutes>
 				}
 			/>
-      <Route
+           <Route
 				path='/home'
 				element={
 					<PrivateRoutes>
 						<Sensors />
+					</PrivateRoutes>
+				}
+			/>
+			<Route
+				path='/forum'
+				element={
+					<PrivateRoutes>
+						<Forum />
 					</PrivateRoutes>
 				}
 			/>
