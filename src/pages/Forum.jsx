@@ -127,6 +127,17 @@ function Forum() {
     setSelectedForum(null);
   };
 
+  const TOOL_BAR_OPTIONS = [
+    ['bold', 'italic', 'underline'],
+    [{ list: 'ordered' }, { list: 'bullet' }],
+  ];
+  
+  const modules = {
+    toolbar: {
+      container: TOOL_BAR_OPTIONS,
+    },
+  };
+
   return (
     <div className="forum-container">
       {showDetailedView ? (
@@ -138,6 +149,7 @@ function Forum() {
           <div className="comment-input">
             <ReactQuill
               ref={quillRef}
+              modules={modules}
               value={newComment}
               onChange={setNewComment}
               placeholder="Comment on this forum"
@@ -155,7 +167,7 @@ function Forum() {
                 <p className="comment-date">{new Date(comment.createdAt).toLocaleString()}</p>
                 <div className="comment-text" dangerouslySetInnerHTML={{ __html: comment.comment }} />
                 {currentUser && comment.postedBy === currentUser && (
-                  <button onClick={() => handleDeleteComment(index)} className="forum-button delete-button">Delete</button>
+                  <button onClick={() => handleDeleteComment(index)} className="delete-button">Delete</button>
                 )}
               </li>
             ))}
@@ -175,6 +187,7 @@ function Forum() {
             />
             <ReactQuill
               ref={quillRef}
+              modules={modules}
               value={newForumContent}
               onChange={setNewForumContent}
               placeholder="Content of your forum"

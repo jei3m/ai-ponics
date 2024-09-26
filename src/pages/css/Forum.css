@@ -134,7 +134,19 @@
 
 .forum-content {
   margin: 20px 0;
-  line-height: 1.6;
+}
+
+.forum-content p{
+  margin: 20px 0;
+  line-height: 0.5;
+  font-weight: normal;
+}
+
+.forum-content li{
+  margin: 20px 0;
+  line-height: 0.5;
+  font-weight: normal;
+  font-size: 18px;
 }
 
 .comment-input {
@@ -167,8 +179,14 @@
 }
 
 .comment-text p {
-  margin-top: 10px;
   font-weight: normal;
+  line-height: 0.2;
+}
+
+.comment-text li {
+  margin-bottom: 12px;
+  font-weight: normal;
+  line-height: 1;
 }
 
 /* Styles for Quill editor */
@@ -192,6 +210,11 @@
 
 .ql-editor p {
   font-weight: normal;
+}
+
+.ql-editor li {
+  font-weight: normal;
+  font-size: 18px;
 }
 
 .button-group {
