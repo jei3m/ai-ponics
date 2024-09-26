@@ -11,6 +11,7 @@
   color: #333;
   text-align: center;
   margin-bottom: 20px;
+  margin-top: -4px;
 }
 
 .forum-input {
@@ -120,31 +121,41 @@
 .detailed-view {
   background-color: #fff;
   border: 1px solid #ddd;
-  border-radius: 4px;
+  border-radius: 12px;
   padding: 20px;
-  
 }
 
-.forum-author,
+.forum-author{
+  color: #666;
+  font-size: 0.9em;
+  margin: 5px 0;
+  margin-bottom: 30px;
+  margin-top: 10px;
+}
 .forum-date {
   color: #666;
   font-size: 0.9em;
   margin: 5px 0;
+  margin-bottom: 40px;
+  margin-top: -20px;
 }
 
 .forum-content {
-  margin: 20px 0;
+  word-wrap: break-word; 
+  margin-top: 10px;
 }
 
 .forum-content p{
   margin: 20px 0;
-  line-height: 0.5;
   font-weight: normal;
+  line-height: 1.1em;
+  margin-top: -18px;
+  word-wrap: break-word;
 }
 
 .forum-content li{
   margin: 20px 0;
-  line-height: 0.5;
+  line-height: 1.1em;
   font-weight: normal;
   font-size: 18px;
 }
@@ -176,17 +187,19 @@
 .comment-text {
   margin-top: 10px;
   font-weight: normal;
+  word-wrap: break-word; 
 }
 
 .comment-text p {
   font-weight: normal;
   line-height: 0.2;
+  line-height: 1.1em;
 }
 
 .comment-text li {
   margin-bottom: 12px;
   font-weight: normal;
-  line-height: 1;
+  line-height: 1.1em;
 }
 
 /* Styles for Quill editor */
@@ -206,15 +219,18 @@
 .ql-editor {
   min-height: 18em;
   font-weight: normal;
+  white-space: normal; 
+  word-wrap: break-word; 
 }
 
 .ql-editor p {
   font-weight: normal;
+  font-size: 16px;
 }
 
 .ql-editor li {
   font-weight: normal;
-  font-size: 18px;
+  font-size: 15px;
 }
 
 .button-group {
@@ -228,5 +244,186 @@
 
 .button-group .button-back {
   margin-left: 0;
+}
+
+/* Modal styles */
+
+.modal {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+}
+
+.modal-content {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  width: 80%;
+  max-width: 800px;
+}
+
+.modal-content h2 {
+  margin-top: 0;
+}
+
+.modal-content .forum-input-field {
+  margin-bottom: 20px;
+}
+
+.modal-content .forum-button {
+  margin-right: 10px;
+}
+
+.modal-content .button-back {
+  margin-left: 0;
+}
+
+.modal {
+  transition: opacity 0.3s ease-in-out;
+}
+
+.modal-content {
+  transform: scale(1);
+  transition: transform 0.3s ease-in-out;
+}
+
+.modal.show {
+  opacity: 1;
+}
+
+.modal.show .modal-content {
+  transform: scale(1);
+}
+
+/* ql-editor Modal Styles */
+
+.ql-modal {
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.ql-modal::-webkit-scrollbar {
+  width: 10px;
+}
+
+.ql-modal::-webkit-scrollbar-track {
+  background-color: #f0f0f0;
+}
+
+.ql-modal::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 5px;
+}
+
+.ql-modal::-webkit-scrollbar-thumb:hover {
+  background-color: #aaa;
+}
+
+/* Tablet Devices */
+@media screen and (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+
+  .forum-title {
+    font-size: 24px;
+  }
+
+  .forum-button,
+  .forum-button-detailed,
+  .button-back,
+  .delete-button {
+    font-size: 14px;
+  }
+
+  .forum-item-title {
+    font-size: 18px;
+  }
+
+  .forum-item-author,
+  .forum-item-date,
+  .forum-author,
+  .forum-date,
+  .comment-author,
+  .comment-date {
+    font-size: 0.8em;
+  }
+
+  .forum-content p,
+  .forum-content li,
+  .comment-text p,
+  .comment-text li {
+    font-size: 14px;
+  }
+
+  .ql-editor {
+    font-size: 14px;
+  }
+
+  .ql-editor p {
+    font-size: 14px;
+  }
+
+  .ql-editor li {
+    font-size: 13px;
+  }
+}
+
+/* Mobile Devices */
+@media screen and (max-width: 480px) {
+  body {
+    font-size: 12px;
+  }
+
+  .forum-title {
+    font-size: 20px;
+  }
+
+  .forum-button,
+  .forum-button-detailed,
+  .button-back,
+  .delete-button {
+    font-size: 12px;
+  }
+
+  .forum-item-title {
+    font-size: 16px;
+  }
+
+  .forum-item-author,
+  .forum-item-date,
+  .forum-author,
+  .forum-date,
+  .comment-author,
+  .comment-date {
+    font-size: 0.7em;
+  }
+
+  .forum-content p,
+  .forum-content li,
+  .comment-text p,
+  .comment-text li {
+    font-size: 12px;
+  }
+
+  .ql-editor {
+    font-size: 12px;
+  }
+
+  .ql-editor p {
+    font-size: 12px;
+  }
+
+  .ql-editor li {
+    font-size: 11px;
+  }
 }
 

@@ -21,6 +21,7 @@ function Forum() {
   const [selectedForum, setSelectedForum] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
   const [showDetailedView, setShowDetailedView] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const quillRef = useRef(null);
 
   useEffect(() => {
@@ -58,6 +59,7 @@ function Forum() {
       setNewForumTitle('');
       setNewForumContent('');
       setForums([...forums, { ...newForum, id: docRef.id }]);
+      setShowModal(false);
     }
   };
 
@@ -177,23 +179,31 @@ function Forum() {
       ) : (
         <div>
           <h1 className="forum-title">Forums</h1>
-          <div className="forum-input">
-            <input
-              type="text"
-              value={newForumTitle}
-              onChange={(e) => setNewForumTitle(e.target.value)}
-              placeholder="Title of your forum"
-              className="forum-input-field"
-            />
-            <ReactQuill
-              ref={quillRef}
-              modules={modules}
-              value={newForumContent}
-              onChange={setNewForumContent}
-              placeholder="Content of your forum"
-            />
-            <button onClick={handlePostForum} className="forum-button">Post</button>
-          </div>
+          <button onClick={() => setShowModal(true)} className="forum-button">Create New Forum</button>
+          {showModal && (
+            <div className="modal">
+              <div className="modal-content">
+                <h2>Create New Forum</h2>
+                <input
+                  type="text"
+                  value={newForumTitle}
+                  onChange={(e) => setNewForumTitle(e.target.value)}
+                  placeholder="Title of your forum"
+                  className="forum-input-field"
+                />
+                <ReactQuill
+                  ref={quillRef}
+                  modules={modules}
+                  value={newForumContent}
+                  onChange={setNewForumContent}
+                  placeholder="Content of your forum"
+                  className='ql-modal'
+                />
+                <button onClick={() => setShowModal(false)} className="button-back">Cancel</button>
+                <button onClick={handlePostForum} className="forum-button" style={{marginLeft:'10px'}}>Post</button>
+              </div>
+            </div>
+          )}
           <ul className="forum-list">
             {forums.map((forum) => (
               <li key={forum.id} className="forum-item">
