@@ -1,17 +1,22 @@
 /* Forum.css */
 
+.home-forum{
+  padding: 10px;
+}
+
 .forum-container {
   max-width: 800px;
+  width: 100%;
   margin: 0 auto;
-  padding: 20px;
   font-family: Arial, sans-serif;
+  height: 100%;
 }
 
 .forum-title {
   color: #333;
   text-align: center;
   margin-bottom: 20px;
-  margin-top: -4px;
+  margin-top: 20px;
 }
 
 .forum-input {
@@ -35,29 +40,30 @@
 }
 
 .delete-button {
-  background-color: #f44336;
-  color: white;
-  padding: 10px 15px;
+  color: grey;
+  padding: 8px 12px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 16px;
-  margin-right: 10px;
+  font-size: 14px;
+  margin-left: -1px;
   margin-top: 10px;
+  color:'grey'; 
+  font-weight: 600;
 }
 
 .delete-button:hover {
-  background-color: #d32f2f;
+  background-color: #d1d0d0;
 }
 
 .forum-button {
   background-color: #4CAF50;
   color: white;
-  padding: 10px 15px;
+  padding: 8px 15px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 14px;
   margin-right: 10px;
   margin-top: 10px;
 }
@@ -65,11 +71,11 @@
 .forum-button-detailed {
   background-color: #4CAF50;
   color: white;
-  padding: 10px 15px;
+  padding: 8px 12px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 14px;
   margin-top: 10px;
 }
 
@@ -80,11 +86,11 @@
 .button-back {
   background-color: #2196F3;
   color: white;
-  padding: 10px 15px;
+  padding: 8px 15px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 14px;
   margin-top: 10px;
 }
 
@@ -101,7 +107,7 @@
 .forum-item {
   background-color: #f9f9f9;
   border: 1px solid #ddd;
-  border-radius: 4px;
+  border-radius: 8px;
   padding: 15px;
   margin-bottom: 15px;
 }
@@ -121,17 +127,18 @@
 .detailed-view {
   background-color: #fff;
   border: 1px solid #ddd;
-  border-radius: 12px;
   padding: 20px;
+  min-height: 100dvh;
 }
 
 .forum-author{
   color: #666;
   font-size: 0.9em;
   margin: 5px 0;
-  margin-bottom: 30px;
+  margin-bottom: 24px;
   margin-top: 10px;
 }
+
 .forum-date {
   color: #666;
   font-size: 0.9em;
@@ -155,7 +162,7 @@
 
 .forum-content li{
   margin: 20px 0;
-  line-height: 1.1em;
+  line-height: 0.6em;
   font-weight: normal;
   font-size: 18px;
 }
@@ -194,12 +201,14 @@
   font-weight: normal;
   line-height: 0.2;
   line-height: 1.1em;
+  font-size: 18px;
 }
 
 .comment-text li {
-  margin-bottom: 12px;
+  margin-bottom: 10px;
   font-weight: normal;
   line-height: 1.1em;
+  font-size: 16px;
 }
 
 /* Styles for Quill editor */
@@ -216,8 +225,15 @@
   border-top-right-radius: 0.5em;
 }
 
-.ql-editor {
+.ql-modal .ql-editor{
   min-height: 18em;
+  font-weight: normal;
+  white-space: normal; 
+  word-wrap: break-word; 
+}
+
+.ql-comment .ql-editor{
+  min-height: 10em;
   font-weight: normal;
   white-space: normal; 
   word-wrap: break-word; 
@@ -310,6 +326,7 @@
   overflow-y: auto;
 }
 
+
 .ql-modal::-webkit-scrollbar {
   width: 10px;
 }
@@ -384,14 +401,22 @@
   }
 
   .forum-title {
+    margin-top: 10px;
     font-size: 20px;
+  }
+
+  .modal-content{
+    width: 100%;
+    height: 94dvh;
+    border-radius: 0px;
   }
 
   .forum-button,
   .forum-button-detailed,
   .button-back,
   .delete-button {
-    font-size: 12px;
+    font-size: 10px;
+    padding: 6px 12px;
   }
 
   .forum-item-title {
@@ -405,17 +430,33 @@
   .comment-author,
   .comment-date {
     font-size: 0.7em;
+    margin: 1;
+  }
+
+  .comment-date{
+    margin-top: 4px;
+    margin-bottom: 30px;
   }
 
   .forum-content p,
-  .forum-content li,
-  .comment-text p,
-  .comment-text li {
+  .forum-content li {
     font-size: 12px;
+    margin-top: -12px;
+  }
+
+  .comment-text p,
+  .comment-text li{
+    font-size: 12px;
+    margin-top: -12px;
+  }
+
+  .ql-modal{
+    min-width: 100%;
   }
 
   .ql-editor {
     font-size: 12px;
+    width: 100%;
   }
 
   .ql-editor p {

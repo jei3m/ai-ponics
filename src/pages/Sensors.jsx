@@ -530,49 +530,6 @@ function Sensors() {
               )}
             </CardContent>
           </Card>
-          {/* <Card className="sensor-card">
-                        <CardHeader
-                            title={
-                                <Typography variant="h6" sx={{ fontWeight: '540', fontFamily: 'Inter, sans-serif' }}>
-                                    Blynk API Token
-                                </Typography>
-                            }
-                        />
-                        <CardContent>
-                            <TextField
-                                type={showBlynkApiKey ? "text" : "password"}
-                                value={blynkApiKey}
-                                onChange={handleBlynkApiKeyChange}
-                                fullWidth
-                                variant="outlined"
-                                label="Blynk API Token"
-                                placeholder="Enter your Blynk API Token"
-                                className="blynk-api-input"
-                                sx={{ marginBottom: 2 }}
-                                InputProps={{
-                                    endAdornment: (
-                                        <Button onClick={toggleBlynkApiKeyVisibility}>
-                                            {showBlynkApiKey ? "Hide" : "Show"}
-                                        </Button>
-                                    ),
-                                }}
-                            />
-                            {isBlynkApiKeyChanged && (
-                                <Button
-                                    variant="contained"
-                                    sx={{
-                                        backgroundColor: '#388E3C',
-                                        '&:hover': {
-                                            backgroundColor: '#2E7D32',
-                                        }
-                                    }}
-                                    onClick={() => handleSave('blynkApiKey')}
-                                >
-                                    Save
-                                </Button>
-                            )}
-                        </CardContent>
-                    </Card> */}
         </Box>
       </div>
       <div className="ask-aiponics-container">
@@ -583,7 +540,6 @@ function Sensors() {
             className="profile-pic"
           />
         </a>
-        <div className="text-bubble">Ask AI-Ponics!</div>
       </div>
       <ToastContainer />
     </div>
