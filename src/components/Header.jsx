@@ -5,7 +5,7 @@ import { db } from '../firebase';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import '../pages/css/Header.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faLeaf } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faLeaf, faNewspaper } from '@fortawesome/free-solid-svg-icons';
 
 Modal.setAppElement('#root');
 
@@ -92,12 +92,15 @@ function Header() {
   return (
     <header>
       <div className="header-logo">
-        <a href=''>
+        <a href='/'>
           <FontAwesomeIcon icon={faLeaf} className="header-logo-icon" />
           <span>{plantName || 'AI-Ponics'}</span> Dashboard
         </a>
       </div>
       <div className="header-user">
+        <a href='/forum'>
+          <FontAwesomeIcon icon={faNewspaper} className='forum-icon'/>
+        </a>
         {currentUser && (
           <>
             <FontAwesomeIcon

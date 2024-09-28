@@ -14,6 +14,7 @@ import 'react-quill/dist/quill.snow.css';
 import "./css/Forum.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faComment, faDeleteLeft, faPlus, faTrash} from '@fortawesome/free-solid-svg-icons';
+import Header from '../components/Header';
 
 function Forum() {
   const [forums, setForums] = useState([]);
@@ -144,6 +145,8 @@ function Forum() {
 
   return (
     <div>
+    <Header/>
+    <br/><br/><br/>
     <div className="forum-container">
       {showDetailedView ? (
         <div className="detailed-view">
