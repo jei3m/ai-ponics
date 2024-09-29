@@ -5,7 +5,7 @@ import { db } from '../firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import '../pages/css/Header.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faLeaf, faNewspaper, faHome } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faLeaf, faNewspaper, faHome, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { useLocation } from 'react-router-dom';
 import { useApiKey } from '../context/ApiKeyContext';
 
@@ -188,6 +188,12 @@ function Header() {
               }}
               contentLabel='Profile Modal'
             >
+                <button
+                  onClick={closeModal}
+                  className="x-close-button"
+                >
+                  <FontAwesomeIcon icon={faTimes}/>
+                </button>
               <h2 className="modal-title">User Profile</h2>
               <img
                 src={currentUser.photoURL}
@@ -253,21 +259,13 @@ function Header() {
                 >
                   Delete
                 </button>
-              </div>
-              </div>
-              <div className="modal-buttons">
-                <button
-                  onClick={closeModal}
-                  className="close-button"
-                >
-                  Close
-                </button>
                 <button
                   onClick={logOut}
                   className="logout-button"
                 >
                   Log Out
                 </button>
+              </div>
               </div>
             </Modal>
           </>

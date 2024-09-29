@@ -144,10 +144,10 @@ header {
 }
 
 .save-api-key-button {
+  background-color: #F8F8FF;
   margin-top: 6px;
-  background: #1877F2;
   border: none;
-  color: #ffffff;
+  color: #5c6063;
   font-size: 0.9rem;
   cursor: pointer;
   border-radius: 4px;
@@ -155,11 +155,13 @@ header {
   transition: background-color 0.3s ease, transform 0.3s ease;
   border-radius: 6px;
   margin-right: 5px;
+  font-weight: 600;
 }
 
 .save-api-key-button:hover {
   background-color: #166FE5;
   transform: scale(1.05);
+  color: #F8F8FF;
 }
 
 .modal-buttons {
@@ -167,14 +169,17 @@ header {
 }
 
 .close-button, .logout-button {
+  background-color: #d81e31;
   border: none;
   color: #ffffff;
-  font-size: 1rem;
+  font-size: 0.9rem;
   cursor: pointer;
   border-radius: 4px;
-  padding: 0.5rem 1rem;
-  display: inline-block;
+  padding: 0.4rem 0.7rem;
   transition: background-color 0.3s ease, transform 0.3s ease;
+  font-weight: 600;
+  float: right;
+  margin-top: 5px;
 }
 
 .close-button {
@@ -187,14 +192,30 @@ header {
   transform: scale(1.05);
 }
 
+.x-close-button{
+  border: none;
+  background-color: #F8F8FF;
+  color: 'black';
+  font-size: 1.4rem;
+  cursor: pointer;
+  border-radius: 4px;
+  float: right;
+  margin-left: -60px;
+  transition: font-size 0.2s ease-in-out;
+}
+
+.x-close-button:hover {
+  font-size: 2rem;
+}
+
 .logout-button {
-  background: #078007;
   margin-left: 0.5rem;
 }
 
 .logout-button:hover {
-  background-color: #056105;
-  transform: scale(1.05);
+  background-color: #b41d2c;
+  color: #F8F8FF;
+  transform: scale(1.04);
 }
 
 .api-key-select {
@@ -207,10 +228,10 @@ header {
 }
 
 .add-api-key-button{ 
+  background-color: #F8F8FF;
   margin-top: 6px;
-  background: #1877F2;
   border: none;
-  color: #ffffff;
+  color: #5c6063;
   font-size: 0.9rem;
   cursor: pointer;
   border-radius: 4px;
@@ -218,13 +239,14 @@ header {
   transition: background-color 0.3s ease, transform 0.3s ease;
   border-radius: 6px;
   margin-right: 5px;
+  font-weight: 600;
 }
 
 .delete-api-key-button {
+  background-color: #F8F8FF;
   margin-top: 6px;
-  background: #1877F2;
   border: none;
-  color: #ffffff;
+  color: #5c6063;
   font-size: 0.9rem;
   cursor: pointer;
   border-radius: 4px;
@@ -232,18 +254,16 @@ header {
   transition: background-color 0.3s ease, transform 0.3s ease;
   border-radius: 6px;
   margin-right: 5px;
-  float:right;
+  font-weight: 600;
 }
 
 .add-api-key-button:hover, .delete-api-key-button:hover {
   background-color: #166FE5;
   transform: scale(1.05);
-}
-
-.delete-api-key-button {
-  background: #dc3545;
+  color: #F8F8FF;
 }
 
 .delete-api-key-button:hover {
   background-color: #c82333;
+  color: #F8F8FF;
 }
