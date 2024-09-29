@@ -7,6 +7,7 @@ import Login from './pages/Login';
 import PrivateRoutes from './routes/PrivateRoutes'
 import AiwithImage2 from './pages/AiwithImage2';
 import Forum from './pages/Forum';
+import DetailedView from './pages/ForumDetailed';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -45,13 +46,22 @@ function App() {
 				}
 			/>
 			<Route
-				path='/forum'
-				element={
-					<PrivateRoutes>
-						<Forum />
-					</PrivateRoutes>
-				}
-			/>
+          path='/forum'
+          element={
+            <PrivateRoutes>
+              <Forum />
+            </PrivateRoutes>
+          }
+        />
+        <Route
+          path='/forum/:id'
+          element={
+            <PrivateRoutes>
+              <DetailedView />
+            </PrivateRoutes>
+          }
+        />
+
 		<Route path='/chat2' element={<AiwithImage2 />}	/>
 		</Routes>
   );
