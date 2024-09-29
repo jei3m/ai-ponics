@@ -7,6 +7,7 @@ import 'react-quill/dist/quill.snow.css';
 import "./css/Forum.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faComment, faTrash } from '@fortawesome/free-solid-svg-icons';
+import Loading from './Loading';
 
 function DetailedView() {
   const { id } = useParams();
@@ -88,7 +89,7 @@ function DetailedView() {
     },
   };
 
-  if (!forum) return <div>Loading...</div>;
+  if (!forum) return <div><Loading/></div>;
 
   return (
     <div>

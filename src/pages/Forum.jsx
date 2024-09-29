@@ -8,6 +8,7 @@ import "./css/Forum.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 import Header from '../components/Header';
+import Loading from './Loading';
 
 function Forum() {
   const [forums, setForums] = useState([]);
@@ -16,6 +17,7 @@ function Forum() {
   const [currentUser, setCurrentUser] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
+  
   useEffect(() => {
     const fetchForums = async () => {
       const querySnapshot = await getDocs(collection(db, 'forums'));
