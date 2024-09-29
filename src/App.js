@@ -8,6 +8,7 @@ import PrivateRoutes from './routes/PrivateRoutes'
 import AiwithImage2 from './pages/AiwithImage2';
 import Forum from './pages/Forum';
 import DetailedView from './pages/ForumDetailed';
+import { ApiKeyProvider } from './context/ApiKeyContext';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -27,7 +28,9 @@ function App() {
   }
 
   return (
+    <ApiKeyProvider>
 		<Routes>
+      
 			<Route path='/' element={<Login />} />
 			<Route
 				path='/chat'
@@ -63,7 +66,9 @@ function App() {
         />
 
 		<Route path='/chat2' element={<AiwithImage2 />}	/>
+    
 		</Routes>
+    </ApiKeyProvider>
   );
 }
 

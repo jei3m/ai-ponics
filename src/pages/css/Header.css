@@ -52,10 +52,10 @@ header {
   color: #006400;
 }
 
-.forum-icon{
+.forum-icon {
   width: 20px;
   height: 20px;
-  margin-right:2px;
+  margin-right: 2px;
   cursor: pointer;
   padding: 8px;
   color: #006400;
@@ -97,10 +97,11 @@ header {
 .user-info p {
   font-size: 18px;
   font-weight: normal;
+  text-align: left;
 }
 
 .user-info p:first-child {
-  margin-bottom: -10px;
+  margin-bottom: -4px;
 }
 
 .blynk-api-section {
@@ -126,6 +127,7 @@ header {
   font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 8px;
+  margin-bottom: 8px;
 }
 
 .toggle-visibility-button {
@@ -138,6 +140,7 @@ header {
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-top: -10px;
 }
 
 .save-api-key-button {
@@ -148,9 +151,10 @@ header {
   font-size: 0.9rem;
   cursor: pointer;
   border-radius: 4px;
-  padding: 0.3rem 0.7rem;
+  padding: 0.4rem 0.7rem;
   transition: background-color 0.3s ease, transform 0.3s ease;
   border-radius: 6px;
+  margin-right: 5px;
 }
 
 .save-api-key-button:hover {
@@ -184,11 +188,61 @@ header {
 }
 
 .logout-button {
-  background: #006400;
+  background: #078007;
   margin-left: 0.5rem;
 }
 
 .logout-button:hover {
-  background-color: #004d00;
+  background-color: #056105;
   transform: scale(1.05);
+}
+
+.api-key-select {
+  width: 100%;
+  padding: 5px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.add-api-key-button{ 
+  margin-top: 6px;
+  background: #1877F2;
+  border: none;
+  color: #ffffff;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 0.4rem 0.7rem;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  border-radius: 6px;
+  margin-right: 5px;
+}
+
+.delete-api-key-button {
+  margin-top: 6px;
+  background: #1877F2;
+  border: none;
+  color: #ffffff;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 0.4rem 0.7rem;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  border-radius: 6px;
+  margin-right: 5px;
+}
+
+.add-api-key-button:hover, .delete-api-key-button:hover {
+  background-color: #166FE5;
+  transform: scale(1.05);
+}
+
+.delete-api-key-button {
+  background: #dc3545;
+}
+
+.delete-api-key-button:hover {
+  background-color: #c82333;
 }

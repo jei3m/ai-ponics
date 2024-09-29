@@ -25,6 +25,7 @@ import {
   faTint,
   faLeaf,
 } from "@fortawesome/free-solid-svg-icons";
+import { useApiKey } from "../context/ApiKeyContext";
 
 function Sensors() {
   const [temperature, setTemperature] = useState(null);
@@ -35,16 +36,16 @@ function Sensors() {
   const [plantName, setPlantName] = useState("");
   const [user, setUser] = useState(null);
   const [isDataChanged, setIsDataChanged] = useState(false);
-  const [blynkApiKey, setBlynkApiKey] = useState("");
   const [showBlynkApiKey, setShowBlynkApiKey] = useState(false);
   const [isPlantInfoChanged, setIsPlantInfoChanged] = useState(false);
   const [isBlynkApiKeyChanged, setIsBlynkApiKeyChanged] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isApiKeyValid, setIsApiKeyValid] = useState(true);
   const [toastShown, setToastShown] = useState(false);
+  const { selectedApiKey } = useApiKey();
 
   useEffect(() => {
-    if (!blynkApiKey) {
+    if (!selectedApiKey) {
       setIsLoading(false);
       return;
     }
@@ -55,10 +56,10 @@ function Sensors() {
     const fetchSensorData = async () => {
       try {
         const temperatureResponse = await axios.get(
-          `https://blynk.cloud/external/api/get?token=${blynkApiKey}&V0`,
+          `https://blynk.cloud/external/api/get?token=${selectedApiKey}&V0`,
         );
         const humidityResponse = await axios.get(
-          `https://blynk.cloud/external/api/get?token=${blynkApiKey}&V1`,
+          `https://blynk.cloud/external/api/get?token=${selectedApiKey}&V1`,
         );
         setTemperature(temperatureResponse.data);
         setHumidity(humidityResponse.data);
@@ -83,7 +84,7 @@ function Sensors() {
           toast.error(
             "Error fetching data. Please check your API token and try again.",
             {
-              position: "top-right",
+              position: "top-center",
               autoClose: 5000,
               hideProgressBar: false,
               closeOnClick: true,
@@ -102,7 +103,7 @@ function Sensors() {
     const interval = setInterval(fetchSensorData, 5000);
 
     return () => clearInterval(interval);
-  }, [blynkApiKey, toastShown]); // Add blynkApiKey to the dependency array
+  }, [selectedApiKey, toastShown]); // Add selectedApiKey to the dependency array
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -119,9 +120,6 @@ function Sensors() {
           }
           if (data.plantName) {
             setPlantName(data.plantName);
-          }
-          if (data.blynkApiKey) {
-            setBlynkApiKey(data.blynkApiKey);
           }
         } else {
           console.log("No such document!");
@@ -255,15 +253,6 @@ function Sensors() {
     }
   };
 
-  // const handleBlynkApiKeyChange = (event) => {
-  //     setBlynkApiKey(event.target.value);
-  //     setIsBlynkApiKeyChanged(true);
-  // };
-
-  // const toggleBlynkApiKeyVisibility = () => {
-  //     setShowBlynkApiKey(!showBlynkApiKey);
-  // };
-
   const handleSave = (field) => {
     const currentUser = auth.currentUser;
     if (currentUser) {
@@ -276,7 +265,7 @@ function Sensors() {
         };
         setIsPlantInfoChanged(false);
       } else if (field === "blynkApiKey") {
-        dataToUpdate = { blynkApiKey };
+        dataToUpdate = { selectedApiKey };
         setIsBlynkApiKeyChanged(false);
       }
 
@@ -315,7 +304,7 @@ function Sensors() {
                   alignItems: "center",
                 }}
               >
-                {!blynkApiKey ? (
+                {!selectedApiKey ? (
                   <Typography variant="h6" className="loading-text">
                     Add API Token
                   </Typography>
@@ -388,7 +377,7 @@ function Sensors() {
               }
             />
             <CardContent className="gauge-container">
-              {!blynkApiKey ? (
+              {!selectedApiKey ? (
                 <Typography variant="h6" className="loading-text">
                   Add API Token
                 </Typography>
@@ -417,7 +406,7 @@ function Sensors() {
               }
             />
             <CardContent className="gauge-container">
-              {!blynkApiKey ? (
+              {!selectedApiKey ? (
                 <Typography variant="h6" className="loading-text">
                   Add API Token
                 </Typography>
@@ -446,7 +435,7 @@ function Sensors() {
               }
             />
             <CardContent>
-              {!blynkApiKey ? (
+              {!selectedApiKey ? (
                 <Typography
                   variant="h6"
                   className="loading-text"

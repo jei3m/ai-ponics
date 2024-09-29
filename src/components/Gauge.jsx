@@ -39,7 +39,7 @@ export function Gauge({ value, max, label }) {
                 justifyContent="center"
             >
                 <Typography variant="h5" component="div" color="textPrimary"sx={{
-                    fontFamily: 'Inter, sans-serif', fontWeight:'600'}}>
+                    fontFamily: 'Inter, sans-serif', fontWeight:'500'}}>
                     {`${Math.round(value)}${label}`}
                 </Typography>
             </Box>
