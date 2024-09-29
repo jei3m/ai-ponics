@@ -5,7 +5,9 @@ import { db } from '../firebase';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import '../pages/css/Header.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faLeaf, faNewspaper } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faLeaf, faNewspaper, faHome  } from '@fortawesome/free-solid-svg-icons';
+import { useLocation } from 'react-router-dom';
+
 
 Modal.setAppElement('#root');
 
@@ -16,6 +18,7 @@ function Header() {
   const [blynkApiKey, setBlynkApiKey] = useState('');
   const [editableBlynkApiKey, setEditableBlynkApiKey] = useState('');
   const [showBlynkApiKey, setShowBlynkApiKey] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     const fetchPlantName = async () => {
@@ -98,9 +101,18 @@ function Header() {
         </a>
       </div>
       <div className="header-user">
-        <a href='/forum'>
-          <FontAwesomeIcon icon={faNewspaper} className='forum-icon'/>
-        </a>
+          <div>
+          {location.pathname === '/home' && (
+            <a href='/forum'>
+              <FontAwesomeIcon icon={faNewspaper} className='forum-icon'/>
+            </a>
+          )}
+          {location.pathname === '/forum' && (
+            <a href='/'>
+              <FontAwesomeIcon icon={faHome} className='forum-icon'/>
+            </a>
+          )}
+        </div>
         {currentUser && (
           <>
             <FontAwesomeIcon

@@ -7,7 +7,7 @@ import 'react-quill/dist/quill.snow.css';
 import "./css/Forum.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
-import HeaderForum from '../components/HeaderForum';
+import Header from '../components/Header';
 
 function Forum() {
   const [forums, setForums] = useState([]);
@@ -83,7 +83,7 @@ function Forum() {
 
   return (
     <div>
-      <HeaderForum/>
+      <Header/>
       <br/><br/><br/>
       <div className="forum-container">
         <div className='home-forum'>
