@@ -314,21 +314,23 @@ function Sensors2() {
           }}
         >
           <Flex gap="middle" horizontal style={{ width: '100%', height: 'fit-content', marginTop:'-14px'}}>
-            <div style={{width:'100%',  display: 'flex', flexDirection: 'row', marginTop:'-20px', borderRadius:'10px', justifyContent:'center',                       border: '1px solid #ddd',
+            <div style={{width:'94vw', maxWidth:'600px',  display: 'flex', flexDirection: 'row', marginTop:'-20px', borderRadius:'10px', justifyContent:'center',                       border: '1px solid #ddd',
                       boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
                       marginBottom:'10px'}}>
             <Card
               title={
                 <div style={{ fontSize: '16px' }}>
                   <FontAwesomeIcon icon={faThermometerHalf} style={{ marginRight: 10 }} />
-                  Temperature
+                 Temperature
                 </div>
               }
               bordered={false}
               style={{
-                width: '50%',
+                minWidth: '50%',
                 height: 230,
-                background: 'white'
+                background: 'white',
+                borderBottomRightRadius:'0',
+                borderTopRightRadius:'0',
               }}
             >
               <div className="gauge-container">
@@ -359,9 +361,11 @@ function Sensors2() {
               }
               bordered={false}
               style={{
-                width: '50%',
+                minWidth: '50%',
                 height: 230,
-                overflowY: 'hidden'
+                overflowY: 'hidden',
+                borderBottomLeftRadius:'0',
+                borderTopLeftRadius:'0',
               }}
             >
               <div className="gauge-container">

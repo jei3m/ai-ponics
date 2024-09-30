@@ -458,6 +458,10 @@
     margin-top: -12px;
   }
 
+  .forum-content li{
+    margin-left: -12px;
+  }
+
   .comment-text p,
   .comment-text li{
     font-size: 12px;

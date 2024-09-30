@@ -41,11 +41,11 @@ function App() {
 					</PrivateRoutes>
 				}
 			/>
-           <Route
+      <Route
 				path='/home'
 				element={
 					<PrivateRoutes>
-						<Sensors />
+						<Sensors2 />
 					</PrivateRoutes>
 				}
 			/>
@@ -66,9 +66,16 @@ function App() {
           }
         />
 
+        {/* <Route
+          path='/home2'
+          element={
+            <PrivateRoutes>
+              <Sensors2 />
+            </PrivateRoutes>
+          }
+        /> */}
+
 		<Route path='/chat2' element={<AiwithImage2 />}	/>
-    <Route path='/home2' element={<Sensors2 />}	/>
-    
 		</Routes>
     </ApiKeyProvider>
   );
