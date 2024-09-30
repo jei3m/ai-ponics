@@ -283,13 +283,14 @@ function Sensors2() {
 
   return (
     <div style={{ width: '100%', overflowX: 'hidden' }}>
+      <div style={{marginBottom:'40px', backgroundColor: '#FAF9F6',}}>
       <Header />
+      </div>
       <div style={{
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
         textAlign: 'center',
-        marginTop: '45px',
       }}>
         <Card               
           title={
@@ -301,11 +302,13 @@ function Sensors2() {
           style={{
             width: '100vw', 
             borderRadius: '14px', 
+            minHeight:'100dvh',
             height: 'fit-content',
             display: 'flex', 
             justifyContent: 'center', 
             alignItems: 'center',
             flexDirection: 'column',
+            backgroundColor: '#FAF9F6'
           }}
         >
           <Flex gap="middle" horizontal style={{ width: '100%', height: 'fit-content', marginTop:'-14px'}}>
@@ -329,7 +332,7 @@ function Sensors2() {
               <div className="gauge-container">
                 {!selectedApiKey ? (
                   <Typography.Text strong className="loading-text">
-                    Add API Token
+                    Please Add API Token
                   </Typography.Text>
                 ) : !isApiKeyValid ? (
                   <Typography.Text strong className="error-text">
@@ -362,7 +365,7 @@ function Sensors2() {
               <div className="gauge-container">
                 {!selectedApiKey ? (
                   <Typography.Text strong className="loading-text">
-                    Add API Token
+                   Please Add API Token
                   </Typography.Text>
                 ) : !isApiKeyValid ? (
                   <Typography.Text strong className="error-text">
@@ -395,7 +398,7 @@ function Sensors2() {
                     }}>
             {!selectedApiKey ? (
               <Typography.Text strong className="loading-text">
-                Add API Token
+                Please Add API Token
               </Typography.Text>
             ) : isLoading ? (
               <Typography.Text strong className="loading-text">
@@ -453,8 +456,8 @@ function Sensors2() {
             }}
           >
             {!selectedApiKey ? (
-              <Typography.Text strong style={{ textAlign: 'center' }}>
-                Add API Token
+              <Typography.Text strong style={{ textAlign: 'center' }} className="loading-text">
+                Please Add API Token
               </Typography.Text>
             ) : !isApiKeyValid ? (
               <Typography.Text strong style={{ textAlign: 'center' }}>
