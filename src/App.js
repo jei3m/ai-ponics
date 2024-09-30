@@ -9,6 +9,7 @@ import AiwithImage2 from './pages/AiwithImage2';
 import Forum from './pages/Forum';
 import DetailedView from './pages/ForumDetailed';
 import { ApiKeyProvider } from './context/ApiKeyContext';
+import Sensors2 from './pages/Sensors2';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -66,6 +67,7 @@ function App() {
         />
 
 		<Route path='/chat2' element={<AiwithImage2 />}	/>
+    <Route path='/home2' element={<Sensors2 />}	/>
     
 		</Routes>
     </ApiKeyProvider>

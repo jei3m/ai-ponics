@@ -8,7 +8,9 @@ import {
   Box,
   TextField,
   Button,
-} from "@mui/material";
+  Flex,
+  Input,
+} from "antd";
 import { differenceInDays, format } from "date-fns";
 import emailjs from "emailjs-com";
 import { Gauge } from "../components/Gauge";
@@ -27,7 +29,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useApiKey } from "../context/ApiKeyContext";
 
-function Sensors() {
+function Sensors2() {
   const [temperature, setTemperature] = useState(null);
   const [humidity, setHumidity] = useState(null);
   const [plantingDate, setPlantingDate] = useState("");
@@ -280,260 +282,234 @@ function Sensors() {
   };
 
   return (
-    <div className="Appsensor">
+    <div style={{ width: '100%', overflowX: 'hidden' }}>
       <Header />
-      <div className="sensor-content">
-        <Box className="sensor-container">
-          <Card className="sensor-card">
-            <CardHeader
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        textAlign: 'center',
+        marginTop: '45px',
+      }}>
+        <Card               
+          title={
+            <div style={{fontSize: '20px', textAlign: 'center' }}>
+              Sensor Monitoring
+            </div>
+          }
+          bordered={false}
+          style={{
+            width: '100vw', 
+            borderRadius: '14px', 
+            height: 'fit-content',
+            display: 'flex', 
+            justifyContent: 'center', 
+            alignItems: 'center',
+            flexDirection: 'column',
+          }}
+        >
+          <Flex gap="middle" horizontal style={{ width: '100%', height: 'fit-content', marginTop:'-14px'}}>
+            <div style={{width:'100%',  display: 'flex', flexDirection: 'row', marginTop:'-10px', borderRadius:'10px', justifyContent:'center',                       border: '1px solid #ddd',
+                      boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                      marginBottom:'10px'}}>
+            <Card
               title={
-                <Typography
-                  variant="h6"
-                  sx={{ fontWeight: "540", fontFamily: "Inter, sans-serif" }}
-                >
-                  <FontAwesomeIcon icon={faExclamationTriangle} /> Temperature
-                  Alert
-                </Typography>
+                <div style={{ fontSize: '16px' }}>
+                  <FontAwesomeIcon icon={faThermometerHalf} style={{ marginRight: 10 }} />
+                  Temperature
+                </div>
               }
-            />
-            <CardContent>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
+              bordered={false}
+              style={{
+                width: '50%',
+                height: 230,
+                background: 'white'
+              }}
+            >
+              <div className="gauge-container">
                 {!selectedApiKey ? (
-                  <Typography variant="h6" className="loading-text">
+                  <Typography.Text strong className="loading-text">
                     Add API Token
-                  </Typography>
-                ) : isLoading ? (
-                  <Typography variant="h6" className="loading-text">
-                    Loading...
-                  </Typography>
+                  </Typography.Text>
                 ) : !isApiKeyValid ? (
-                  <Typography variant="h6" className="error-text">
+                  <Typography.Text strong className="error-text">
                     Invalid API Token
-                  </Typography>
-                ) : temperature > 73 ? (
-                  <Box sx={{ textAlign: "center", margin: "0 16px" }}>
-                    <Typography
-                      component="div"
-                      className="temperature-alert-icon"
-                    >
-                      🔥
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      className="temperature-alert-text"
-                    >
-                      Too Hot
-                    </Typography>
-                  </Box>
-                ) : temperature >= 15 && temperature <= 73 ? (
-                  <Box sx={{ textAlign: "center", margin: "0 16px" }}>
-                    <Typography
-                      component="div"
-                      className="temperature-alert-icon"
-                    >
-                      ✅
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      className="temperature-alert-text"
-                    >
-                      Normal
-                    </Typography>
-                  </Box>
+                  </Typography.Text>
+                ) : temperature !== null ? (
+                  <Gauge value={temperature} max={60} label="°C" />
                 ) : (
-                  <Box sx={{ textAlign: "center", margin: "0 16px" }}>
-                    <Typography
-                      component="div"
-                      className="temperature-alert-icon"
-                    >
-                      ❄️
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      className="temperature-alert-text"
-                    >
-                      Too Cold
-                    </Typography>
-                  </Box>
+                  <Typography.Text strong className="loading-text">
+                    Loading...
+                  </Typography.Text>
                 )}
-              </Box>
-            </CardContent>
-          </Card>
-          
-          <Card className="sensor-card">
-            <CardHeader
+              </div>
+            </Card>
+
+            <Card
               title={
-                <Typography
-                  variant="h6"
-                  sx={{ fontWeight: "540", fontFamily: "Inter, sans-serif" }}
-                >
-                  <FontAwesomeIcon icon={faThermometerHalf} /> Temperature
-                </Typography>
+                <div style={{ fontSize: '16px' }}>
+                  <FontAwesomeIcon icon={faTint} style={{ marginRight: 10 }} />
+                  Humidity
+                </div>
               }
-            />
-            <CardContent className="gauge-container">
-              {!selectedApiKey ? (
-                <Typography variant="h6" className="loading-text">
-                  Add API Token
-                </Typography>
-              ) : !isApiKeyValid ? (
-                <Typography variant="h6" className="error-text">
-                  Invalid API Token
-                </Typography>
-              ) : temperature !== null ? (
-                <Gauge value={temperature} max={50} label="°C" />
-              ) : (
-                <Typography variant="h6" className="loading-text">
-                  Loading...
-                </Typography>
-              )}
-            </CardContent>
+              bordered={false}
+              style={{
+                width: '50%',
+                height: 230,
+                overflowY: 'hidden'
+              }}
+            >
+              <div className="gauge-container">
+                {!selectedApiKey ? (
+                  <Typography.Text strong className="loading-text">
+                    Add API Token
+                  </Typography.Text>
+                ) : !isApiKeyValid ? (
+                  <Typography.Text strong className="error-text">
+                    Invalid API Token
+                  </Typography.Text>
+                ) : temperature !== null ? (
+                  <Gauge value={humidity} max={100} label="%" />
+                ) : (
+                  <Typography.Text strong className="loading-text">
+                    Loading...
+                  </Typography.Text>
+                )}
+              </div>
+            </Card>
+            </div>
+          </Flex>
+          <Card 
+                    title={
+                      <div style={{fontSize: '16px', textAlign: 'center' }}>
+                        <FontAwesomeIcon icon={faExclamationTriangle}/> Temperature Alert
+                      </div>
+                    }
+                    style={{
+                      width: '100%',
+                      height: 230,
+                      background: 'white',
+                      border: '1px solid #ddd',
+                      boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                      marginBottom:'10px'
+                    }}>
+            {!selectedApiKey ? (
+              <Typography.Text strong className="loading-text">
+                Add API Token
+              </Typography.Text>
+            ) : isLoading ? (
+              <Typography.Text strong className="loading-text">
+                Loading...
+              </Typography.Text>
+            ) : !isApiKeyValid ? (
+              <Typography.Text strong className="error-text">
+                Invalid API Token
+              </Typography.Text>
+            ) : temperature > 73 ? (
+              <div>
+                <Typography.Text strong className="temperature-alert-icon">
+                  🔥 <br/>
+                </Typography.Text>
+                <Typography.Text>
+                  Too Hot
+                </Typography.Text>
+              </div>
+            ) : temperature >= 15 && temperature <= 73 ? (
+              <div>
+                <Typography.Text strong className="temperature-alert-icon">
+                  ✅ <br/>
+                </Typography.Text>
+                <Typography.Text strong className="temperature-alert-text">
+                  Normal
+                </Typography.Text>
+              </div>
+            ) : (
+              <div>
+                <Typography.Text strong className="temperature-alert-icon">
+                  ❄️ <br/>
+                </Typography.Text>
+                <Typography.Text strong className="temperature-alert-text">
+                  Too Cold
+                </Typography.Text>
+              </div>
+            )}
           </Card>
-          <Card className="sensor-card">
-            <CardHeader
-              title={
-                <Typography
-                  variant="h6"
-                  sx={{ fontWeight: "540", fontFamily: "Inter, sans-serif" }}
-                >
-                  <FontAwesomeIcon icon={faTint} /> Humidity
-                </Typography>
-              }
-            />
-            <CardContent className="gauge-container">
-              {!selectedApiKey ? (
-                <Typography variant="h6" className="loading-text">
-                  Add API Token
-                </Typography>
-              ) : !isApiKeyValid ? (
-                <Typography variant="h6" className="error-text">
-                  Invalid API Token
-                </Typography>
-              ) : humidity !== null ? (
-                <Gauge value={humidity} max={100} label="%" />
-              ) : (
-                <Typography variant="h6" className="loading-text">
-                  Loading...
-                </Typography>
-              )}
-            </CardContent>
+          <Card
+            title={
+              <div style={{ fontSize: '16px' }}>
+                <FontAwesomeIcon icon={faLeaf} style={{ marginRight: 10 }} />
+                Plant Information
+              </div>
+            }
+            bordered={false}
+            style={{
+              width: '100%',
+              height: 230,
+              background: 'white',
+              
+              border: '1px solid #ddd',
+              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+              marginBottom:'10px'
+            }}
+          >
+            {!selectedApiKey ? (
+              <Typography.Text strong style={{ textAlign: 'center' }}>
+                Add API Token
+              </Typography.Text>
+            ) : !isApiKeyValid ? (
+              <Typography.Text strong style={{ textAlign: 'center' }}>
+                Invalid API Token
+              </Typography.Text>
+            ) : (
+              <>
+                <Input
+                  type="text"
+                  value={plantName}
+                  onChange={handlePlantNameChange}
+                  placeholder="Enter plant name"
+                  style={{ marginBottom: 16 }}
+                />
+                <Input
+                  type="date"
+                  value={plantingDate}
+                  onChange={handlePlantingDateChange}
+                  style={{ marginBottom: 8 }}
+                  max={format(new Date(), "yyyy-MM-dd")}
+                />
+                {plantingDate && (
+                  <div style={{textAlign:'left', marginLeft:'3px'}}>
+                    <Typography.Text strong style={{ fontWeight: 540, fontFamily: 'Inter, sans-serif', marginTop: '-10px', textAlign:'left', }}>
+                      Days planted: {daysSincePlanting}
+                    </Typography.Text>
+                  </div>
+                )}
+                {isPlantInfoChanged && (
+                  <Button
+                    type="primary"
+                    style={{float:'left', fontSize:'14px'}}
+                    onClick={() => handleSave('plantInfo')}
+                  >
+                    Save
+                  </Button>
+                )}
+              </>
+            )}
           </Card>
-          <Card className="sensor-card">
-            <CardHeader
-              title={
-                <Typography
-                  variant="h6"
-                  sx={{ fontWeight: "540", fontFamily: "Inter, sans-serif" }}
-                >
-                  <FontAwesomeIcon icon={faLeaf} /> Plant Information
-                </Typography>
-              }
+        </Card>
+
+        <div className="ask-aiponics-container">
+          <a href="/chat" className="ask-aiponics-button">
+            <img
+              src="/img/aiponicsbot.png"
+              alt="AI-Ponics Bot"
+              className="profile-pic"
             />
-            <CardContent>
-              {!selectedApiKey ? (
-                <Typography
-                  variant="h6"
-                  className="loading-text"
-                  sx={{ textAlign: "center" }}
-                >
-                  Add API Token
-                </Typography>
-              ) : !isApiKeyValid ? (
-                <Typography
-                  variant="h6"
-                  className="error-text"
-                  sx={{ textAlign: "center" }}
-                >
-                  Invalid API Token
-                </Typography>
-              ) : (
-                <>
-                  <TextField
-                    type="text"
-                    value={plantName}
-                    onChange={handlePlantNameChange}
-                    fullWidth
-                    variant="outlined"
-                    label="Plant Name"
-                    placeholder="Enter plant name"
-                    className="plant-info-input"
-                    sx={{ marginBottom: 2 }}
-                  />
-                  <TextField
-                    type="date"
-                    value={plantingDate}
-                    onChange={handlePlantingDateChange}
-                    fullWidth
-                    variant="outlined"
-                    label=""
-                    placeholder=""
-                    className="plant-info-input"
-                    sx={{ marginBottom: 1 }}
-                    InputProps={{
-                      inputProps: { max: format(new Date(), "yyyy-MM-dd") },
-                    }}
-                  />
-                  {plantingDate && (
-                    <Box
-                      sx={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        marginTop: 1,
-                      }}
-                    >
-                      <Typography
-                        variant="body1"
-                        className="days-planted-text"
-                        sx={{
-                          fontWeight: "540",
-                          fontFamily: "Inter, sans-serif",
-                          marginTop: "-10px !important",
-                          marginLeft: "2px",
-                        }}
-                      >
-                        Days planted: {daysSincePlanting}
-                      </Typography>
-                      {isPlantInfoChanged && (
-                        <Button
-                          variant="contained"
-                          sx={{
-                            backgroundColor: "#388E3C",
-                            "&:hover": {
-                              backgroundColor: "#2E7D32",
-                            },
-                          }}
-                          onClick={() => handleSave("plantInfo")}
-                        >
-                          Save
-                        </Button>
-                      )}
-                    </Box>
-                  )}
-                </>
-              )}
-            </CardContent>
-          </Card>
-        </Box>
+          </a>
+        </div>
+        <ToastContainer />
       </div>
-      <div className="ask-aiponics-container">
-        <a href="/chat" className="ask-aiponics-button">
-          <img
-            src="/img/aiponicsbot.png"
-            alt="AI-Ponics Bot"
-            className="profile-pic"
-          />
-        </a>
-      </div>
-      <ToastContainer />
     </div>
   );
 }
 
-export default Sensors;
+export default Sensors2;
