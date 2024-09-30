@@ -282,8 +282,8 @@ function Sensors2() {
   };
 
   return (
-    <div style={{ width: '100%', overflowX: 'hidden' }}>
-      <div style={{marginBottom:'40px', backgroundColor: '#FAF9F6',}}>
+    <div style={{ width: '100%', overflowX: 'hidden', backgroundColor: '#FAF9F6' }}>
+      <div style={{backgroundColor: '#FAF9F6'}}>
       <Header />
       </div>
       <div style={{
@@ -291,6 +291,7 @@ function Sensors2() {
         justifyContent: 'center',
         alignItems: 'center',
         textAlign: 'center',
+        padding: '2.5rem',
       }}>
         <Card               
           title={

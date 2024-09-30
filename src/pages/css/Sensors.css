@@ -60,7 +60,7 @@
 
 .ask-aiponics-container {
   position: fixed; 
-  bottom: 15px;  /* Move container lower on the screen */
+  bottom: 15px;  
   right: 15px; 
   display: flex;
   align-items: center;
@@ -107,7 +107,7 @@
   color: white;
   padding: 12px; 
   border-radius: 20px; 
-  margin-left: -20px;  /* Adjust positioning */
+  margin-left: -20px;  
   font-size: 15px; 
   position: relative;
   max-width: 220px; 

@@ -1,14 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { db, auth } from '../firebase';
 import { collection, getDocs, addDoc, deleteDoc, doc } from 'firebase/firestore';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import "./css/Forum.css";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { Button, Modal, Input, List, Avatar, Typography, Space } from 'antd';
+import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import Header from '../components/Header';
 import Loading from './Loading';
+
+const { Title, Text } = Typography;
 
 function Forum() {
   const [forums, setForums] = useState([]);
@@ -16,8 +17,8 @@ function Forum() {
   const [newForumContent, setNewForumContent] = useState('');
   const [currentUser, setCurrentUser] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const modalRef = useRef(null);
 
-  
   useEffect(() => {
     const fetchForums = async () => {
       const querySnapshot = await getDocs(collection(db, 'forums'));
@@ -47,6 +48,7 @@ function Forum() {
         comments: [],
         postedBy: currentUser,
         authorName: auth.currentUser.displayName || 'Anonymous',
+        authorAvatar: auth.currentUser.photoURL || 'https://via.placeholder.com/50',
         createdAt: new Date().toISOString(),
       };
       const docRef = await addDoc(collection(db, 'forums'), newForum);
@@ -76,60 +78,109 @@ function Forum() {
     ['bold', 'italic', 'underline'],
     [{ list: 'ordered' }, { list: 'bullet' }],
   ];
-  
+
   const modules = {
     toolbar: {
       container: TOOL_BAR_OPTIONS,
     },
   };
 
+  const adjustModalHeight = () => {
+    if (modalRef.current) {
+      const contentHeight = modalRef.current.querySelector('.ql-editor').scrollHeight;
+      modalRef.current.style.height = `${contentHeight + 200}px`; // Adjust the height based on content
+    }
+  };
+
   return (
     <div>
-      <Header/>
-      <br/><br/><br/>
-      <div className="forum-container">
-        <div className='home-forum'>
-          <h1 className="forum-title">Forums</h1>
-          <button onClick={() => setShowModal(true)} className="forum-button">Create New Forum <FontAwesomeIcon icon={faPlus}/></button>
-          {showModal && (
-            <div className="modal">
-              <div className="modal-content">
-                <h2>Create New Forum</h2>
-                <input
-                  type="text"
-                  value={newForumTitle}
-                  onChange={(e) => setNewForumTitle(e.target.value)}
-                  placeholder="Title of your forum"
-                  className="forum-input-field"
-                  style={{borderRadius:'6px'}}
-                />
-                <ReactQuill
-                  modules={modules}
-                  value={newForumContent}
-                  onChange={setNewForumContent}
-                  placeholder="Content of your forum"
-                  className='ql-modal'
-                />
-                <button onClick={() => setShowModal(false)} className="button-back">Cancel</button>
-                <button onClick={handlePostForum} className="forum-button" style={{marginLeft:'10px'}}>Post</button>
-              </div>
-            </div>
+      <Header />
+      <div style={{ padding: '2rem' }}>
+        <Title level={2}>Forums</Title>
+        <Button type="primary" icon={<PlusOutlined />} onClick={() => setShowModal(true)}>
+          Create New Forum
+        </Button>
+        <Modal
+          title="Create New Forum"
+          open={showModal}
+          onCancel={() => setShowModal(false)}
+          footer={[
+            <Button key="back" onClick={() => setShowModal(false)}>
+              Cancel
+            </Button>,
+            <Button key="submit" type="primary" onClick={handlePostForum}>
+              Post
+            </Button>,
+          ]}
+          ref={modalRef}
+          style={{
+            overflowY: 'auto',
+            maxHeight: '80%',
+            scrollbarWidth: 'thin',
+            scrollbarColor: '#ccc #f5f5f5',
+            borderRadius:'8px',
+          }}>
+          <Input
+            placeholder="Title of your forum"
+            value={newForumTitle}
+            onChange={(e) => setNewForumTitle(e.target.value)}
+            style={{ marginBottom: '1rem' }}
+          />
+          <ReactQuill
+            modules={modules}
+            value={newForumContent}
+            onChange={(content) => {
+              setNewForumContent(content);
+              adjustModalHeight();
+            }}
+            placeholder="Content of your forum"
+            style={{ height: 'auto', marginBottom: '2rem' }}
+          />
+        </Modal>
+        <List
+          itemLayout="horizontal"
+          dataSource={forums}
+          renderItem={(forum) => (
+            <List.Item
+              style={{
+                backgroundColor: 'white',
+                border: '1px solid #e8e8e8',
+                borderRadius: '12px',
+                marginBottom: '1rem',
+                marginTop: '1rem',
+                padding: '1rem',
+              }}
+              actions={
+                currentUser && forum.postedBy === currentUser
+                  ? [
+                      <Button
+                        type="text"
+                        icon={<DeleteOutlined />}
+                        onClick={() => handleDeleteForum(forum.id)}
+                      >
+                        Delete
+                      </Button>,
+                    ]
+                  : []
+              }
+            >
+              <List.Item.Meta
+                avatar={<Avatar src={forum.authorAvatar} />}
+                title={
+                  <Link to={`/forum/${forum.id}`} style={{ textDecoration: 'none' }}>
+                    <Text strong>{forum.title}</Text>
+                  </Link>
+                }
+                description={
+                  <Space direction="vertical">
+                    <Text type="secondary">Posted by: {forum.authorName}</Text>
+                    <Text type="secondary">{new Date(forum.createdAt).toLocaleString()}</Text>
+                  </Space>
+                }
+              />
+            </List.Item>
           )}
-          <ul className="forum-list">
-            {forums.map((forum) => (
-              <li key={forum.id} className="forum-item">
-                <Link to={`/forum/${forum.id}`} style={{ textDecoration: 'none'}}>
-                <h2 className="forum-item-title">{forum.title}</h2>
-                <p className="forum-item-author">Posted by: {forum.authorName}</p>
-                <p className="forum-item-date">{new Date(forum.createdAt).toLocaleString()}</p>
-                </Link>
-                {currentUser && forum.postedBy === currentUser && (
-                  <button onClick={() => handleDeleteForum(forum.id)} className="delete-button"><FontAwesomeIcon icon={faTrash} style={{color:'grey'}}/> Delete</button>
-                )}
-              </li>
-            ))}
-          </ul>
-        </div>
+        />
       </div>
     </div>
   );
