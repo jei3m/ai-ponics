@@ -291,12 +291,12 @@ function Sensors2() {
         justifyContent: 'center',
         alignItems: 'center',
         textAlign: 'center',
-        padding: '2.5rem',
+        padding: '0.5rem',
       }}>
         <Card               
           title={
-            <div style={{fontSize: '20px', textAlign: 'center' }}>
-              Sensor Monitoring
+            <div style={{fontSize: '20px', textAlign: 'center'}}>
+            Sensor Monitoring
             </div>
           }
           bordered={false}
@@ -309,11 +309,12 @@ function Sensors2() {
             justifyContent: 'center', 
             alignItems: 'center',
             flexDirection: 'column',
-            backgroundColor: '#FAF9F6'
+            backgroundColor: '#FAF9F6',
+            padding:'2rem'
           }}
         >
           <Flex gap="middle" horizontal style={{ width: '100%', height: 'fit-content', marginTop:'-14px'}}>
-            <div style={{width:'100%',  display: 'flex', flexDirection: 'row', marginTop:'-10px', borderRadius:'10px', justifyContent:'center',                       border: '1px solid #ddd',
+            <div style={{width:'100%',  display: 'flex', flexDirection: 'row', marginTop:'-20px', borderRadius:'10px', justifyContent:'center',                       border: '1px solid #ddd',
                       boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
                       marginBottom:'10px'}}>
             <Card

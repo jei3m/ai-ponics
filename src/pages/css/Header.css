@@ -5,11 +5,7 @@ header {
   padding: 0.5rem 1.5rem;
   background-color: #FAF9F6;
   border-bottom: 1px solid #dee2e6;
-  position: fixed;
-  top: 0;
-  left: 0;
   width: 100%;
-  z-index: 1000;
 }
 
 .header-logo {

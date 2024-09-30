@@ -165,7 +165,7 @@ function Forum() {
               }
             >
               <List.Item.Meta
-                avatar={<Avatar src={forum.authorAvatar} />}
+                avatar={<Avatar style={{width:'40px', height:'40px'}} src={forum.authorAvatar} />}
                 title={
                   <Link to={`/forum/${forum.id}`} style={{ textDecoration: 'none' }}>
                     <Text strong>{forum.title}</Text>
