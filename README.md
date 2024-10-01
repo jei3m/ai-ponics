@@ -60,7 +60,7 @@ To set up AI-Ponics locally, follow these steps:
 
 ## Usage
 
-- **Upload Plant Images**: Use the interface to upload images of plants. The AI will analyze the images and provide insights into plant health.
-- **View Sensor Data**: Access live updates from your aeroponic system's sensors to monitor environmental conditions and make adjustments as needed.
+- **Upload Plant Images**: Use the interface to upload images of plants. The AI will analyze the images and provide insights about the plant.
+- **View Sensor Data**: Access live updates from your aeroponic system's sensors to monitor environmental conditions.
 - **AI-Chatbot**: Interact with an AI-powered chatbot for real-time advice on plant care, troubleshooting, and system optimization.
 
