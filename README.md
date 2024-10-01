@@ -41,7 +41,6 @@ To set up AI-Ponics locally, follow these steps:
 
     ```env
     REACT_APP_GEMINI_API_KEY=your_gemini_api_key
-    REACT_APP_BLYNK_API_KEY=your_blynk_api_key
     ```
 
 4. **Start the Development Server**
