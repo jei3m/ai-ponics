@@ -11,6 +11,7 @@ import { doc, getDoc } from 'firebase/firestore'; // Firestore methods
 import Webcam from 'react-webcam';
 import './css/Chat.css';
 import axios from 'axios';
+import { useApiKey } from "../context/ApiKeyContext";
 
 // Setting constants to process environment variables (API Keys)
 const apiKey = process.env.REACT_APP_API_KEY;
@@ -34,6 +35,7 @@ const AiwithImage = () => {
   const navigate = useNavigate();
   const { currentUser } = UserAuth();
   const [sensorDataLoaded, setSensorDataLoaded] = useState(false);
+  const { selectedApiKey } = useApiKey();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -46,11 +48,11 @@ const AiwithImage = () => {
             const userData = docSnap.data();
             setPlantName(userData.plantName || 'AI-Ponics'); // Default to 'AI-Ponics' if no plantName
             setDaysSincePlanting(userData.daysSincePlanting || 0); // Default to 0 if no daysSincePlanting
-            setBlynkApiKey(userData.blynkApiKey || '');
+            setBlynkApiKey(userData.selectedApiKey || '');
             
             // Start fetching sensor data immediately after getting the API key
-            if (userData.blynkApiKey) {
-              fetchSensorData(userData.blynkApiKey);
+            if (userData.selectedApiKey) {
+              fetchSensorData(userData.selectedApiKey);
             } else {
               setSensorDataLoaded(true);
             }
@@ -70,10 +72,10 @@ const AiwithImage = () => {
     fetchUserData();
   }, [currentUser]);
 
-  const fetchSensorData = async (apiKey) => {
+  const fetchSensorData = async (selectedApiKey) => {
     try {
-      const temperatureResponse = await axios.get(`https://blynk.cloud/external/api/get?token=${apiKey}&V0`);
-      const humidityResponse = await axios.get(`https://blynk.cloud/external/api/get?token=${apiKey}&V1`);
+      const temperatureResponse = await axios.get(`https://blynk.cloud/external/api/get?token=${selectedApiKey}&V0`);
+      const humidityResponse = await axios.get(`https://blynk.cloud/external/api/get?token=${selectedApiKey}&V1`);
       setTemperature(temperatureResponse.data);
       setHumidity(humidityResponse.data);
       setSensorDataLoaded(true);
@@ -85,15 +87,15 @@ const AiwithImage = () => {
 
   useEffect(() => {
     let interval;
-    if (blynkApiKey) {
-      fetchSensorData(blynkApiKey);
-      interval = setInterval(() => fetchSensorData(blynkApiKey), 8000);
+    if (selectedApiKey) {
+      fetchSensorData(selectedApiKey);
+      interval = setInterval(() => fetchSensorData(selectedApiKey), 8000);
     }
 
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [blynkApiKey]);
+  }, [selectedApiKey]);
 
   async function aiRun() {
     if (!sensorDataLoaded) {

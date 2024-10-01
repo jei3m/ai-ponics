@@ -282,8 +282,8 @@ function Sensors2() {
   };
 
   return (
-    <div style={{ width: '100%', overflowX: 'hidden', backgroundColor: '#FAF9F6' }}>
-      <div style={{backgroundColor: '#FAF9F6'}}>
+    <div style={{ width: '100%', overflowX: 'hidden', backgroundColor: '#d1e9d3' }}>
+      <div style={{backgroundColor: '#d1e9d3'}}>
       <Header />
       </div>
       <div style={{
@@ -294,11 +294,6 @@ function Sensors2() {
         padding: '0.5rem',
       }}>
         <Card               
-          title={
-            <div style={{fontSize: '20px', textAlign: 'center'}}>
-            Sensor Monitoring
-            </div>
-          }
           bordered={false}
           style={{
             width: '100vw', 
@@ -309,8 +304,8 @@ function Sensors2() {
             justifyContent: 'center', 
             alignItems: 'center',
             flexDirection: 'column',
-            backgroundColor: '#FAF9F6',
-            padding:'2rem'
+            backgroundColor: '#d1e9d3',
+            padding:'4rem'
           }}
         >
           <Flex gap="middle" horizontal style={{ width: '100%', height: 'fit-content', marginTop:'-14px'}}>

@@ -24,7 +24,7 @@ export function Gauge({ value, max, label }) {
                     position: 'absolute',
                     top: 0,
                     left: 0,
-                    color: '#3693f7', 
+                    color: '#3cb371', 
                     borderRadius: '50%',
                 }}
             />

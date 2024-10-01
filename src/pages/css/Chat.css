@@ -6,6 +6,7 @@
     align-items: center;
     justify-content: center;
     background: linear-gradient(to bottom, #e6f7e6, #c8e6c8);
+    /* background-color: #FAF9F6; */
     overflow: hidden;
 }
 

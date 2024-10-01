@@ -97,8 +97,12 @@ function Header() {
         const userRef = doc(db, 'users', currentUser.uid);
         const updatedApiKeys = [...blynkApiKeys];
         updatedApiKeys[selectedApiKeyIndex] = editableBlynkApiKey;
-        await setDoc(userRef, { blynkApiKeys: updatedApiKeys }, { merge: true });
+        await setDoc(userRef, { 
+          blynkApiKeys: updatedApiKeys,
+          selectedApiKey: editableBlynkApiKey // Save the selected API key
+        }, { merge: true });
         setBlynkApiKeys(updatedApiKeys);
+        setSelectedApiKey(editableBlynkApiKey); // Set the selected API key
         alert('Blynk API Key saved successfully!');
         window.location.reload();
       } catch (error) {
@@ -122,7 +126,10 @@ function Header() {
       try {
         const userRef = doc(db, 'users', currentUser.uid);
         const updatedApiKeys = blynkApiKeys.filter((_, index) => index !== selectedApiKeyIndex);
-        await setDoc(userRef, { blynkApiKeys: updatedApiKeys }, { merge: true });
+        await setDoc(userRef, { 
+          blynkApiKeys: updatedApiKeys,
+          selectedApiKey: updatedApiKeys[0] || '' // Update the selected API key
+        }, { merge: true });
         setBlynkApiKeys(updatedApiKeys);
         setSelectedApiKeyIndex(0);
         setEditableBlynkApiKey(updatedApiKeys[0] || '');
