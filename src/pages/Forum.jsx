@@ -7,7 +7,6 @@ import 'react-quill/dist/quill.snow.css';
 import { Button, Modal, Input, List, Avatar, Typography, Space } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import Header from '../components/Header';
-import Loading from './Loading';
 
 const { Title, Text } = Typography;
 
@@ -138,7 +137,7 @@ function Forum() {
           />
         </Modal>
         <List
-          itemLayout="horizontal"
+          itemLayout="vertical"
           dataSource={forums}
           renderItem={(forum) => (
             <List.Item
@@ -157,6 +156,7 @@ function Forum() {
                         type="text"
                         icon={<DeleteOutlined />}
                         onClick={() => handleDeleteForum(forum.id)}
+                        style={{float:'left', marginTop:'-20px'}}
                       >
                         Delete
                       </Button>,
