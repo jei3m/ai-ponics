@@ -466,20 +466,22 @@ function Sensors2() {
               </Typography.Text>
             ) : (
               <>
-                <Input
-                  type="text"
-                  value={plantName}
-                  onChange={handlePlantNameChange}
-                  placeholder="Enter plant name"
-                  style={{ marginBottom: 16 }}
-                />
-                <Input
-                  type="date"
-                  value={plantingDate}
-                  onChange={handlePlantingDateChange}
-                  style={{ marginBottom: 8 }}
-                  max={format(new Date(), "yyyy-MM-dd")}
-                />
+                <div style={{ width: '100%'}}> 
+                  <Input
+                    type="text"
+                    value={plantName}
+                    onChange={handlePlantNameChange}
+                    placeholder="Enter plant name"
+                    style={{ width: '100%', marginBottom: 16 }}
+                  />
+                  <Input
+                    type="date"
+                    value={plantingDate}
+                    onChange={handlePlantingDateChange}
+                    style={{ width: '100%', marginBottom: 8 }}
+                    max={format(new Date(), "yyyy-MM-dd")}
+                  />
+                </div>
                 {plantingDate && (
                   <div style={{textAlign:'left', marginLeft:'3px'}}>
                     <Typography.Text strong style={{ fontWeight: 540, fontFamily: 'Inter, sans-serif', marginTop: '-10px', textAlign:'left', }}>

@@ -261,6 +261,7 @@
 .ql-editor li {
   font-weight: normal;
   font-size: 15px;
+  margin-left: -10px;
 }
 
 .button-group {

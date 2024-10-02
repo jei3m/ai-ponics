@@ -4,7 +4,7 @@ import { db, auth } from '../firebase';
 import { collection, getDocs, addDoc, deleteDoc, doc } from 'firebase/firestore';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import { Button, Modal, Input, List, Avatar, Typography, Space } from 'antd';
+import { Button, Modal, Input, List, Avatar, Typography, Space, Popconfirm } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import Header from '../components/Header';
 
@@ -103,6 +103,7 @@ function Forum() {
           title="Create New Forum"
           open={showModal}
           onCancel={() => setShowModal(false)}
+          width={1000}
           footer={[
             <Button key="back" onClick={() => setShowModal(false)}>
               Cancel
@@ -123,7 +124,7 @@ function Forum() {
             placeholder="Title of your forum"
             value={newForumTitle}
             onChange={(e) => setNewForumTitle(e.target.value)}
-            style={{ marginBottom: '1rem' }}
+            style={{ marginBottom: '1rem', fontWeight:'bold' }}
           />
           <ReactQuill
             modules={modules}
@@ -134,6 +135,7 @@ function Forum() {
             }}
             placeholder="Content of your forum"
             style={{ height: 'auto', marginBottom: '2rem' }}
+            className='ql-modal'
           />
         </Modal>
         <List
@@ -152,14 +154,15 @@ function Forum() {
               actions={
                 currentUser && forum.postedBy === currentUser
                   ? [
-                      <Button
-                        type="text"
-                        icon={<DeleteOutlined />}
-                        onClick={() => handleDeleteForum(forum.id)}
-                        style={{float:'left', marginTop:'-20px'}}
-                      >
-                        Delete
-                      </Button>,
+                    <Popconfirm
+                      title="Delete the task"
+                      description="Are you sure to delete this task?"
+                      onConfirm={() => handleDeleteForum(forum.id)}
+                      okText="Yes"
+                      cancelText="No"
+                    >
+                      <Button danger size="small">Delete</Button>
+                    </Popconfirm>,
                     ]
                   : []
               }
