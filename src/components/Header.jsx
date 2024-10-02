@@ -174,7 +174,7 @@ function Header() {
       <Modal
         title={
           <div style={{fontSize: '20px', textAlign: 'center' }}>
-            Sensor Monitoring
+            User Profile
           </div>
         }
         open={modalIsOpen}

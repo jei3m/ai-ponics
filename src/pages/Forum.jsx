@@ -95,7 +95,7 @@ function Forum() {
     <div>
       <Header />
       <div style={{ padding: '2rem' }}>
-        <Title level={2}>Forums</Title>
+        <Title level={2} style={{textAlign:'center'}}>Forums</Title>
         <Button type="primary" icon={<PlusOutlined />} onClick={() => setShowModal(true)}>
           Create New Forum
         </Button>

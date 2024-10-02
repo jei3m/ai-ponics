@@ -8,7 +8,7 @@ import "./css/Forum.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 import Header from '../components/Header';
-import Loading from './Loading';
+
 
 function Forum() {
   const [forums, setForums] = useState([]);
