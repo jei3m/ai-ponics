@@ -155,8 +155,8 @@ function Forum() {
                 currentUser && forum.postedBy === currentUser
                   ? [
                     <Popconfirm
-                      title="Delete the task"
-                      description="Are you sure to delete this task?"
+                      title="Delete Forum"
+                      description="Are you sure to delete this forum?"
                       onConfirm={() => handleDeleteForum(forum.id)}
                       okText="Yes"
                       cancelText="No"

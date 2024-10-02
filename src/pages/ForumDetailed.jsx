@@ -8,6 +8,8 @@ import "./css/Forum.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faComment, faTrash } from '@fortawesome/free-solid-svg-icons';
 import Loading from './Loading';
+import { Button, Popconfirm } from 'antd';
+
 
 function DetailedView() {
   const { id } = useParams();
@@ -122,7 +124,15 @@ function DetailedView() {
                 <p className="comment-date">{new Date(comment.createdAt).toLocaleString()}</p>
                 <div className="comment-text" dangerouslySetInnerHTML={{ __html: comment.comment }} />
                 {currentUser && comment.postedBy === currentUser && (
-                  <button onClick={() => handleDeleteComment(index)} className="delete-button"><FontAwesomeIcon icon={faTrash} style={{color:'grey'}}/> Delete</button>
+                    <Popconfirm
+                      title="Delete Comment"
+                      description="Are you sure to delete this comment?"
+                      onConfirm={() => handleDeleteComment(index)}
+                      okText="Yes"
+                      cancelText="No"
+                    >
+                      <Button danger size="small">Delete</Button>
+                    </Popconfirm>
                 )}
               </li>
             ))}
