@@ -99,22 +99,6 @@
   }
 }
 
-.text-bubble {
-  background-color: #0084ff; 
-  color: white;
-  padding: 12px; 
-  border-radius: 20px; 
-  margin-left: -20px;  
-  font-size: 15px; 
-  position: relative;
-  max-width: 220px; 
-  text-align: center; 
-}
-
-.text-bubble::before {
-  content: none;
-}
-
 .gauge-container {
   display: flex;
   flex-direction: column;
@@ -212,6 +196,6 @@
 }
 
 .sensor-content {
-  padding-top: 80px; /* Adjust this value based on your header height */
+  padding-top: 80px; 
   flex-grow: 1;
 }
