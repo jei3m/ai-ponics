@@ -150,7 +150,7 @@
 
 .forum-content {
   word-wrap: break-word; 
-  margin-top: 10px;
+  margin-top: 20px;
 }
 
 .forum-content p{
@@ -441,10 +441,13 @@
     margin-bottom: 30px;
   }
 
-  .forum-content p,
   .forum-content li {
-    font-size: 12px;
+    font-size: 13px;
     margin-top: -12px;
+  }
+
+  .forum-content p{
+    margin-top: -18px;
   }
 
   .forum-content li{

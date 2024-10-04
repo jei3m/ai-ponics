@@ -168,16 +168,22 @@ function Forum() {
               }
             >
               <List.Item.Meta
-                avatar={<Avatar style={{width:'40px', height:'40px'}} src={forum.authorAvatar} />}
+                avatar={<Avatar style={{width:'50px', height:'50px'}} src={forum.authorAvatar} />}
                 title={
                   <Link to={`/forum/${forum.id}`} style={{ textDecoration: 'none' }}>
+                    <div style={{marginBottom:'-10px'}}>
                     <Text strong>{forum.title}</Text>
+                    </div>
                   </Link>
                 }
                 description={
                   <Space direction="vertical">
-                    <Text type="secondary">Posted by: {forum.authorName}</Text>
-                    <Text type="secondary">{new Date(forum.createdAt).toLocaleString()}</Text>
+                    <div style={{marginTop:'-20px'}}>
+                     <Text type="secondary">Posted by: {forum.authorName}</Text>
+                    </div>
+                    <div style={{marginTop:'-5px'}}>
+                     <Text type="secondary" size-lg>{new Date(forum.createdAt).toLocaleString()}</Text>
+                    </div>
                   </Space>
                 }
               />
