@@ -153,7 +153,10 @@
   margin-top: 20px;
 }
 
+
+
 .forum-content p{
+  font-size: 20px;
   margin: 20px 0;
   font-weight: normal;
   line-height: 1.1em;
@@ -232,6 +235,10 @@
   font-weight: normal;
   white-space: normal; 
   word-wrap: break-word; 
+}
+
+.ql-modal .ql-editor li {
+ margin-left: -14px;
 }
 
 .ql-comment .ql-editor{

@@ -7,6 +7,7 @@ import 'react-quill/dist/quill.snow.css';
 import { Button, Modal, Input, List, Avatar, Typography, Space, Popconfirm } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import Header from '../components/Header';
+import "./css/Forum.css";
 
 const { Title, Text } = Typography;
 
@@ -93,8 +94,8 @@ function Forum() {
 
   return (
     <div>
-      <Header />
-      <div style={{ padding: '2rem' }}>
+      <Header/>
+      <div style={{ padding: '2.4rem'}}>
         <Title level={2} style={{textAlign:'center'}}>Forums</Title>
         <Button type="primary" icon={<PlusOutlined />} onClick={() => setShowModal(true)}>
           Create New Forum
