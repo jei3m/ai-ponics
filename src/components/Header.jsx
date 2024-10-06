@@ -25,6 +25,7 @@ function Header() {
   const { setSelectedApiKey } = useApiKey();
   const [loading, setLoading] = useState(false);
 
+  // For the header to fetch and display plant name
   useEffect(() => {
     const fetchPlantName = async () => {
       if (currentUser) {
@@ -46,6 +47,7 @@ function Header() {
     fetchPlantName();
   }, [currentUser]);
 
+  // For the header to fetch and display user data
   useEffect(() => {
     const fetchUserData = async () => {
       if (currentUser) {
