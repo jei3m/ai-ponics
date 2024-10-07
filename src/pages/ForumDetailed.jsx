@@ -6,10 +6,9 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import "./css/Forum.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft, faComment, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faComment, faTrash, faReply, faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 import Loading from './Loading';
-import { Button, Popconfirm } from 'antd';
-
+import { Button, Popconfirm, Avatar } from 'antd';
 
 function DetailedView() {
   const { id } = useParams();
@@ -17,6 +16,9 @@ function DetailedView() {
   const [forum, setForum] = useState(null);
   const [newComment, setNewComment] = useState('');
   const [currentUser, setCurrentUser] = useState(null);
+  const [replyInputs, setReplyInputs] = useState({});
+  const [showReplies, setShowReplies] = useState({});
+  const [showReplyForm, setShowReplyForm] = useState({});
 
   useEffect(() => {
     const fetchForum = async () => {
@@ -47,6 +49,7 @@ function DetailedView() {
         comment: newComment,
         postedBy: currentUser,
         authorName: auth.currentUser.displayName || 'Anonymous',
+        authorAvatar: auth.currentUser.photoURL || 'https://via.placeholder.com/50',
         createdAt: new Date().toISOString(),
       };
       await updateDoc(forumRef, {
@@ -78,6 +81,65 @@ function DetailedView() {
     } else {
       alert('Please log in to delete this comment.');
     }
+  };
+
+  const handleDeleteReply = async (commentIndex, replyIndex) => {
+    if (currentUser && forum) {
+      const forumRef = doc(db, 'forums', forum.id);
+      if (forum.comments[commentIndex].replies[replyIndex].postedBy === currentUser) {
+        const updatedComments = [...forum.comments];
+        updatedComments[commentIndex].replies = updatedComments[commentIndex].replies.filter(
+          (_, index) => index !== replyIndex
+        );
+        await updateDoc(forumRef, { comments: updatedComments });
+        setForum({
+          ...forum,
+          comments: updatedComments,
+        });
+      } else {
+        alert('You do not have permission to delete this reply.');
+      }
+    } else {
+      alert('Please log in to delete this reply.');
+    }
+  };
+
+  const handleReply = async (commentIndex) => {
+    const reply = replyInputs[commentIndex];
+    if (reply && reply.trim() !== '' && forum) {
+      const forumRef = doc(db, 'forums', forum.id);
+      const newReplyObj = {
+        comment: reply,
+        postedBy: currentUser,
+        authorName: auth.currentUser.displayName || 'Anonymous',
+        authorAvatar: auth.currentUser.photoURL || 'https://via.placeholder.com/50',
+        createdAt: new Date().toISOString(),
+      };
+      const updatedComments = [...forum.comments];
+      updatedComments[commentIndex].replies = updatedComments[commentIndex].replies || [];
+      updatedComments[commentIndex].replies.push(newReplyObj);
+      await updateDoc(forumRef, { comments: updatedComments });
+      setForum({
+        ...forum,
+        comments: updatedComments,
+      });
+      setReplyInputs({ ...replyInputs, [commentIndex]: '' });
+      setShowReplyForm({ ...showReplyForm, [commentIndex]: false });
+    }
+  };
+
+  const toggleReplies = (commentIndex) => {
+    setShowReplies({
+      ...showReplies,
+      [commentIndex]: !showReplies[commentIndex],
+    });
+  };
+
+  const toggleReplyForm = (commentIndex) => {
+    setShowReplyForm({
+      ...showReplyForm,
+      [commentIndex]: !showReplyForm[commentIndex],
+    });
   };
 
   const TOOL_BAR_OPTIONS = [
@@ -120,6 +182,7 @@ function DetailedView() {
           <ul className="comment-list">
             {forum.comments.map((comment, index) => (
               <li key={index} className="comment-item">
+                <Avatar style={{width:'50px', height:'50px', marginBottom:'4px', marginTop:'-4px',}} src={comment.authorAvatar} />
                 <p className="comment-author">{comment.authorName}</p>
                 <p className="comment-date">{new Date(comment.createdAt).toLocaleString()}</p>
                 <div className="comment-text" dangerouslySetInnerHTML={{ __html: comment.comment }} />
@@ -133,6 +196,58 @@ function DetailedView() {
                     >
                       <Button danger size="small">Delete</Button>
                     </Popconfirm>
+                )}
+                <Button
+                  type="text"
+                  onClick={() => toggleReplyForm(index)}
+                  icon={showReplyForm[index] ? <FontAwesomeIcon icon={faChevronUp} /> : <FontAwesomeIcon icon={faReply} />}
+                >
+                  {showReplyForm[index] ? 'Cancel Reply' : 'Reply'}
+                </Button>
+                {showReplyForm[index] && (
+                  <div className="reply-input">
+                    <ReactQuill
+                      modules={modules}
+                      value={replyInputs[index] || ''}
+                      onChange={(value) => setReplyInputs({ ...replyInputs, [index]: value })}
+                      placeholder="Reply to this comment"
+                      className='ql-reply'
+                      style={{minHeight:'5em'}}
+                    />
+                    <Button onClick={() => handleReply(index)}><FontAwesomeIcon icon={faReply}/> Submit Reply</Button>
+                  </div>
+                )}
+                {comment.replies && comment.replies.length > 0 && (
+                  <Button
+                    type="text"
+                    onClick={() => toggleReplies(index)}
+                    icon={showReplies[index] ? <FontAwesomeIcon icon={faChevronUp} /> : <FontAwesomeIcon icon={faChevronDown} />}
+                  >
+                    {showReplies[index] ? 'Hide Replies' : 'Show Replies'}
+                  </Button>
+                )}
+                {showReplies[index] && comment.replies && comment.replies.length > 0 && (
+                  <ul className="reply-list">
+                    {comment.replies.map((reply, replyIndex) => (
+                      <li key={replyIndex} className="reply-item">
+                        <Avatar style={{width:'30px', height:'30px', marginBottom:'4px', marginTop:'-4px',}} src={reply.authorAvatar} />
+                        <p className="reply-author">{reply.authorName}</p>
+                        <p className="reply-date">{new Date(reply.createdAt).toLocaleString()}</p>
+                        <div className="reply-text" dangerouslySetInnerHTML={{ __html: reply.comment }} />
+                        {currentUser && reply.postedBy === currentUser && (
+                          <Popconfirm
+                            title="Delete Reply"
+                            description="Are you sure to delete this reply?"
+                            onConfirm={() => handleDeleteReply(index, replyIndex)}
+                            okText="Yes"
+                            cancelText="No"
+                          >
+                            <Button danger size="small">Delete</Button>
+                          </Popconfirm>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
                 )}
               </li>
             ))}
