@@ -146,9 +146,8 @@ function Forum() {
             <List.Item
               style={{
                 backgroundColor: 'white',
-                border: '1px solid #e8e8e8',
+                border: '1px solid #ccc',
                 borderRadius: '12px',
-                marginBottom: '1rem',
                 marginTop: '1rem',
                 padding: '1rem',
               }}
@@ -173,17 +172,17 @@ function Forum() {
                 title={
                   <Link to={`/forum/${forum.id}`} style={{ textDecoration: 'none' }}>
                     <div style={{marginBottom:'-10px'}}>
-                    <Text strong>{forum.title}</Text>
+                    <Text strong style={{fontSize:'20px'}}>{forum.title}</Text>
                     </div>
                   </Link>
                 }
                 description={
                   <Space direction="vertical">
                     <div style={{marginTop:'-20px'}}>
-                     <Text type="secondary">Posted by: {forum.authorName}</Text>
+                     <Text type="secondary" style={{fontSize:'15px'}}>Posted by: {forum.authorName}</Text>
                     </div>
                     <div style={{marginTop:'-5px'}}>
-                     <Text type="secondary" size-lg>{new Date(forum.createdAt).toLocaleString()}</Text>
+                     <Text type="secondary" style={{fontSize:'14px'}}>{new Date(forum.createdAt).toLocaleString()}</Text>
                     </div>
                   </Space>
                 }
