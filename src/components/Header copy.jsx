@@ -11,6 +11,7 @@ import { useApiKey } from '../context/ApiKeyContext';
 
 Modal.setAppElement('#root');
 
+// This is a copy of the navbar
 function Header() {
   const { logOut, currentUser } = UserAuth();
   const [modalIsOpen, setModalIsOpen] = useState(false);
