@@ -64,7 +64,7 @@ function Sensors2() {
         setTemperature(temperatureResponse.data);
         setHumidity(humidityResponse.data);
 
-        if (temperatureResponse.data > 30) {
+        if (temperatureResponse.data > 60) {
           setTemperatureAlert("Temperature too high!");
           sendEmailHot(temperatureResponse.data);
         } else if (temperatureResponse.data < 15) {
@@ -183,7 +183,7 @@ function Sensors2() {
     const lastEmailTimestamp = localStorage.getItem("lastEmailTimestamp");
     const now = new Date().getTime();
   
-    if (!lastEmailTimestamp || now - lastEmailTimestamp > 1 * 60 * 1000) {
+    if (!lastEmailTimestamp || now - lastEmailTimestamp > 10 * 60 * 1000) {
       if (user) {
         const emailData = {
           to: user.email,
