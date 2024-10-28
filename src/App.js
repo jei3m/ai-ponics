@@ -11,6 +11,7 @@ import DetailedView from './pages/ForumDetailed';
 import { ApiKeyProvider } from './context/ApiKeyContext';
 import Sensors2 from './pages/Sensors2';
 
+
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);

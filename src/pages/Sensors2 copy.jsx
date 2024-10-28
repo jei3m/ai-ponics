@@ -8,7 +8,7 @@ import {
   Input,
 } from "antd";
 import { differenceInDays, format } from "date-fns";
-import { Resend } from 'resend'; // Import Resend
+import emailjs from "emailjs-com";
 import { Gauge } from "../components/Gauge";
 import Header from "../components/Header";
 import { db, auth } from "../firebase"; // Import Firebase
@@ -25,8 +25,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useApiKey } from "../context/ApiKeyContext";
 
-const resend = new Resend(process.env.REACT_APP_RESEND_API_KEY); // Initialize Resend with your API key
-
 function Sensors2() {
   const [temperature, setTemperature] = useState(null);
   const [humidity, setHumidity] = useState(null);
@@ -35,6 +33,8 @@ function Sensors2() {
   const [temperatureAlert, setTemperatureAlert] = useState("");
   const [plantName, setPlantName] = useState("");
   const [user, setUser] = useState(null);
+  // const [isDataChanged, setIsDataChanged] = useState(false);
+  // const [showBlynkApiKey, setShowBlynkApiKey] = useState(false);
   const [isPlantInfoChanged, setIsPlantInfoChanged] = useState(false);
   const [isBlynkApiKeyChanged, setIsBlynkApiKeyChanged] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -62,7 +62,7 @@ function Sensors2() {
         setTemperature(temperatureResponse.data);
         setHumidity(humidityResponse.data);
 
-        if (temperatureResponse.data > 30) {
+        if (temperatureResponse.data > 60) {
           setTemperatureAlert("Temperature too high!");
           sendEmailHot(temperatureResponse.data);
         } else if (temperatureResponse.data < 15) {
@@ -101,13 +101,13 @@ function Sensors2() {
     const interval = setInterval(fetchSensorData, 5000);
 
     return () => clearInterval(interval);
-  }, [selectedApiKey, toastShown]);
+  }, [selectedApiKey, toastShown]); // Add selectedApiKey to the dependency array
 
   useEffect(() => {
     const fetchUserData = async () => {
       const currentUser = auth.currentUser;
       if (currentUser) {
-        setUser(currentUser);
+        setUser(currentUser); // Set user state
         const docRef = doc(db, "users", currentUser.uid);
         const docSnap = await getDoc(docRef);
 
@@ -137,6 +137,7 @@ function Sensors2() {
       const days = differenceInDays(today, selectedDate);
       setDaysSincePlanting(days >= 0 ? days : 0);
 
+      // Save planting date and days since planting to Firestore when it changes
       const currentUser = auth.currentUser;
       if (currentUser) {
         setDoc(
@@ -173,48 +174,77 @@ function Sensors2() {
   };
 
   // Function to send email if the temperature is too hot
-  const sendEmailHot = async (temperature) => {
+  const sendEmailHot = (temperature) => {
     const lastEmailTimestamp = localStorage.getItem("lastEmailTimestamp");
     const now = new Date().getTime();
-  
-    if (!lastEmailTimestamp || now - lastEmailTimestamp > 1 * 60 * 1000) {
+
+    if (!lastEmailTimestamp || now - lastEmailTimestamp > 10 * 60 * 1000) {
       if (user) {
-        try {
-          await axios.post('/.netlify/functions/send-email', {
-            from: 'onboarding@resend.dev',
-            to: user.email,
-            subject: 'Temperature Alert',
-            html: `<p>Temperature is too high! ${temperature}°C</p>`,
-          });
-          console.log("Email successfully sent!");
-          localStorage.setItem("lastEmailTimestamp", now);
-        } catch (error) {
-          console.error("Failed to send email:", error);
-        }
+        const templateParams = {
+          to_name: user.displayName || "User",
+          message: `Temperature is too high! ${temperature}°C`,
+          user_email: user.email,
+        };
+
+        emailjs
+          .send(
+            process.env.REACT_APP_EMAILJS_SERVICE_ID,
+            process.env.REACT_APP_EMAILJS_TEMPLATE_ID,
+            templateParams,
+            process.env.REACT_APP_EMAILJS_USER_ID,
+          )
+          .then(
+            (response) => {
+              console.log(
+                "Email successfully sent!",
+                response.status,
+                response.text,
+              );
+              localStorage.setItem("lastEmailTimestamp", now);
+            },
+            (err) => {
+              console.error("Failed to send email:", err);
+            },
+          );
       }
     } else {
       console.log("Email not sent: 10 minutes have not passed yet.");
     }
   };
-  
-  const sendEmailCold = async (temperature) => {
+
+   // Function to send email if the temperature is too cold
+  const sendEmailCold = (temperature) => {
     const lastEmailTimestamp = localStorage.getItem("lastEmailTimestamp");
     const now = new Date().getTime();
-  
+
     if (!lastEmailTimestamp || now - lastEmailTimestamp > 10 * 60 * 1000) {
       if (user) {
-        try {
-          await axios.post('/.netlify/functions/send-email', {
-            from: 'onboarding@resend.dev',
-            to: user.email,
-            subject: 'Temperature Alert',
-            html: `<p>Temperature is too cold! ${temperature}°C</p>`,
-          });
-          console.log("Email successfully sent!");
-          localStorage.setItem("lastEmailTimestamp", now);
-        } catch (error) {
-          console.error("Failed to send email:", error);
-        }
+        const templateParams = {
+          to_name: user.displayName || "User",
+          message: `Temperature is too cold! ${temperature}°C`,
+          user_email: user.email,
+        };
+
+        emailjs
+          .send(
+            process.env.REACT_APP_EMAILJS_SERVICE_ID,
+            process.env.REACT_APP_EMAILJS_TEMPLATE_ID,
+            templateParams,
+            process.env.REACT_APP_EMAILJS_USER_ID,
+          )
+          .then(
+            (response) => {
+              console.log(
+                "Email successfully sent!",
+                response.status,
+                response.text,
+              );
+              localStorage.setItem("lastEmailTimestamp", now);
+            },
+            (err) => {
+              console.error("Failed to send email:", err);
+            },
+          );
       }
     } else {
       console.log("Email not sent: 10 minutes have not passed yet.");
@@ -229,7 +259,7 @@ function Sensors2() {
         dataToUpdate = {
           plantName,
           plantingDate,
-          daysSincePlanting,
+          daysSincePlanting, // Add this line to include daysSincePlanting
         };
         setIsPlantInfoChanged(false);
       } else if (field === "blynkApiKey") {
