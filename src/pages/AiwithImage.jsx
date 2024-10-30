@@ -72,6 +72,7 @@ const AiwithImage = () => {
     fetchUserData();
   }, [currentUser]);
 
+  //Fetching sensor data from Blynk API
   const fetchSensorData = async (selectedApiKey) => {
     try {
       const temperatureResponse = await axios.get(`https://blynk.cloud/external/api/get?token=${selectedApiKey}&V0`);
@@ -102,6 +103,7 @@ const AiwithImage = () => {
       toast.error('Sensor data is still loading. Please wait.');
       return;
     }
+    //List of models as of this moment for testing
     //gemini-1.5-pro-exp-0827 Pro Experimental
     //gemini-1.5-flash Flash
     setLoading(true);
@@ -120,9 +122,10 @@ const AiwithImage = () => {
     ]);
   }
 
+  // Don't greet until sensor data is loaded
   async function greetUser() {
     if (!sensorDataLoaded) {
-      return; // Don't greet until sensor data is loaded
+      return; 
     }
     const model = genAI.getGenerativeModel({
       model: "gemini-1.5-flash",
@@ -140,7 +143,7 @@ const AiwithImage = () => {
     }
   }, [plantName, daysSincePlanting, sensorDataLoaded]);
 
-  // Replacing asterisks from the output of AI
+  // Replacing asterisks from the output of AI. Might change this to react-markdown
   const sanitizeText = (text) => {
     return text
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
