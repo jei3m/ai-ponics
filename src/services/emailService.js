@@ -11,7 +11,7 @@ export const sendEmailHot = async (user, temperature) => {
     if (user) {
       const emailData = {
         // to: user.email,
-        to: "virozzegt@gmail.com",
+        to: user.email,
         from: "Acme <onboarding@resend.dev>",
         subject: "Temperature Alert - High Temperature Detected!",
         html: `<!DOCTYPE html>
