@@ -5,7 +5,7 @@ import { collection, getDocs, addDoc, deleteDoc, doc } from 'firebase/firestore'
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { Button, Modal, Input, List, Avatar, Typography, Space, Popconfirm } from 'antd';
-import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
+import { PlusOutlined, DeleteOutlined, CommentOutlined } from '@ant-design/icons';
 import Header from '../components/Header';
 import "./css/Forum.css";
 
@@ -95,11 +95,13 @@ function Forum() {
   return (
     <div>
       <Header/>
-      <div style={{ padding: '2.4rem'}}>
+      <div style={{ padding: '2.4rem 8px', maxWidth: '700px', margin: '0 auto'}}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '-10px', marginTop: '10px'}}>
         <Title level={2} style={{textAlign:'center'}}>Forums</Title>
-        <Button type="primary" icon={<PlusOutlined />} onClick={() => setShowModal(true)}>
+        <Button style={{marginTop:'14px'}} type="primary" icon={<PlusOutlined />} onClick={() => setShowModal(true)}>
           Create New Forum
         </Button>
+        </div>
         <Modal
           title="Create New Forum"
           open={showModal}
@@ -148,7 +150,7 @@ function Forum() {
                 backgroundColor: 'white',
                 border: '1px solid #ccc',
                 borderRadius: '12px',
-                marginTop: '1rem',
+                marginTop: '0.8rem',
                 padding: '1rem',
               }}
               actions={
@@ -187,6 +189,10 @@ function Forum() {
                   </Space>
                 }
               />
+              <div style={{ display: 'flex', alignItems: 'center', marginTop: '1rem' }}>
+                <CommentOutlined style={{ marginRight: '0.5rem' }} />
+                <Text type="secondary">{forum.comments.length} comments</Text>
+              </div>
             </List.Item>
           )}
         />
