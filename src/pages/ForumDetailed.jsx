@@ -198,6 +198,7 @@ function DetailedView() {
                     </Popconfirm>
                 )}
                 <Button
+                  className='forum-button'
                   type="text"
                   onClick={() => toggleReplyForm(index)}
                   icon={showReplyForm[index] ? <FontAwesomeIcon icon={faChevronUp} /> : <FontAwesomeIcon icon={faReply} />}
@@ -211,7 +212,7 @@ function DetailedView() {
                       value={replyInputs[index] || ''}
                       onChange={(value) => setReplyInputs({ ...replyInputs, [index]: value })}
                       placeholder="Reply to this comment"
-                      className='ql-reply'
+                      className='ql-comment'
                       style={{minHeight:'5em'}}
                     />
                     <Button onClick={() => handleReply(index)} style={{marginTop:'10px'}}><FontAwesomeIcon icon={faReply}/> Submit Reply</Button>
@@ -219,6 +220,7 @@ function DetailedView() {
                 )}
                 {comment.replies && comment.replies.length > 0 && (
                   <Button
+                    className="forum-button"
                     type="text"
                     onClick={() => toggleReplies(index)}
                     icon={showReplies[index] ? <FontAwesomeIcon icon={faChevronUp} /> : <FontAwesomeIcon icon={faChevronDown} />}
