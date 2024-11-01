@@ -36,7 +36,7 @@
 
 .forum-content li, .comment-text li, .reply-text li {
   margin: 20px 0;
-  line-height: 1.1em;
+  line-height: 0.5em;
   font-weight: normal;
   font-size: 18px;
 }
