@@ -139,7 +139,7 @@
 
 @media screen and (max-width: 480px) {
   body {
-    font-size: 12px;
+    font-size: 13px;
   }
 
   .forum-title {
@@ -152,17 +152,22 @@
   }
 
   .forum-content p, .comment-text p, .reply-text p {
-    font-size: 12px;
+    font-size: 13px;
+  }
+
+  .comment-author, .comment-date, .reply-author, .reply-date {
+    font-size: 10px;
+    margin: 3px 0;
   }
 
   .forum-content li, .comment-text li, .reply-text li {
-    font-size: 12px;
+    font-size: 13px;
     margin-top: -12px;
     margin-left: -8px;
   }
 
   .ql-editor p, .ql-editor li {
-    font-size: 12px;
+    font-size: 13px;
   }
 
   .ql-editor li {
