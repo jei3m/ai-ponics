@@ -10,6 +10,7 @@ import Forum from './pages/Forum';
 import DetailedView from './pages/ForumDetailed';
 import { ApiKeyProvider } from './context/ApiKeyContext';
 import Sensors2 from './pages/Sensors2';
+import EmailTemplate from './components/template/emailTemplate';
 
 
 function App() {
@@ -77,6 +78,7 @@ function App() {
         /> */}
 
 		<Route path='/chat2' element={<AiwithImage2 />}	/>
+    <Route path='/email' element={<EmailTemplate />}	/>
 		</Routes>
     </ApiKeyProvider>
   );

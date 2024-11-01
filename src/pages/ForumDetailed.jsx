@@ -56,10 +56,10 @@ function DetailedView() {
         comments: arrayUnion(newCommentObj),
       });
       setNewComment('');
-      setForum({
-        ...forum,
-        comments: [...forum.comments, newCommentObj],
-      });
+      setForum(prevForum => ({
+        ...prevForum,
+        comments: [...prevForum.comments, newCommentObj],
+      }));
     }
   };
 
@@ -71,10 +71,10 @@ function DetailedView() {
           (_, index) => index !== commentIndex
         );
         await updateDoc(forumRef, { comments: updatedComments });
-        setForum({
-          ...forum,
+        setForum(prevForum => ({
+          ...prevForum,
           comments: updatedComments,
-        });
+        }));
       } else {
         alert('You do not have permission to delete this comment.');
       }
@@ -92,10 +92,10 @@ function DetailedView() {
           (_, index) => index !== replyIndex
         );
         await updateDoc(forumRef, { comments: updatedComments });
-        setForum({
-          ...forum,
+        setForum(prevForum => ({
+          ...prevForum,
           comments: updatedComments,
-        });
+        }));
       } else {
         alert('You do not have permission to delete this reply.');
       }
@@ -119,27 +119,27 @@ function DetailedView() {
       updatedComments[commentIndex].replies = updatedComments[commentIndex].replies || [];
       updatedComments[commentIndex].replies.push(newReplyObj);
       await updateDoc(forumRef, { comments: updatedComments });
-      setForum({
-        ...forum,
+      setForum(prevForum => ({
+        ...prevForum,
         comments: updatedComments,
-      });
-      setReplyInputs({ ...replyInputs, [commentIndex]: '' });
-      setShowReplyForm({ ...showReplyForm, [commentIndex]: false });
+      }));
+      setReplyInputs(prev => ({ ...prev, [commentIndex]: '' }));
+      setShowReplyForm(prev => ({ ...prev, [commentIndex]: false }));
     }
   };
 
   const toggleReplies = (commentIndex) => {
-    setShowReplies({
-      ...showReplies,
-      [commentIndex]: !showReplies[commentIndex],
-    });
+    setShowReplies(prev => ({
+      ...prev,
+      [commentIndex]: !prev[commentIndex],
+    }));
   };
 
   const toggleReplyForm = (commentIndex) => {
-    setShowReplyForm({
-      ...showReplyForm,
-      [commentIndex]: !showReplyForm[commentIndex],
-    });
+    setShowReplyForm(prev => ({
+      ...prev,
+      [commentIndex]: !prev[commentIndex],
+    }));
   };
 
   const TOOL_BAR_OPTIONS = [
@@ -182,7 +182,7 @@ function DetailedView() {
           <ul className="comment-list">
             {forum.comments.map((comment, index) => (
               <li key={index} className="comment-item">
-                <Avatar style={{width:'50px', height:'50px', marginBottom:'4px', marginTop:'-4px',}} src={comment.authorAvatar} />
+                <Avatar style={{width:'40px', height:'40px', marginBottom:'4px', marginTop:'-4px',}} src={comment.authorAvatar} />
                 <p className="comment-author">{comment.authorName}</p>
                 <p className="comment-date">{new Date(comment.createdAt).toLocaleString()}</p>
                 <div className="comment-text" dangerouslySetInnerHTML={{ __html: comment.comment }} />
@@ -214,7 +214,7 @@ function DetailedView() {
                       className='ql-reply'
                       style={{minHeight:'5em'}}
                     />
-                    <Button onClick={() => handleReply(index)}><FontAwesomeIcon icon={faReply}/> Submit Reply</Button>
+                    <Button onClick={() => handleReply(index)} style={{marginTop:'10px'}}><FontAwesomeIcon icon={faReply}/> Submit Reply</Button>
                   </div>
                 )}
                 {comment.replies && comment.replies.length > 0 && (
