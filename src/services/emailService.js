@@ -14,7 +14,7 @@ export const sendEmailHot = async (user, temperature) => {
       const emailData = {
         // to: user.email,
         to: user.email,
-        from: "Acme <onboarding@resend.dev>",
+        from: "AI-Ponics@jeiem.site",
         subject: "Temperature Alert - High Temperature Detected!",
         html: ReactDOMServer.renderToStaticMarkup(<EmailTemplate temperature={temperature} />),
         text: `Temperature Alert: The current temperature is ${temperature}°C, which exceeds the safe threshold. Please check your equipment immediately.`,

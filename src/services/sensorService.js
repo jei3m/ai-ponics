@@ -40,7 +40,7 @@ export const useSensorsLogic = () => {
         setTemperature(temperatureResponse.data);
         setHumidity(humidityResponse.data);
 
-        if (temperatureResponse.data > 60) {
+        if (temperatureResponse.data > 73) {
           setTemperatureAlert("Temperature too high!");
           sendEmailHot(user, temperatureResponse.data);
         } else if (temperatureResponse.data < 15) {
