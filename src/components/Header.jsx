@@ -1,7 +1,7 @@
 // Header.jsx
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Select, Input, Avatar, Typography, Space, message } from 'antd';
-import { UserOutlined, EyeInvisibleOutlined, EyeTwoTone, PlusOutlined, SaveOutlined, DeleteOutlined, LogoutOutlined } from '@ant-design/icons';
+import { EyeInvisibleOutlined, EyeTwoTone, PlusOutlined, SaveOutlined, DeleteOutlined, LogoutOutlined } from '@ant-design/icons';
 import { UserAuth } from '../context/AuthContext';
 import { useLocation } from 'react-router-dom';
 import { useApiKey } from '../context/ApiKeyContext';
