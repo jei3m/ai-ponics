@@ -1,13 +1,13 @@
+// Header.jsx
 import React, { useState, useEffect } from 'react';
-import { Modal, Button, Select, Input, Avatar, Typography, Space } from 'antd';
+import { Modal, Button, Select, Input, Avatar, Typography, Space, message } from 'antd';
 import { UserOutlined, EyeInvisibleOutlined, EyeTwoTone, PlusOutlined, SaveOutlined, DeleteOutlined, LogoutOutlined } from '@ant-design/icons';
 import { UserAuth } from '../context/AuthContext';
-import { db } from '../firebase';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { useLocation } from 'react-router-dom';
 import { useApiKey } from '../context/ApiKeyContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faLeaf, faNewspaper, faHome, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { fetchPlantName, fetchUserData, saveBlynkApiKey, addNewApiKey, deleteApiKey } from '../services/headerService';
 
 import "../pages/css/Header.css"
 const { Option } = Select;
@@ -25,53 +25,9 @@ function Header() {
   const { setSelectedApiKey } = useApiKey();
   const [loading, setLoading] = useState(false);
 
-  // For the header to fetch and display plant name
   useEffect(() => {
-    const fetchPlantName = async () => {
-      if (currentUser) {
-        try {
-          const docRef = doc(db, 'users', currentUser.uid);
-          const docSnap = await getDoc(docRef);
-
-          if (docSnap.exists()) {
-            setPlantName(docSnap.data().plantName || 'AI-Ponics');
-          } else {
-            console.log('No such document!');
-          }
-        } catch (error) {
-          console.error('Error fetching plant name:', error);
-        }
-      }
-    };
-
-    fetchPlantName();
-  }, [currentUser]);
-
-  // For the header to fetch and display user data
-  useEffect(() => {
-    const fetchUserData = async () => {
-      if (currentUser) {
-        try {
-          const docRef = doc(db, 'users', currentUser.uid);
-          const docSnap = await getDoc(docRef);
-
-          if (docSnap.exists()) {
-            setPlantName(docSnap.data().plantName || 'AI-Ponics');
-            setBlynkApiKeys(docSnap.data().blynkApiKeys || []);
-            const savedIndex = localStorage.getItem('selectedApiKeyIndex');
-            const index = savedIndex ? parseInt(savedIndex, 10) : 0;
-            setSelectedApiKeyIndex(index);
-            setEditableBlynkApiKey(docSnap.data().blynkApiKeys?.[index] || '');
-          } else {
-            console.log('No such document!');
-          }
-        } catch (error) {
-          console.error('Error fetching user data:', error);
-        }
-      }
-    };
-
-    fetchUserData();
+    fetchPlantName(currentUser, setPlantName);
+    fetchUserData(currentUser, setPlantName, setBlynkApiKeys, setSelectedApiKeyIndex, setEditableBlynkApiKey);
   }, [currentUser]);
 
   useEffect(() => {
@@ -92,58 +48,22 @@ function Header() {
     setEditableBlynkApiKey(e.target.value);
   };
 
-  const saveBlynkApiKey = async () => {
-    if (currentUser) {
-      setLoading(true);
-      try {
-        const userRef = doc(db, 'users', currentUser.uid);
-        const updatedApiKeys = [...blynkApiKeys];
-        updatedApiKeys[selectedApiKeyIndex] = editableBlynkApiKey;
-        await setDoc(userRef, { 
-          blynkApiKeys: updatedApiKeys,
-          selectedApiKey: editableBlynkApiKey // Save the selected API key
-        }, { merge: true });
-        setBlynkApiKeys(updatedApiKeys);
-        setSelectedApiKey(editableBlynkApiKey); // Set the selected API key
-        alert('Blynk API Key saved successfully!');
-        window.location.reload();
-      } catch (error) {
-        console.error('Error saving Blynk API Key:', error);
-        alert('Failed to save Blynk API Key. Please try again.');
-      } finally {
-        setLoading(false);
-      }
+  const handleSaveBlynkApiKey = async () => {
+    await saveBlynkApiKey(currentUser, blynkApiKeys, selectedApiKeyIndex, editableBlynkApiKey, setBlynkApiKeys, setSelectedApiKey, setLoading);
+  };
+
+  const handleAddNewApiKey = () => {
+    // Check if there is any blank API key
+    const hasBlankKey = blynkApiKeys.some(key => key.trim() === '');
+    if (!hasBlankKey) {
+      addNewApiKey(blynkApiKeys, setBlynkApiKeys, setSelectedApiKeyIndex, setEditableBlynkApiKey);
+    } else {
+      message.warning('Please fill in the existing blank API key before adding a new one.');
     }
   };
 
-  const addNewApiKey = () => {
-    setBlynkApiKeys([...blynkApiKeys, '']);
-    setSelectedApiKeyIndex(blynkApiKeys.length);
-    setEditableBlynkApiKey('');
-  };
-
-  const deleteApiKey = async () => {
-    if (currentUser) {
-      setLoading(true);
-      try {
-        const userRef = doc(db, 'users', currentUser.uid);
-        const updatedApiKeys = blynkApiKeys.filter((_, index) => index !== selectedApiKeyIndex);
-        await setDoc(userRef, { 
-          blynkApiKeys: updatedApiKeys,
-          selectedApiKey: updatedApiKeys[0] || '' // Update the selected API key
-        }, { merge: true });
-        setBlynkApiKeys(updatedApiKeys);
-        setSelectedApiKeyIndex(0);
-        setEditableBlynkApiKey(updatedApiKeys[0] || '');
-        alert('Blynk API Key deleted successfully!');
-        window.location.reload();
-      } catch (error) {
-        console.error('Error deleting Blynk API Key:', error);
-        alert('Failed to delete Blynk API Key. Please try again.');
-      } finally {
-        setLoading(false);
-      }
-    }
+  const handleDeleteApiKey = async () => {
+    await deleteApiKey(currentUser, blynkApiKeys, selectedApiKeyIndex, setBlynkApiKeys, setSelectedApiKeyIndex, setEditableBlynkApiKey, setLoading);
   };
 
   return (
@@ -227,9 +147,9 @@ function Header() {
             style={{ marginTop: '0.5rem' }}
           />
           <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', marginTop: '1rem' }}>
-            <Button icon={<DeleteOutlined />} onClick={deleteApiKey} loading={loading} >Delete</Button>
-            <Button icon={<PlusOutlined />} onClick={addNewApiKey}>Add</Button>
-            <Button icon={<SaveOutlined />} onClick={saveBlynkApiKey} loading={loading}>Save</Button>
+            <Button icon={<DeleteOutlined />} onClick={handleDeleteApiKey} loading={loading} >Delete</Button>
+            <Button icon={<PlusOutlined />} onClick={handleAddNewApiKey}>Add</Button>
+            <Button icon={<SaveOutlined />} onClick={handleSaveBlynkApiKey} loading={loading}>Save</Button>
           </div>
         </div>
       </Modal>
