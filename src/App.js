@@ -1,17 +1,23 @@
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { 
+  BrowserRouter as Router, 
+  Route, 
+  Routes, 
+} from 'react-router-dom';
 import { auth } from './firebase';
-import Sensors from './pages/Sensors';
+
+//import Sensors from './pages/Sensors';
 import Chat from './pages/AiwithImage';
 import Login from './pages/Login';
-import PrivateRoutes from './routes/PrivateRoutes'
 import AiwithImage2 from './pages/AiwithImage2';
 import Forum from './pages/Forum';
 import DetailedView from './pages/ForumDetailed';
-import { ApiKeyProvider } from './context/ApiKeyContext';
 import Sensors2 from './pages/Sensors2';
-import EmailTemplate from './components/template/emailTemplate';
 
+// Import routes and context
+import PrivateRoutes from './routes/PrivateRoutes';
+import { ApiKeyProvider } from './context/ApiKeyContext';
+import Loading from './pages/Loading';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -27,32 +33,31 @@ function App() {
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div><Loading/></div>;
   }
 
   return (
     <ApiKeyProvider>
-		<Routes>
-      
-			<Route path='/' element={<Login />} />
-			<Route
-				path='/chat'
-				element={
-					<PrivateRoutes>
-						<Chat />
-					</PrivateRoutes>
-				}
-			/>
-      <Route
-				path='/home'
-				element={
-					<PrivateRoutes>
-						<Sensors2 />
-					</PrivateRoutes>
-				}
-			/>
-			<Route
-          path='/forum'
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route
+          path="/chat"
+          element={
+            <PrivateRoutes>
+              <Chat />
+            </PrivateRoutes>
+          }
+        />
+        <Route
+          path="/home"
+          element={
+            <PrivateRoutes>
+              <Sensors2 />
+            </PrivateRoutes>
+          }
+        />
+        <Route
+          path="/forum"
           element={
             <PrivateRoutes>
               <Forum />
@@ -60,26 +65,15 @@ function App() {
           }
         />
         <Route
-          path='/forum/:id'
+          path="/forum/:id"
           element={
             <PrivateRoutes>
               <DetailedView />
             </PrivateRoutes>
           }
         />
-
-        {/* <Route
-          path='/home2'
-          element={
-            <PrivateRoutes>
-              <Sensors2 />
-            </PrivateRoutes>
-          }
-        /> */}
-
-		<Route path='/chat2' element={<AiwithImage2 />}	/>
-    <Route path='/email' element={<EmailTemplate />}	/>
-		</Routes>
+        <Route path="/chat2" element={<AiwithImage2 />} />
+      </Routes>
     </ApiKeyProvider>
   );
 }

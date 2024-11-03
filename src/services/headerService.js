@@ -3,6 +3,7 @@ import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { message } from 'antd';
 
+// To fetch the plant name from Firestore, to be displayed in the header
 export const fetchPlantName = async (currentUser, setPlantName) => {
   if (currentUser) {
     try {
@@ -20,6 +21,7 @@ export const fetchPlantName = async (currentUser, setPlantName) => {
   }
 };
 
+// To fetch the user data from Firestore, to be displayed in the user profile modal
 export const fetchUserData = async (currentUser, setPlantName, setBlynkApiKeys, setSelectedApiKeyIndex, setEditableBlynkApiKey) => {
   if (currentUser) {
     try {
@@ -42,6 +44,7 @@ export const fetchUserData = async (currentUser, setPlantName, setBlynkApiKeys, 
   }
 };
 
+// To save the selected Blynk API key to Firestore 
 export const saveBlynkApiKey = async (currentUser, blynkApiKeys, selectedApiKeyIndex, editableBlynkApiKey, setBlynkApiKeys, setSelectedApiKey, setLoading) => {
   if (currentUser) {
     setLoading(true);
@@ -66,12 +69,15 @@ export const saveBlynkApiKey = async (currentUser, blynkApiKeys, selectedApiKeyI
   }
 };
 
+// Add a new Blynk API key
 export const addNewApiKey = (blynkApiKeys, setBlynkApiKeys, setSelectedApiKeyIndex, setEditableBlynkApiKey) => {
   setBlynkApiKeys([...blynkApiKeys, '']);
   setSelectedApiKeyIndex(blynkApiKeys.length);
   setEditableBlynkApiKey('');
 };
 
+
+// Delete a Blynk API key
 export const deleteApiKey = async (currentUser, blynkApiKeys, selectedApiKeyIndex, setBlynkApiKeys, setSelectedApiKeyIndex, setEditableBlynkApiKey, setLoading) => {
   if (currentUser) {
     setLoading(true);
@@ -80,7 +86,7 @@ export const deleteApiKey = async (currentUser, blynkApiKeys, selectedApiKeyInde
       const updatedApiKeys = blynkApiKeys.filter((_, index) => index !== selectedApiKeyIndex);
       await setDoc(userRef, { 
         blynkApiKeys: updatedApiKeys,
-        selectedApiKey: updatedApiKeys[0] || '' // Update the selected API key
+        selectedApiKey: updatedApiKeys[0] || '' 
       }, { merge: true });
       setBlynkApiKeys(updatedApiKeys);
       setSelectedApiKeyIndex(0);
@@ -95,3 +101,4 @@ export const deleteApiKey = async (currentUser, blynkApiKeys, selectedApiKeyInde
     }
   }
 };
+

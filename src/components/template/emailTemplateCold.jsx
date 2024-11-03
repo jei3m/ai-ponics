@@ -1,6 +1,6 @@
 import React from 'react';
 
-const EmailTemplate = ({ temperature }) => (
+const EmailTemplateCold = ({ temperature }) => (
   <html>
     <head>
       <meta charset="utf-8" />
@@ -11,21 +11,21 @@ const EmailTemplate = ({ temperature }) => (
       <div style={{ maxWidth: 580, margin: '0 auto', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', padding: '32px 24px', backgroundColor: '#ffffff' }}>
         <div style={{ borderBottom: '2px solid #38a169', paddingBottom: 16, marginBottom: 24 }}>
           <h1 style={{ color: '#38a169', fontSize: 30, fontWeight: 600, letterSpacing: '-0.025em', margin: 0 }}>Temperature Monitor</h1>
-          <div style={{ display: 'inline-block', backgroundColor: '#ffe6e6', color: '#e74c3c', padding: '4px 12px', borderRadius: 6, fontSize: 18, fontWeight: 500, marginTop: 8 }}>Critical Alert</div>
+          <div style={{ display: 'inline-block', backgroundColor: '#c5e1f5', color: '#45a0e6', padding: '4px 12px', borderRadius: 6, fontSize: 18, fontWeight: 500, marginTop: 8 }}>Critical Alert</div>
         </div>
 
-        <div style={{ fontSize: 48, fontWeight: 700, color: '#e74c3c', margin: '24px 0', fontFeatureSettings: '"tnum"', fontVariantNumeric: 'tabular-nums' }}>
+        <div style={{ fontSize: 48, fontWeight: 700, color: '#45a0e6', margin: '24px 0', fontFeatureSettings: '"tnum"', fontVariantNumeric: 'tabular-nums' }}>
           {temperature}°C
         </div>
 
         <div style={{ color: '#374151', lineHeight: 1.6, marginBottom: 24 }}>
-          <p style={{fontSize:'16px'}}>AI-Ponics has detected high temperature within your system!</p>
+          <p style={{fontSize:'16px'}}>AI-Ponics has detected Low temperature within your system!</p>
         </div>
 
         <div style={{ backgroundColor: '#f0fff4', borderRadius: 8, padding: 16, marginBottom: 24 }}>
           <div style={{ marginBottom: 12 }}>
             <div style={{ fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#6b7280', marginBottom: 4 }}>Status</div>
-            <div style={{ fontSize: 15, color: '#111827', fontWeight: 500 }}>Above Critical Threshold</div>
+            <div style={{ fontSize: 15, color: '#111827', fontWeight: 500 }}>Below Critical Threshold</div>
           </div>
           <div style={{ marginBottom: 12 }}>
             <div style={{ fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#6b7280', marginBottom: 4 }}>Time Detected</div>
@@ -37,15 +37,6 @@ const EmailTemplate = ({ temperature }) => (
           </div>
         </div>
 
-        <div style={{ color: '#374151', lineHeight: 1.6, marginBottom: 24 }}>
-          <p style={{fontSize:'24px', marginBottom:'-8px'}}>Recommended actions:</p>
-          <ul style={{ paddingLeft: 20, margin: '12px 0' }}>
-            <li style={{fontSize:'15px'}}>Make sure the area is well ventilated</li>
-            <li style={{fontSize:'15px'}}>Move to a different area with lower room temperature</li>
-            <li style={{fontSize:'15px'}}>Monitor for additional fluctuations</li>
-          </ul>
-        </div>
-
         <div style={{ color: '#6b7280', fontSize: 14, borderTop: '1px solid #e5e7eb', paddingTop: 16, marginTop: 32 }}>
           <p>This is an automated alert from your monitoring system. Do not reply to this email.</p>
         </div>
@@ -54,4 +45,4 @@ const EmailTemplate = ({ temperature }) => (
   </html>
 );
 
-export default EmailTemplate;
+export default EmailTemplateCold;

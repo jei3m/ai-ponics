@@ -37,9 +37,10 @@ function Header() {
     }
   }, [blynkApiKeys, selectedApiKeyIndex, setSelectedApiKey]);
 
-  const toggleBlynkApiKeyVisibility = () => {
-    setShowBlynkApiKey(!showBlynkApiKey);
-  };
+  // Used Input.Password component to hide/show password
+  // const toggleBlynkApiKeyVisibility = () => {
+  //   setShowBlynkApiKey(!showBlynkApiKey);
+  // };
 
   const openModal = () => setModalIsOpen(true);
   const closeModal = () => setModalIsOpen(false);
