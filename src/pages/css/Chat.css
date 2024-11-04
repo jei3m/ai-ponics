@@ -342,6 +342,38 @@
 
     .message-input {
         font-size: 16px;
-        width: 100%; /* Ensure full width */
+        width: 100%; 
     }
 }
+
+   /* React-markdown styling     */
+
+   .markdown-content {
+    margin-top: -20px;
+    font-size: 12px;
+    line-height: 1.5;
+    margin-bottom: -20px;
+   }
+
+  .markdown-content p {
+    font-weight: normal;
+  }
+  
+  .markdown-content strong {
+    font-weight: bold;
+  }
+  
+  .markdown-content em {
+    font-style: italic;
+  }
+  
+  .markdown-content a {
+    color: blue;
+    text-decoration: underline;
+  }
+  
+  .message.user .markdown-content p{
+    color: white;
+  }
+  
+  

@@ -61,7 +61,7 @@ function Sensors2() {
         dataToUpdate = {
           plantName,
           plantingDate,
-          daysSincePlanting, // Add this line to include daysSincePlanting
+          daysSincePlanting,
         };
         setIsPlantInfoChanged(false);
       } else if (field === "blynkApiKey") {
