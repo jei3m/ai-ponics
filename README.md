@@ -8,7 +8,7 @@ AI-Ponics is a web application built with React JS, designed to monitor and mana
 
 - **Plant State Detection**: Leveraging Gemini AI, the application can analyze images of the plant to assess their health and growth status.
   
-- **Real-Time Sensor Monitoring**: Integration with the Blynk API allows for continuous monitoring of environmental conditions through various sensors. Users receive live updates on factors such as humidity, and temperature. Ensuring a controlled and optimized growing environment.
+- **Real-Time Sensor Monitoring**: Integration with the Blynk API allows for continuous monitoring of environmental conditions through various sensors. Users receive live updates on factors such as humidity, and temperature.
 
 - **Firebase Integration**: Firebase provides backend services such as user authentication (via Google), real-time database storage, and cloud-based data sync. This ensures seamless data management, user profiles, and real-time updates across devices.
 
