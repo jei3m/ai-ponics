@@ -12,7 +12,7 @@ AI-Ponics is a web application built with React JS, designed to monitor and mana
 
 - **Firebase Integration**: Firebase provides backend services such as user authentication (via Google), real-time database storage, and cloud-based data sync. This ensures seamless data management, user profiles, and real-time updates across devices.
 
-- **AI-Chatbot Integration**: The application includes an AI-powered chatbot that provides real-time advice on plant care based on the sensor data.
+- **AI-Chatbot Integration**: The application includes an AI-powered chatbot that provides real-time advice on plant care based on the sensor data. Images can also be sent to the chatbot for further analysis.
 
 - **Email Notifications**: Users will receive email notifications whenever critical temperature thresholds are reached. Such as when it is too cold for the plant to grow, or when it is too hot for the plant to survive.
 
