@@ -2,7 +2,7 @@
 
 ## Overview
 
-AI-Ponics is an advanced web application built with React JS, designed to monitor and manage plants in an aeroponic system using technology. The website integrates Gemini AI for image detection and analysis, providing insights into the state of the plants. Additionally, it utilizes the Blynk API for live updates from sensor monitoring, ensuring real-time data for optimal plant care.
+AI-Ponics is a web application built with React JS, designed to monitor and manage plants in an aeroponic system using technology. The website integrates Gemini AI for image detection and analysis, providing insights into the state of the plants. Additionally, it utilizes the Blynk API for live updates from sensor monitoring, ensuring real-time data for optimal plant care.
 
 ## Features
 
@@ -12,9 +12,13 @@ AI-Ponics is an advanced web application built with React JS, designed to monito
 
 - **Firebase Integration**: Firebase provides backend services such as user authentication (via Google), real-time database storage, and cloud-based data sync. This ensures seamless data management, user profiles, and real-time updates across devices.
 
+- **AI-Chatbot Integration**: The application includes an AI-powered chatbot that provides real-time advice on plant care based on the sensor data.
+
+- **Email Notifications**: Users will receive email notifications whenever critical temperature thresholds are reached. Such as when it is too cold for the plant to grow, or when it is too hot for the plant to survive.
+
 - **User-Friendly Interface**: The React JS-based frontend with the implementation of Ant Design provides an intuitive and interactive user experience, making it easy to visualize plant health data and sensor readings.
 
-- **Multiple Blynk API Keys**: Users can now implement multiple Blynk API keys, allowing seamless switching between Aeroponic systems.
+- **Multiple Blynk API Keys**: Users can now implement multiple Blynk API keys, allowing seamless switching between different Aeroponic systems.
 
 ## Technologies Used
 
