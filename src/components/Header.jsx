@@ -76,7 +76,7 @@ function Header() {
         </a>
       </div>
       <div>
-        {location.pathname === '/home' && (
+        {/* {location.pathname === '/home' && (
           <a href='/forum'>
             <FontAwesomeIcon icon={faNewspaper} className='forum-icon'/>
           </a>
@@ -85,7 +85,7 @@ function Header() {
           <a href='/'>
            <FontAwesomeIcon icon={faHome} className='forum-icon'/>
           </a>
-        )}
+        )} */}
         {currentUser && (
           <FontAwesomeIcon
           icon={faUser}
