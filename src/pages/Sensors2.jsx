@@ -89,7 +89,8 @@ function Sensors2() {
         justifyContent: 'center',
         alignItems: 'center',
         textAlign: 'center',
-        padding: '0.5rem',
+        padding: '0.4rem',
+        margin: '0 auto',
       }}>
         <Card
           bordered={false}
@@ -103,7 +104,7 @@ function Sensors2() {
             alignItems: 'center',
             flexDirection: 'column',
             backgroundColor: '#d1e9d3',
-            padding: '4rem'
+            padding: '0rem'
           }}
         >
           <Flex gap="middle" horizontal style={{ 
@@ -248,7 +249,7 @@ function Sensors2() {
             bordered={false}
             style={{
               width: '100%',
-              height: 230,
+              height: 'fit-content',              
               background: 'white',
               border: '1px solid #ddd',
               boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
@@ -281,22 +282,25 @@ function Sensors2() {
                     max={format(new Date(), "yyyy-MM-dd")} // Use format from date-fns
                   />
                 </div>
-                {plantingDate && (
-                  <div style={{ textAlign: 'left', marginLeft: '3px' }}>
-                    <Typography.Text strong style={{ fontWeight: 540, fontFamily: 'Inter, sans-serif', marginTop: '-10px', textAlign: 'left', }}>
-                      Days planted: {daysSincePlanting}
-                    </Typography.Text>
+                <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div style={{ textAlign: 'left' }}>
+                    {plantingDate && (
+                      <Typography.Text strong style={{ fontWeight: 540, fontFamily: 'Inter, sans-serif', marginTop: '-10px', textAlign: 'left', }}>
+                        Days planted: {daysSincePlanting}
+                      </Typography.Text>
+                    )}
                   </div>
-                )}
-                {isPlantInfoChanged && (
-                  <Button
-                    type="primary"
-                    style={{ float: 'left', fontSize: '14px' }}
-                    onClick={() => handleSave('plantInfo')}
-                  >
-                    Save
-                  </Button>
-                )}
+                  {isPlantInfoChanged && (
+                    <Button
+                      type="primary"
+                      style={{ fontSize: '14px', marginBottom: '-10px' }}
+                      onClick={() => handleSave('plantInfo')}
+                    >
+                      Save
+                    </Button>
+                  )}
+                </div>
+
               </>
             )}
           </Card>

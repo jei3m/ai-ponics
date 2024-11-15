@@ -93,14 +93,14 @@ function Forum() {
   };
 
   return (
-    <div>
-      <Header/>
-      <div style={{ padding: '2.4rem 8px', maxWidth: '700px', margin: '0 auto'}}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '-10px', marginTop: '10px'}}>
-        <Title level={2} style={{textAlign:'center'}}>Forums</Title>
-        <Button style={{marginTop:'14px'}} type="primary" icon={<PlusOutlined />} onClick={() => setShowModal(true)}>
-          Create New Forum
-        </Button>
+    <div style={{ backgroundColor: '#f5f5f5', minHeight: '100vh' }}>
+      <Header />
+      <div style={{ padding: '1.4rem 0px', maxWidth: '700px', margin: '0 auto' }}>
+        <div style={{ padding: '0px 8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '-10px', marginTop: '10px' }}>
+          <Title level={2} style={{ textAlign: 'center', fontWeight: 'bold' }}>Forums</Title>
+          <Button style={{ marginTop: '10px' }} type="primary" icon={<PlusOutlined />} onClick={() => setShowModal(true)}>
+            Create New Forum
+          </Button>
         </div>
         <Modal
           title="Create New Forum"
@@ -117,29 +117,32 @@ function Forum() {
           ]}
           ref={modalRef}
           style={{
-            overflowY: 'auto',
-            maxHeight: '80%',
+            overflowY: 'hidden',
             scrollbarWidth: 'thin',
             scrollbarColor: '#ccc #f5f5f5',
-            borderRadius:'8px',
-          }}>
-          <Input
-            placeholder="Title of your forum"
-            value={newForumTitle}
-            onChange={(e) => setNewForumTitle(e.target.value)}
-            style={{ marginBottom: '1rem', fontWeight:'bold' }}
-          />
-          <ReactQuill
-            modules={modules}
-            value={newForumContent}
-            onChange={(content) => {
-              setNewForumContent(content);
-              adjustModalHeight();
-            }}
-            placeholder="Content of your forum"
-            style={{ height: 'auto', marginBottom: '2rem' }}
-            className='ql-modal'
-          />
+            borderRadius: '8px',
+            margin:'0 auto',
+          }}
+        >
+          <div style={{ maxHeight: 'calc(100vh - 300px)', overflowY: 'auto'}}>
+            <Input
+              placeholder="Title of your forum"
+              value={newForumTitle}
+              onChange={(e) => setNewForumTitle(e.target.value)}
+              style={{ marginBottom: '1rem', fontWeight: 'bold' }}
+            />
+            <ReactQuill
+              modules={modules}
+              value={newForumContent}
+              onChange={(content) => {
+                setNewForumContent(content);
+                adjustModalHeight();
+              }}
+              placeholder="Content of your forum"
+              style={{ height: 'auto', marginBottom: '2rem' }}
+              className='ql-modal'
+            />
+          </div>
         </Modal>
         <List
           itemLayout="vertical"
@@ -148,51 +151,53 @@ function Forum() {
             <List.Item
               style={{
                 backgroundColor: 'white',
-                border: '1px solid #ccc',
-                borderRadius: '12px',
-                marginTop: '0.8rem',
+                borderRadius: '8px',
+                marginTop: '0px',
                 padding: '1rem',
+                display: 'flex',
               }}
               actions={
                 currentUser && forum.postedBy === currentUser
                   ? [
-                    <Popconfirm
-                      title="Delete Forum"
-                      description="Are you sure to delete this forum?"
-                      onConfirm={() => handleDeleteForum(forum.id)}
-                      okText="Yes"
-                      cancelText="No"
-                    >
-                      <Button danger size="small">Delete</Button>
-                    </Popconfirm>,
-                    ]
+                    <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', marginLeft: 'auto' }}>
+                      <Popconfirm
+                        title="Delete Forum"
+                        description="Are you sure to delete this forum?"
+                        onConfirm={() => handleDeleteForum(forum.id)}
+                        okText="Yes"
+                        cancelText="No"
+                      >
+                        <Button danger size="small">Delete</Button>
+                      </Popconfirm>,
+                    </div>
+                  ]
                   : []
               }
             >
               <List.Item.Meta
-                avatar={<Avatar style={{width:'50px', height:'50px'}} src={forum.authorAvatar} />}
+                avatar={<Avatar style={{ width: '50px', height: '50px' }} src={forum.authorAvatar} />}
                 title={
                   <Link to={`/forum/${forum.id}`} style={{ textDecoration: 'none' }}>
-                    <div style={{marginBottom:'-10px'}}>
-                    <Text strong style={{fontSize:'20px'}}>{forum.title}</Text>
+                    <div style={{ marginBottom: '-14px', marginTop: '-10px' }}>
+                      <Text strong style={{ fontSize: '20px' }}>{forum.title}</Text>
                     </div>
                   </Link>
                 }
                 description={
                   <Space direction="vertical">
-                    <div style={{marginTop:'-20px'}}>
-                     <Text type="secondary" style={{fontSize:'15px'}}>Posted by: {forum.authorName}</Text>
+                    <div style={{ marginTop: '-20px' }}>
+                      <Text type="secondary" style={{ fontSize: '14px' }}>Posted by: {forum.authorName}</Text>
                     </div>
-                    <div style={{marginTop:'-5px'}}>
-                     <Text type="secondary" style={{fontSize:'14px'}}>{new Date(forum.createdAt).toLocaleString()}</Text>
+                    <div style={{ marginTop: '-10px' }}>
+                      <Text type="secondary" style={{ fontSize: '12px' }}>{new Date(forum.createdAt).toLocaleString()}</Text>
+                    </div>
+                    <div style={{ marginTop: '0.5rem' }}>
+                      <CommentOutlined style={{ marginRight: '0.5rem' }} />
+                      <Text type="secondary">{forum.comments.length} comments</Text>
                     </div>
                   </Space>
                 }
               />
-              <div style={{ display: 'flex', alignItems: 'center', marginTop: '1rem' }}>
-                <CommentOutlined style={{ marginRight: '0.5rem' }} />
-                <Text type="secondary">{forum.comments.length} comments</Text>
-              </div>
             </List.Item>
           )}
         />

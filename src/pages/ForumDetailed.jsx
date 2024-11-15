@@ -182,11 +182,36 @@ function DetailedView() {
           <ul className="comment-list">
             {forum.comments.map((comment, index) => (
               <li key={index} className="comment-item">
-                <Avatar style={{width:'40px', height:'40px', marginBottom:'4px', marginTop:'-4px',}} src={comment.authorAvatar} />
-                <p className="comment-author">{comment.authorName}</p>
-                <p className="comment-date">{new Date(comment.createdAt).toLocaleString()}</p>
+                <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+                  <Avatar style={{ width: '40px', height: '40px', marginRight: '10px' }} src={comment.authorAvatar} />
+                  <div>
+                    <p className="comment-author">{comment.authorName}</p>
+                    <p className="comment-date">{new Date(comment.createdAt).toLocaleString()}</p>
+                  </div>
+                </div>
                 <div className="comment-text" dangerouslySetInnerHTML={{ __html: comment.comment }} />
-                {currentUser && comment.postedBy === currentUser && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                    <Button
+                      className='forum-button'
+                      type="normal"
+                      onClick={() => toggleReplyForm(index)}
+                      icon={showReplyForm[index] ? <FontAwesomeIcon icon={faChevronUp} /> : <FontAwesomeIcon icon={faReply} />}
+                    >
+                      {showReplyForm[index] ? 'Cancel Reply' : 'Reply'}
+                    </Button>
+                    {comment.replies && comment.replies.length > 0 && (
+                      <Button
+                        className="forum-button"
+                        type="normal"
+                        onClick={() => toggleReplies(index)}
+                        icon={showReplies[index] ? <FontAwesomeIcon icon={faChevronUp} /> : <FontAwesomeIcon icon={faChevronDown} />}
+                      >
+                        {showReplies[index] ? 'Hide Replies' : 'Show Replies'}
+                      </Button>
+                    )}
+                  </div>
+                  {currentUser && comment.postedBy === currentUser && (
                     <Popconfirm
                       title="Delete Comment"
                       description="Are you sure to delete this comment?"
@@ -196,15 +221,8 @@ function DetailedView() {
                     >
                       <Button danger size="small">Delete</Button>
                     </Popconfirm>
-                )}
-                <Button
-                  className='forum-button'
-                  type="text"
-                  onClick={() => toggleReplyForm(index)}
-                  icon={showReplyForm[index] ? <FontAwesomeIcon icon={faChevronUp} /> : <FontAwesomeIcon icon={faReply} />}
-                >
-                  {showReplyForm[index] ? 'Cancel Reply' : 'Reply'}
-                </Button>
+                  )}
+                </div>
                 {showReplyForm[index] && (
                   <div className="reply-input">
                     <ReactQuill
@@ -215,37 +233,33 @@ function DetailedView() {
                       className='ql-comment'
                       style={{minHeight:'5em'}}
                     />
-                    <Button onClick={() => handleReply(index)} style={{marginTop:'10px'}}><FontAwesomeIcon icon={faReply}/> Submit Reply</Button>
+                    <Button className='forum-button' onClick={() => handleReply(index)} style={{marginTop:'10px', display:'flex', marginLeft:'auto'}}><FontAwesomeIcon icon={faReply}/> Submit Reply</Button>
                   </div>
-                )}
-                {comment.replies && comment.replies.length > 0 && (
-                  <Button
-                    className="forum-button"
-                    type="text"
-                    onClick={() => toggleReplies(index)}
-                    icon={showReplies[index] ? <FontAwesomeIcon icon={faChevronUp} /> : <FontAwesomeIcon icon={faChevronDown} />}
-                  >
-                    {showReplies[index] ? 'Hide Replies' : 'Show Replies'}
-                  </Button>
                 )}
                 {showReplies[index] && comment.replies && comment.replies.length > 0 && (
                   <ul className="reply-list">
                     {comment.replies.map((reply, replyIndex) => (
                       <li key={replyIndex} className="reply-item">
-                        <Avatar style={{width:'30px', height:'30px', marginBottom:'4px', marginTop:'-4px',}} src={reply.authorAvatar} />
-                        <p className="reply-author">{reply.authorName}</p>
-                        <p className="reply-date">{new Date(reply.createdAt).toLocaleString()}</p>
+                        <div style={{display:'flex', alignItems:'flex-start'}}>    
+                          <Avatar style={{width:'36px', height:'36px', marginRight:'10px'}} src={reply.authorAvatar} />
+                          <div>
+                            <p className="reply-author">{reply.authorName}</p>
+                            <p className="reply-date">{new Date(reply.createdAt).toLocaleString()}</p>
+                          </div>
+                        </div>
                         <div className="reply-text" dangerouslySetInnerHTML={{ __html: reply.comment }} />
                         {currentUser && reply.postedBy === currentUser && (
-                          <Popconfirm
-                            title="Delete Reply"
-                            description="Are you sure to delete this reply?"
-                            onConfirm={() => handleDeleteReply(index, replyIndex)}
-                            okText="Yes"
-                            cancelText="No"
-                          >
-                            <Button danger size="small">Delete</Button>
-                          </Popconfirm>
+                          <div style={{display:'flex', justifyContent:'right'}}>
+                            <Popconfirm
+                              title="Delete Reply"
+                              description="Are you sure to delete this reply?"
+                              onConfirm={() => handleDeleteReply(index, replyIndex)}
+                              okText="Yes"
+                              cancelText="No"
+                            >
+                              <Button danger size="small">Delete</Button>
+                            </Popconfirm>
+                          </div>
                         )}
                       </li>
                     ))}
