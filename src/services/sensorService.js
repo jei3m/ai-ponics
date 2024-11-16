@@ -6,6 +6,7 @@ import { auth, db } from "../firebase";
 import { toast } from "react-toastify";
 import { useApiKey } from "../context/ApiKeyContext";
 import { sendEmailHot, sendEmailCold } from './emailService';
+import { styled } from "@mui/material";
 
 export const useSensorsLogic = () => {
   const [temperature, setTemperature] = useState(null);
@@ -60,7 +61,7 @@ export const useSensorsLogic = () => {
           toast.error(
             "Error fetching data. Please check your API token and try again.",
             {
-              position: "top-center",
+              position: "bottom-center",
               autoClose: 5000,
               hideProgressBar: false,
               closeOnClick: true,

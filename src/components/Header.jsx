@@ -68,11 +68,16 @@ function Header() {
   };
 
   return (
-    <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.5rem 1.5rem', backgroundColor: '#FAF9F6', borderBottom: '1px solid #dee2e6', position: 'fixed', top: '0', left: '0', width: '100%', zIndex: '1000' }}>
+    <header style={{ marginBottom:'10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.5rem 1.5rem', backgroundColor: '#FAF9F6', borderBottom: '1px solid #dee2e6', position: 'sticky' }}>
       <div className="header-logo">
-        <a href='/'>
+        {/* <a href='/'>
           <FontAwesomeIcon icon={faLeaf} className="header-logo-icon" />
           <span>{plantName || 'AI-Ponics'}</span> Dashboard
+        </a> */}
+
+        <a href='/'>
+          <FontAwesomeIcon icon={faLeaf} className="header-logo-icon" />
+          <span>AI</span>-Ponics
         </a>
       </div>
       <div>

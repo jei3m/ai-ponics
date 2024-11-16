@@ -80,8 +80,8 @@ function Sensors2() {
   };
 
   return (
-    <div style={{ width: '100%', overflowX: 'hidden', backgroundColor: '#d1e9d3' }}>
-      <div style={{ backgroundColor: '#d1e9d3' }}>
+    <div style={{ width: '100%', overflowX: 'hidden' }}>
+      <div>
         <Header />
       </div>
       <div style={{
@@ -92,21 +92,19 @@ function Sensors2() {
         padding: '0.4rem',
         margin: '0 auto',
       }}>
-        <Card
+        <div
           bordered={false}
           style={{
-            width: '100vw',
+            maxWidth: '100vw',
             borderRadius: '14px',
-            minHeight: '100dvh',
             height: 'fit-content',
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
             flexDirection: 'column',
-            backgroundColor: '#d1e9d3',
-            padding: '0rem'
-          }}
-        >
+            padding: '1.8rem'
+          }}>
+            
           <Flex gap="middle" horizontal style={{ 
             width: '100%', 
             height: 'fit-content', 
@@ -304,7 +302,7 @@ function Sensors2() {
               </>
             )}
           </Card>
-        </Card>
+        </div>
         <div className="ask-aiponics-container">
           <a href="/chat" className="ask-aiponics-button">
             <img

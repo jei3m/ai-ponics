@@ -93,9 +93,9 @@ function Forum() {
   };
 
   return (
-    <div style={{ backgroundColor: '#f5f5f5', minHeight: '100vh' }}>
-      <Header />
-      <div style={{ padding: '1.4rem 0px', maxWidth: '700px', margin: '0 auto' }}>
+    <div style={{ backgroundColor: '#f5f5f5', minHeight: '100vh', overflow: 'auto' }}>
+      <Header />  
+      <div style={{ maxWidth: '700px', margin: '0 auto', marginTop:'-30px', }}>
         <div style={{ padding: '0px 8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '-10px', marginTop: '10px' }}>
           <Title level={2} style={{ textAlign: 'center', fontWeight: 'bold' }}>Forums</Title>
           <Button style={{ marginTop: '10px' }} type="primary" icon={<PlusOutlined />} onClick={() => setShowModal(true)}>

@@ -8,10 +8,11 @@
   --background-green: #d1e9d3;
   --text-color: #212121;
   --card-background: #FFFFFF;
+  --light-white:#f5f5f5;
 }
 
 body {
-  background-color: var(--background-green);
+  background-color: var(--light-white);
   color: var(--text-color);
   margin: 0;
   padding: 0;
@@ -31,7 +32,8 @@ body {
   min-height: 100vh;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(to bottom, #e6f7e6, #c8e6c8);
+  /* background: linear-gradient(to bottom, #e6f7e6, #c8e6c8); */
+  background-color: var(--light-white);
 }
 
 .App-logo {

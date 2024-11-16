@@ -41,6 +41,10 @@
   font-size: 18px;
 }
 
+.comment-text li {
+  list-style-type: disc;
+}
+
 .comment-input {
   margin: 20px 0;
 }
