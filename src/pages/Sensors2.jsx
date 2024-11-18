@@ -290,7 +290,7 @@ function Sensors2() {
                   />
                   <DatePicker
                     {...datePickerConfig}
-                    
+                    onFocus={(e) => e.target.readOnly = true}
                     value={plantingDate ? dayjs(plantingDate, 'DD/MM/YYYY') : null}
                   />
                 </div>
