@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Typography, Card, Button, Flex, Input, DatePicker } from "antd";
-import { Gauge } from "../components/Gauge";
 import Header from "../components/Header";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./css/Sensors.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExclamationTriangle, faThermometerHalf, faTint, faLeaf } from "@fortawesome/free-solid-svg-icons";
 import { useSensorsLogic } from "../services/sensorService";
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
+import { faThermometerHalf, faTint, faExclamationTriangle, faLeaf } from "@fortawesome/free-solid-svg-icons";
+import GaugeCard from '../components/GaugeCard';
+import AlertCard from '../components/AlertCard';
 
 dayjs.extend(customParseFormat);
 
@@ -18,7 +19,6 @@ function Sensors2() {
     temperature,
     humidity,
     plantingDate,
-    daysSincePlanting,
     plantName,
     isLoading,
     isApiKeyValid,
@@ -34,6 +34,12 @@ function Sensors2() {
   const [isPlantInfoChanged, setIsPlantInfoChanged] = useState(false);
   const [isBlynkApiKeyChanged, setIsBlynkApiKeyChanged] = useState(false);
 
+  const daysSincePlanting = useMemo(() => {
+    if (!plantingDate) return 0;
+    const plantingDay = dayjs(plantingDate, 'DD/MM/YYYY');
+    return dayjs().diff(plantingDay, 'day');
+  }, [plantingDate]);
+
   const handlePlantingDateChange = (date) => {
     setPlantingDate(date);
     setIsPlantInfoChanged(true);
@@ -42,17 +48,6 @@ function Sensors2() {
   const handlePlantNameChange = (event) => {
     setPlantName(event.target.value);
     setIsPlantInfoChanged(true);
-
-    const currentUser = auth.currentUser;
-    if (currentUser) {
-      setDoc(
-        doc(db, "users", currentUser.uid),
-        {
-          plantName: event.target.value,
-        },
-        { merge: true },
-      );
-    }
   };
 
   const handleSave = (field) => {
@@ -127,132 +122,35 @@ function Sensors2() {
             marginTop: '-14px' 
             }}>
             <div style={{ width: '94vw', maxWidth: '600px', display: 'flex', flexDirection: 'row', marginTop: '-20px', borderRadius: '10px', justifyContent: 'center', border: '1px solid #ddd', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', marginBottom: '10px' }}>
-              <Card
-                title={
-                  <div style={{ fontSize: '16px' }}>
-                    <FontAwesomeIcon icon={faThermometerHalf} style={{ marginRight: 10 }} />
-                    Temperature
-                  </div>
-                }
-                bordered={false}
-                style={{
-                  minWidth: '50%',
-                  height: 230,
-                  background: 'white',
-                  borderBottomRightRadius: '0',
-                  borderTopRightRadius: '0',
-                }}
-              >
-                <div className="gauge-container">
-                  {!selectedApiKey ? (
-                    <Typography.Text strong className="loading-text">
-                      Please Add API Token
-                    </Typography.Text>
-                  ) : !isApiKeyValid ? (
-                    <Typography.Text strong className="error-text">
-                      Invalid API Token
-                    </Typography.Text>
-                  ) : temperature !== null ? (
-                    <Gauge value={temperature} max={60} label="°C" />
-                  ) : (
-                    <Typography.Text strong className="loading-text">
-                      Loading...
-                    </Typography.Text>
-                  )}
-                </div>
-              </Card>
-
-              <Card
-                title={
-                  <div style={{ fontSize: '16px' }}>
-                    <FontAwesomeIcon icon={faTint} style={{ marginRight: 10 }} />
-                    Humidity
-                  </div>
-                }
-                bordered={false}
-                style={{
-                  minWidth: '50%',
-                  height: 230,
-                  overflowY: 'hidden',
-                  borderBottomLeftRadius: '0',
-                  borderTopLeftRadius: '0',
-                }}
-              >
-                <div className="gauge-container">
-                  {!selectedApiKey ? (
-                    <Typography.Text strong className="loading-text">
-                      Please Add API Token
-                    </Typography.Text>
-                  ) : !isApiKeyValid ? (
-                    <Typography.Text strong className="error-text">
-                      Invalid API Token
-                    </Typography.Text>
-                  ) : temperature !== null ? (
-                    <Gauge value={humidity} max={100} label="%" />
-                  ) : (
-                    <Typography.Text strong className="loading-text">
-                      Loading...
-                    </Typography.Text>
-                  )}
-                </div>
-              </Card>
+              <GaugeCard
+                title="Temperature"
+                icon={faThermometerHalf}
+                value={temperature}
+                max={60}
+                label="°C"
+                isLoading={isLoading}
+                isError={!isApiKeyValid}
+              />
+              <GaugeCard
+                title="Humidity"
+                icon={faTint}
+                value={humidity}
+                max={100}
+                label="%"
+                isLoading={isLoading}
+                isError={!isApiKeyValid}
+              />
             </div>
           </Flex>
-          <Card
-            title={
-              <div style={{ fontSize: '16px', textAlign: 'center' }}>
-                <FontAwesomeIcon icon={faExclamationTriangle} /> Temperature Alert
-              </div>
-            }
-            style={{
-              width: '100%',
-              height: 230,
-              background: 'white',
-              border: '1px solid #ddd',
-              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-              marginBottom: '10px'
-            }}>
-            {!selectedApiKey ? (
-              <Typography.Text strong className="loading-text">
-                Please Add API Token
-              </Typography.Text>
-            ) : isLoading ? (
-              <Typography.Text strong className="loading-text">
-                Loading...
-              </Typography.Text>
-            ) : !isApiKeyValid ? (
-              <Typography.Text strong className="error-text">
-                Invalid API Token
-              </Typography.Text>
-            ) : temperature > 73 ? (
-              <div>
-                <Typography.Text strong className="temperature-alert-icon">
-                  🔥 <br />
-                </Typography.Text>
-                <Typography.Text>
-                  Too Hot
-                </Typography.Text>
-              </div>
-            ) : temperature >= 15 && temperature <= 73 ? (
-              <div>
-                <Typography.Text strong className="temperature-alert-icon">
-                  ✅ <br />
-                </Typography.Text>
-                <Typography.Text strong className="temperature-alert-text">
-                  Normal
-                </Typography.Text>
-              </div>
-            ) : (
-              <div>
-                <Typography.Text strong className="temperature-alert-icon">
-                  ❄️ <br />
-                </Typography.Text>
-                <Typography.Text strong className="temperature-alert-text">
-                  Too Cold
-                </Typography.Text>
-              </div>
-            )}
-          </Card>
+          <AlertCard
+            title="Temperature Alert"
+            icon={faExclamationTriangle}
+            condition={temperature > 73}
+            trueText="Too Hot"
+            falseText="Normal"
+            isLoading={isLoading}
+            isError={!isApiKeyValid}
+          />
           <Card
             title={
               <div style={{ fontSize: '16px' }}>
@@ -283,6 +181,8 @@ function Sensors2() {
                 <div style={{ width: '100%' }}>
                   <Input
                     type="text"
+                    id="plantName"
+                    name="plantName"
                     value={plantName}
                     onChange={handlePlantNameChange}
                     placeholder="Enter plant name"
@@ -290,6 +190,8 @@ function Sensors2() {
                   />
                   <DatePicker
                     {...datePickerConfig}
+                    id="plantingDate"
+                    name="plantingDate"
                     onFocus={e => e.target.blur()}
                     value={plantingDate ? dayjs(plantingDate, 'DD/MM/YYYY') : null}
                   />

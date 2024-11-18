@@ -56,8 +56,8 @@
 
 .ask-aiponics-container {
   position: fixed; 
-  bottom: 15px;  
-  right: 15px; 
+  bottom: 6px;  
+  right: -10px; 
   display: flex;
   align-items: center;
   gap: 10px;
@@ -143,8 +143,8 @@
   }
 
   .ask-aiponics-button {
-    width: 70px;
-    height: 70px;
+    width: 60px;
+    height: 60px;
   }
 
   .text-bubble {
