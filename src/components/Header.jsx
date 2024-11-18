@@ -1,4 +1,3 @@
-// Header.jsx
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Select, Input, Avatar, Typography, Space, message } from 'antd';
 import { EyeInvisibleOutlined, EyeTwoTone, PlusOutlined, SaveOutlined, DeleteOutlined, LogoutOutlined } from '@ant-design/icons';
@@ -148,6 +147,8 @@ function Header() {
           </Select>
           <Input.Password
             value={editableBlynkApiKey}
+            id="BlynkApiKey"
+            name="BlynkApiKey"
             onChange={handleBlynkApiKeyChange}
             iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
             style={{ marginTop: '0.5rem' }}

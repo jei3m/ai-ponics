@@ -9,7 +9,7 @@ import { auth } from './firebase';
 //import Sensors from './pages/Sensors';
 import Chat from './pages/AiwithImage';
 import Login from './pages/Login';
-import AiwithImage2 from './pages/AiwithImage2';
+import AiwithImage2 from './pages/ChatTest';
 import Forum from './pages/Forum';
 import DetailedView from './pages/ForumDetailed';
 import Sensors2 from './pages/Sensors2';
@@ -75,8 +75,8 @@ function App() {
             </PrivateRoutes>
           }
         />
-        <Route path="/chat2" element={<AiwithImage2 />} />
-        <Route path="/sensors" element={<Sensors2Copy />} />
+         {/* <Route path="/chat2" element={<AiwithImage2 />} /> */}
+         
       </Routes>
     </ApiKeyProvider>
   );

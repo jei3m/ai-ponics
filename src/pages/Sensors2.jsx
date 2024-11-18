@@ -9,8 +9,8 @@ import { useSensorsLogic } from "../services/sensorService";
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { faThermometerHalf, faTint, faExclamationTriangle, faLeaf } from "@fortawesome/free-solid-svg-icons";
-import GaugeCard from '../components/GaugeCard';
 import AlertCard from '../components/AlertCard';
+import Gauge from "../components/Gauge";
 
 dayjs.extend(customParseFormat);
 
@@ -104,7 +104,6 @@ function Sensors2() {
         margin: '0 auto',
       }}>
         <div
-          bordered={false}
           style={{
             maxWidth: '100vw',
             borderRadius: '14px',
@@ -116,32 +115,84 @@ function Sensors2() {
             padding: '1.8rem'
           }}>
             
-          <Flex gap="middle" horizontal style={{ 
+          <Flex gap="middle" style={{ 
             width: '100%', 
             height: 'fit-content', 
             marginTop: '-14px' 
             }}>
             <div style={{ width: '94vw', maxWidth: '600px', display: 'flex', flexDirection: 'row', marginTop: '-20px', borderRadius: '10px', justifyContent: 'center', border: '1px solid #ddd', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', marginBottom: '10px' }}>
-              <GaugeCard
-                title="Temperature"
-                icon={faThermometerHalf}
-                value={temperature}
-                max={60}
-                label="°C"
-                isLoading={isLoading}
-                isError={!isApiKeyValid}
-              />
-              <GaugeCard
-                title="Humidity"
-                icon={faTint}
-                value={humidity}
-                max={100}
-                label="%"
-                isLoading={isLoading}
-                isError={!isApiKeyValid}
-              />
+              <Card
+                title={
+                  <div style={{ fontSize: '16px' }}>
+                    <FontAwesomeIcon icon={faThermometerHalf} style={{ marginRight: 10 }} />
+                    Temperature
+                  </div>
+                }
+                bordered={false}
+                style={{
+                  minWidth: '50%',
+                  height: 230,
+                  background: 'white',
+                  borderBottomRightRadius: '0',
+                  borderTopRightRadius: '0',
+                }}>
+
+                <div className="gauge-container">
+                  {!selectedApiKey ? (
+                    <Typography.Text strong className="loading-text">
+                      Please Add API Token
+                    </Typography.Text>
+                  ) : !isApiKeyValid ? (
+                    <Typography.Text strong className="error-text">
+                      Invalid API Token
+                    </Typography.Text>
+                  ) : temperature !== null ? (
+                    <Gauge value={temperature} max={60} label="°C" />
+                  ) : (
+                    <Typography.Text strong className="loading-text">
+                      Loading...
+                    </Typography.Text>
+                  )}
+                </div>
+              </Card>
+
+              <Card
+                title={
+                  <div style={{ fontSize: '16px' }}>
+                    <FontAwesomeIcon icon={faTint} style={{ marginRight: 10 }} />
+                    Humidity
+                  </div>
+                }
+                bordered={false}
+                style={{
+                  minWidth: '50%',
+                  height: 230,
+                  overflowY: 'hidden',
+                  borderBottomLeftRadius: '0',
+                  borderTopLeftRadius: '0',
+                }}
+              >
+                <div className="gauge-container">
+                  {!selectedApiKey ? (
+                    <Typography.Text strong className="loading-text">
+                      Please Add API Token
+                    </Typography.Text>
+                  ) : !isApiKeyValid ? (
+                    <Typography.Text strong className="error-text">
+                      Invalid API Token
+                    </Typography.Text>
+                  ) : temperature !== null ? (
+                    <Gauge value={humidity} max={100} label="%" />
+                  ) : (
+                    <Typography.Text strong className="loading-text">
+                      Loading...
+                    </Typography.Text>
+                  )}
+                </div>
+              </Card>
             </div>
           </Flex>
+
           <AlertCard
             title="Temperature Alert"
             icon={faExclamationTriangle}
@@ -199,7 +250,7 @@ function Sensors2() {
                 <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div style={{ textAlign: 'left' }}>
                     {plantingDate && (
-                      <Typography.Text strong style={{ fontWeight: 540, fontFamily: 'Inter, sans-serif', marginTop: '-10px', textAlign: 'left', }}>
+                      <Typography.Text strong style={{ fontWeight: 540, fontFamily: 'Inter, sans-serif', marginTop: '-10px', textAlign: 'left', marginLeft:'1px' }}>
                         Days planted: {daysSincePlanting}
                       </Typography.Text>
                     )}

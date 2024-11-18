@@ -1,8 +1,13 @@
 import React from "react";
 import { Card, Typography } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useApiKey } from "../context/ApiKeyContext";
 
-const AlertCard = ({ title, icon, condition, trueText, falseText, isLoading, isError }) => (
+const AlertCard = ({ title, icon, condition, trueText, falseText, isLoading, isError }) => {
+
+  const { selectedApiKey } = useApiKey();
+
+  return(
   <Card
     title={
       <div style={{ fontSize: '16px', textAlign: 'center' }}>
@@ -18,10 +23,17 @@ const AlertCard = ({ title, icon, condition, trueText, falseText, isLoading, isE
       marginBottom: '10px'
     }}
   >
+    
     {isLoading ? (
       <Typography.Text strong className="loading-text">
         Loading...
       </Typography.Text>
+
+    ) : !selectedApiKey ? (
+      <Typography.Text strong className="loading-text">
+        Please Add API Token
+      </Typography.Text>
+
     ) : isError ? (
       <Typography.Text strong className="error-text">
         Invalid API Token
@@ -47,5 +59,6 @@ const AlertCard = ({ title, icon, condition, trueText, falseText, isLoading, isE
     )}
   </Card>
 );
+};
 
 export default AlertCard;

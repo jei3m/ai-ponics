@@ -2,8 +2,12 @@ import React from "react";
 import { Card, Typography } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Gauge } from "../components/Gauge";
+import { useApiKey } from "../context/ApiKeyContext";
 
-const GaugeCard = ({ title, icon, value, max, label, isLoading, isError }) => (
+
+const GaugeCard = ({ title, icon, value, max, label, isLoading, isError }) => {
+  const { selectedApiKey } = useApiKey();
+  return(
   <Card
     title={
       <div style={{ fontSize: '16px' }}>
@@ -15,11 +19,8 @@ const GaugeCard = ({ title, icon, value, max, label, isLoading, isError }) => (
     style={{
       minWidth: '50%',
       height: 230,
-      background: 'white',
-      borderRadius: '10px',
-      marginBottom: '10px'
-    }}
-  >
+      background: 'white', 
+    }}>
     <div className="gauge-container">
       {isLoading ? (
         <Typography.Text strong className="loading-text">
@@ -29,11 +30,16 @@ const GaugeCard = ({ title, icon, value, max, label, isLoading, isError }) => (
         <Typography.Text strong className="error-text">
           Invalid API Token
         </Typography.Text>
+      ) : !selectedApiKey ? (
+        <Typography.Text strong className="loading-text">
+          Please Add API Token
+        </Typography.Text>
       ) : (
         <Gauge value={value} max={max} label={label} />
       )}
     </div>
   </Card>
 );
+};
 
 export default GaugeCard;

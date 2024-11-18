@@ -124,7 +124,7 @@ function Forum() {
             margin:'0 auto',
           }}
         >
-          <div style={{ maxHeight: 'calc(100vh - 300px)', overflowY: 'auto'}}>
+          <div style={{ height: 'calc(100vh - 300px)', overflowY: 'auto'}}>
             <Input
               placeholder="Title of your forum"
               value={newForumTitle}
@@ -139,7 +139,7 @@ function Forum() {
                 adjustModalHeight();
               }}
               placeholder="Content of your forum"
-              style={{ height: 'auto', marginBottom: '2rem' }}
+              style={{ height: 'calc(86vh - 300px)', marginBottom: '2rem' }}
               className='ql-modal'
             />
           </div>

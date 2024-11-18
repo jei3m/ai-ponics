@@ -6,8 +6,8 @@ import { faArrowLeft, faImage, faCamera, faSearch, faSyncAlt, faTimes } from '@f
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { UserAuth } from '../context/AuthContext';
 import { getBase64 } from '../helpers/imageHelper';
-import { db } from '../firebase'; // Make sure this points to your Firebase config
-import { doc, getDoc } from 'firebase/firestore'; // Firestore methods
+import { db } from '../firebase'; 
+import { doc, getDoc } from 'firebase/firestore';
 import Webcam from 'react-webcam';
 import './css/Chat.css';
 import axios from 'axios';
@@ -31,7 +31,7 @@ const AiwithImage = () => {
   const [daysSincePlanting, setDaysSincePlanting] = useState(0);
   const [temperature, setTemperature] = useState(null);
   const [humidity, setHumidity] = useState(null);
-  const [blynkApiKey, setBlynkApiKey] = useState('');
+  const [ setBlynkApiKey] = useState('');
   const navigate = useNavigate();
   const { currentUser } = UserAuth();
   const [sensorDataLoaded, setSensorDataLoaded] = useState(false);
@@ -129,9 +129,8 @@ const AiwithImage = () => {
     }
     const model = genAI.getGenerativeModel({
       model: "gemini-1.5-flash",
-      systemInstruction: "You are AI-Ponics, an Aeroponics expert. Greet the user warmly and offer assistance.",
     });
-    const result = await model.generateContent(`Introduce yourself as AI-Ponics concisely. Tell plant name is ${plantName} and it has been ${daysSincePlanting} days since planting, and sensor readings: temperature is ${temperature !== null ? temperature + '°C' : 'unavailable'} and humidity ${humidity !== null ? humidity + '%' : 'unavailable'}.`);
+    const result = await model.generateContent(`Introduce yourself as AI-Ponics. Tell plant name is ${plantName} and it has been ${daysSincePlanting} days since planting, and sensor readings: temperature is ${temperature !== null ? temperature + '°C' : 'unavailable'} and humidity ${humidity !== null ? humidity + '%' : 'unavailable'}.`);
     const response = await result.response;
     const text = response.text();
     setMessages([{ user: false, text: sanitizeText(text) }]);
@@ -143,7 +142,7 @@ const AiwithImage = () => {
     }
   }, [plantName, daysSincePlanting, sensorDataLoaded]);
 
-  // Replacing asterisks from the output of AI. Might change this to react-markdown
+  // Replacing asterisks from the output of AI.
   const sanitizeText = (text) => {
     return text
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')

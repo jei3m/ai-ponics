@@ -3,7 +3,7 @@ import ReactDOMServer from 'react-dom/server';
 import EmailTemplateHot from '../components/template/emailTemplateHot';
 import EmailTemplateCold from '../components/template/emailTemplateCold';
 
-const resend = new Resend(process.env.REACT_APP_RESEND_API_KEY);
+// const resend = new Resend(process.env.REACT_APP_RESEND_API_KEY);
 
 export const sendEmailHot = async (user, temperature) => {
   const lastEmailTimestamp = localStorage.getItem("lastEmailTimestamp");
