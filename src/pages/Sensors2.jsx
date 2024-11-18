@@ -1,6 +1,5 @@
-// Sensors2.jsx
-import React, { useState } from "react";
-import { Typography, Card, Button, Flex, Input } from "antd";
+import React, { useState, useEffect } from "react";
+import { Typography, Card, Button, Flex, Input, DatePicker } from "antd";
 import { Gauge } from "../components/Gauge";
 import Header from "../components/Header";
 import { ToastContainer } from "react-toastify";
@@ -9,7 +8,10 @@ import "./css/Sensors.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle, faThermometerHalf, faTint, faLeaf } from "@fortawesome/free-solid-svg-icons";
 import { useSensorsLogic } from "../services/sensorService";
-import { format } from "date-fns"; // Import format from date-fns
+import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+
+dayjs.extend(customParseFormat);
 
 function Sensors2() {
   const {
@@ -32,8 +34,8 @@ function Sensors2() {
   const [isPlantInfoChanged, setIsPlantInfoChanged] = useState(false);
   const [isBlynkApiKeyChanged, setIsBlynkApiKeyChanged] = useState(false);
 
-  const handlePlantingDateChange = (event) => {
-    setPlantingDate(event.target.value);
+  const handlePlantingDateChange = (date) => {
+    setPlantingDate(date);
     setIsPlantInfoChanged(true);
   };
 
@@ -60,7 +62,7 @@ function Sensors2() {
       if (field === "plantInfo") {
         dataToUpdate = {
           plantName,
-          plantingDate,
+          plantingDate: plantingDate ? plantingDate.format('DD/MM/YYYY') : null,
           daysSincePlanting,
         };
         setIsPlantInfoChanged(false);
@@ -77,6 +79,20 @@ function Sensors2() {
           console.error("Error saving data: ", error);
         });
     }
+  };
+
+  const disabledDate = (current) => {
+    return current && current > dayjs().endOf('day');
+  };
+
+  const datePickerConfig = {
+    format: "DD/MM/YYYY",
+    disabledDate: disabledDate,
+    placeholder: "Select planting date",
+    style: { width: '100%', marginBottom: 8 },
+    onChange: handlePlantingDateChange,
+    allowClear: true,
+    showToday: true,
   };
 
   return (
@@ -272,12 +288,10 @@ function Sensors2() {
                     placeholder="Enter plant name"
                     style={{ width: '100%', marginBottom: 16 }}
                   />
-                  <Input
-                    type="date"
-                    value={plantingDate}
-                    onChange={handlePlantingDateChange}
-                    style={{ width: '100%', marginBottom: 8 }}
-                    max={format(new Date(), "yyyy-MM-dd")} // Use format from date-fns
+                  <DatePicker
+                    {...datePickerConfig}
+                    
+                    value={plantingDate ? dayjs(plantingDate, 'DD/MM/YYYY') : null}
                   />
                 </div>
                 <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

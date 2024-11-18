@@ -6,13 +6,15 @@ import {
   Button,
   Flex,
   Input,
+  DatePicker,
 } from "antd";
-import { differenceInDays, format } from "date-fns";
+import { differenceInDays } from "date-fns";
+import moment from 'moment';
 import emailjs from "emailjs-com";
 import { Gauge } from "../components/Gauge";
 import Header from "../components/Header";
-import { db, auth } from "../firebase"; // Import Firebase
-import { doc, setDoc, getDoc } from "firebase/firestore"; // Firestore methods
+import { db, auth } from "../firebase";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./css/Sensors.css";
@@ -28,13 +30,11 @@ import { useApiKey } from "../context/ApiKeyContext";
 function Sensors2() {
   const [temperature, setTemperature] = useState(null);
   const [humidity, setHumidity] = useState(null);
-  const [plantingDate, setPlantingDate] = useState("");
+  const [plantingDate, setPlantingDate] = useState(null);
   const [daysSincePlanting, setDaysSincePlanting] = useState(0);
   const [temperatureAlert, setTemperatureAlert] = useState("");
   const [plantName, setPlantName] = useState("");
   const [user, setUser] = useState(null);
-  // const [isDataChanged, setIsDataChanged] = useState(false);
-  // const [showBlynkApiKey, setShowBlynkApiKey] = useState(false);
   const [isPlantInfoChanged, setIsPlantInfoChanged] = useState(false);
   const [isBlynkApiKeyChanged, setIsBlynkApiKeyChanged] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -101,20 +101,20 @@ function Sensors2() {
     const interval = setInterval(fetchSensorData, 5000);
 
     return () => clearInterval(interval);
-  }, [selectedApiKey, toastShown]); // Add selectedApiKey to the dependency array
+  }, [selectedApiKey, toastShown]);
 
   useEffect(() => {
     const fetchUserData = async () => {
       const currentUser = auth.currentUser;
       if (currentUser) {
-        setUser(currentUser); // Set user state
+        setUser(currentUser);
         const docRef = doc(db, "users", currentUser.uid);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
           const data = docSnap.data();
           if (data.plantingDate) {
-            setPlantingDate(data.plantingDate);
+            setPlantingDate(moment(data.plantingDate));
           }
           if (data.plantName) {
             setPlantName(data.plantName);
@@ -130,20 +130,19 @@ function Sensors2() {
 
   useEffect(() => {
     if (plantingDate) {
-      const selectedDate = new Date(plantingDate);
+      const selectedDate = moment(plantingDate).toDate();
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
       const days = differenceInDays(today, selectedDate);
       setDaysSincePlanting(days >= 0 ? days : 0);
 
-      // Save planting date and days since planting to Firestore when it changes
       const currentUser = auth.currentUser;
       if (currentUser) {
         setDoc(
           doc(db, "users", currentUser.uid),
           {
-            plantingDate: plantingDate,
+            plantingDate: plantingDate.format('YYYY-MM-DD'),
             daysSincePlanting: days >= 0 ? days : 0,
           },
           { merge: true },
@@ -152,28 +151,27 @@ function Sensors2() {
     }
   }, [plantingDate]);
 
-  const handlePlantingDateChange = (event) => {
-    setPlantingDate(event.target.value);
+  const handlePlantingDateChange = (date) => {
+    setPlantingDate(date);
     setIsPlantInfoChanged(true);
   };
 
-  const handlePlantNameChange = (event) => {
-    setPlantName(event.target.value);
-    setIsPlantInfoChanged(true);
-
-    const currentUser = auth.currentUser;
-    if (currentUser) {
-      setDoc(
-        doc(db, "users", currentUser.uid),
-        {
-          plantName: event.target.value,
-        },
-        { merge: true },
-      );
-    }
+  const disabledDate = (current) => {
+    return current && current > moment().endOf('day');
   };
 
-  // Function to send email if the temperature is too hot
+  const datePickerConfig = {
+    defaultValue: plantingDate ? moment(plantingDate) : null,
+    format: "YYYY-MM-DD",
+    disabledDate: disabledDate,
+    placeholder: "Select planting date",
+    style: { width: '100%', marginBottom: 8 },
+    onChange: handlePlantingDateChange,
+    allowClear: true,
+    showToday: true,
+    renderExtraFooter: () => "Select the date when you planted",
+  };
+
   const sendEmailHot = (temperature) => {
     const lastEmailTimestamp = localStorage.getItem("lastEmailTimestamp");
     const now = new Date().getTime();
@@ -212,7 +210,6 @@ function Sensors2() {
     }
   };
 
-   // Function to send email if the temperature is too cold
   const sendEmailCold = (temperature) => {
     const lastEmailTimestamp = localStorage.getItem("lastEmailTimestamp");
     const now = new Date().getTime();
@@ -258,8 +255,8 @@ function Sensors2() {
       if (field === "plantInfo") {
         dataToUpdate = {
           plantName,
-          plantingDate,
-          daysSincePlanting, // Add this line to include daysSincePlanting
+          plantingDate: plantingDate ? plantingDate.format('YYYY-MM-DD') : null,
+          daysSincePlanting,
         };
         setIsPlantInfoChanged(false);
       } else if (field === "blynkApiKey") {
@@ -278,8 +275,8 @@ function Sensors2() {
   };
 
   return (
-    <div style={{ width: '100%', overflowX: 'hidden', backgroundColor: '#d1e9d3' }}>
-      <div style={{backgroundColor: '#d1e9d3'}}>
+    <div style={{ width: '100%', overflowX: 'hidden' }}>
+      <div>
         <Header />
         </div>
         <div style={{
@@ -287,21 +284,19 @@ function Sensors2() {
           justifyContent: 'center',
           alignItems: 'center',
           textAlign: 'center',
-          padding: '0.5rem',
+          padding: '0.4rem',
+          margin: '0 auto',
         }}>
-          <Card               
-            bordered={false}
+          <div               
             style={{
-              width: '100vw', 
-              borderRadius: '14px', 
-              minHeight:'100dvh',
+              maxWidth: '100vw',
+              borderRadius: '14px',
               height: 'fit-content',
-              display: 'flex', 
-              justifyContent: 'center', 
+              display: 'flex',
+              justifyContent: 'center',
               alignItems: 'center',
               flexDirection: 'column',
-              backgroundColor: '#d1e9d3',
-              padding:'4rem'
+              padding: '1.8rem',
             }}
           >
             <Flex gap="middle" horizontal style={{ width: '100%', height: 'fit-content', marginTop:'-14px'}}>
@@ -446,7 +441,6 @@ function Sensors2() {
                 width: '100%',
                 height: 230,
                 background: 'white',
-                
                 border: '1px solid #ddd',
                 boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
                 marginBottom:'10px'
@@ -466,21 +460,18 @@ function Sensors2() {
                     <Input
                       type="text"
                       value={plantName}
-                      onChange={handlePlantNameChange}
+                      onChange={(e) => {
+                        setPlantName(e.target.value);
+                        setIsPlantInfoChanged(true);
+                      }}
                       placeholder="Enter plant name"
                       style={{ width: '100%', marginBottom: 16 }}
                     />
-                    <Input
-                      type="date"
-                      value={plantingDate}
-                      onChange={handlePlantingDateChange}
-                      style={{ width: '100%', marginBottom: 8 }}
-                      max={format(new Date(), "yyyy-MM-dd")}
-                    />
+                    <DatePicker {...datePickerConfig} />
                   </div>
                   {plantingDate && (
                     <div style={{textAlign:'left', marginLeft:'3px'}}>
-                      <Typography.Text strong style={{ fontWeight: 540, fontFamily: 'Inter, sans-serif', marginTop: '-10px', textAlign:'left', }}>
+                      <Typography.Text strong style={{ fontWeight: 540, fontFamily: 'Inter, sans-serif', marginTop: '-10px', textAlign:'left' }}>
                         Days planted: {daysSincePlanting}
                       </Typography.Text>
                     </div>
@@ -497,7 +488,7 @@ function Sensors2() {
                 </>
               )}
             </Card>
-          </Card>
+          </div>
           <div className="ask-aiponics-container">
             <a href="/chat" className="ask-aiponics-button">
               <img

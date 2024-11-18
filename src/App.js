@@ -19,6 +19,9 @@ import PrivateRoutes from './routes/PrivateRoutes';
 import { ApiKeyProvider } from './context/ApiKeyContext';
 import Loading from './pages/Loading';
 
+// Test Page
+import Sensors2Copy from './pages/Sensors2-copy';
+
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -73,6 +76,7 @@ function App() {
           }
         />
         <Route path="/chat2" element={<AiwithImage2 />} />
+        <Route path="/sensors" element={<Sensors2Copy />} />
       </Routes>
     </ApiKeyProvider>
   );

@@ -6,12 +6,15 @@ import { auth, db } from "../firebase";
 import { toast } from "react-toastify";
 import { useApiKey } from "../context/ApiKeyContext";
 import { sendEmailHot, sendEmailCold } from './emailService';
-import { styled } from "@mui/material";
+import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+
+dayjs.extend(customParseFormat);
 
 export const useSensorsLogic = () => {
   const [temperature, setTemperature] = useState(null);
   const [humidity, setHumidity] = useState(null);
-  const [plantingDate, setPlantingDate] = useState("");
+  const [plantingDate, setPlantingDate] = useState(null);
   const [daysSincePlanting, setDaysSincePlanting] = useState(0);
   const [temperatureAlert, setTemperatureAlert] = useState("");
   const [plantName, setPlantName] = useState("");
@@ -93,7 +96,7 @@ export const useSensorsLogic = () => {
         if (docSnap.exists()) {
           const data = docSnap.data();
           if (data.plantingDate) {
-            setPlantingDate(data.plantingDate);
+            setPlantingDate(dayjs(data.plantingDate, 'DD/MM/YYYY'));
           }
           if (data.plantName) {
             setPlantName(data.plantName);
@@ -109,7 +112,7 @@ export const useSensorsLogic = () => {
 
   useEffect(() => {
     if (plantingDate) {
-      const selectedDate = new Date(plantingDate);
+      const selectedDate = dayjs(plantingDate).toDate();
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
@@ -121,7 +124,7 @@ export const useSensorsLogic = () => {
         setDoc(
           doc(db, "users", currentUser.uid),
           {
-            plantingDate: plantingDate,
+            plantingDate: plantingDate.format('DD/MM/YYYY'),
             daysSincePlanting: days >= 0 ? days : 0,
           },
           { merge: true },
