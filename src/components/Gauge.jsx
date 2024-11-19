@@ -14,6 +14,7 @@ export function Gauge({ value, max, label }) {
                 sx={{
                     color: 'grey.400', 
                 }}
+                aria-label={`Background progress`} // Accessible name for the background progress
             />
             <CircularProgress
                 variant="determinate"
@@ -27,6 +28,7 @@ export function Gauge({ value, max, label }) {
                     color: '#3cb371', 
                     borderRadius: '50%',
                 }}
+                aria-label={`Progress: ${Math.round(value)}${label}`} // Accessible name for the progress
             />
             <Box
                 position="absolute"
@@ -38,8 +40,9 @@ export function Gauge({ value, max, label }) {
                 alignItems="center"
                 justifyContent="center"
             >
-                <Typography variant="h5" component="div" color="textPrimary"sx={{
-                    fontFamily: 'Inter, sans-serif', fontWeight:'500'}}>
+                <Typography variant="h5" component="div" color="textPrimary" sx={{
+                    fontFamily: 'Inter, sans-serif', fontWeight: '500'
+                }}>
                     {`${Math.round(value)}${label}`}
                 </Typography>
             </Box>

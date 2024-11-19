@@ -4,11 +4,8 @@ import {
     onAuthStateChanged,
     signInWithPopup,
     signOut,
-    createUserWithEmailAndPassword,
-    signInWithEmailAndPassword,
-    updateProfile,
 } from 'firebase/auth';
-import { auth, db } from '../firebase';
+import { auth } from '../firebase';
 import Loading from '../pages/Loading';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
@@ -33,43 +30,43 @@ function AuthProvider({ children }) {
     }
 
     // Sign up with email, password, and profile picture
-    async function signUpWithEmail(email, password, profilePic, displayName) {
-        try {
-            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-            const user = userCredential.user;
+    // async function signUpWithEmail(email, password, profilePic, displayName) {
+    //     try {
+    //         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    //         const user = userCredential.user;
     
-            // Update user's display name
-            await updateProfile(user, { displayName });
+    //         // Update user's display name
+    //         await updateProfile(user, { displayName });
     
-            // Handle profile picture upload
-            if (profilePic) {
-                const storageRef = ref(storage, `profile-pictures/${user.uid}/${profilePic.name}`);
-                await uploadBytes(storageRef, profilePic);
-                const downloadURL = await getDownloadURL(storageRef);
+    //         // Handle profile picture upload
+    //         if (profilePic) {
+    //             const storageRef = ref(storage, `profile-pictures/${user.uid}/${profilePic.name}`);
+    //             await uploadBytes(storageRef, profilePic);
+    //             const downloadURL = await getDownloadURL(storageRef);
     
-                // Update user's profile with the downloadURL
-                await updateProfile(user, { photoURL: downloadURL });
-                console.log('Profile picture uploaded, URL:', downloadURL);
-            }
+    //             // Update user's profile with the downloadURL
+    //             await updateProfile(user, { photoURL: downloadURL });
+    //             console.log('Profile picture uploaded, URL:', downloadURL);
+    //         }
     
-            console.log('User registered:', user);
-            setCurrentUser({ ...user, displayName }); // Update the currentUser with displayName
-        } catch (error) {
-            console.error('Error signing up:', error);
-            throw error;
-        }
-    }
+    //         console.log('User registered:', user);
+    //         setCurrentUser({ ...user, displayName }); // Update the currentUser with displayName
+    //     } catch (error) {
+    //         console.error('Error signing up:', error);
+    //         throw error;
+    //     }
+    // }
 
     // Sign in with email and password
-    async function signInWithEmail(email, password) {
-        try {
-            const userCredential = await signInWithEmailAndPassword(auth, email, password);
-            return userCredential.user;
-        } catch (error) {
-            console.error('Error signing in:', error);
-            throw error;
-        }
-    }
+    // async function signInWithEmail(email, password) {
+    //     try {
+    //         const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    //         return userCredential.user;
+    //     } catch (error) {
+    //         console.error('Error signing in:', error);
+    //         throw error;
+    //     }
+    // }
 
     // Log out
     function logOut() {
@@ -99,8 +96,6 @@ function AuthProvider({ children }) {
     const value = {
         currentUser,
         signInWithGoogle,
-        signUpWithEmail,
-        signInWithEmail,
         logOut,
         uploadProfilePicture,
     };

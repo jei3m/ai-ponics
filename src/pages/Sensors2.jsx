@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { Typography, Card, Button, Flex, Input, DatePicker } from "antd";
 import Header from "../components/Header";
 import { ToastContainer } from "react-toastify";
@@ -9,7 +9,6 @@ import { useSensorsLogic } from "../services/sensorService";
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { faThermometerHalf, faTint, faExclamationTriangle, faLeaf } from "@fortawesome/free-solid-svg-icons";
-import AlertCard from '../components/AlertCard';
 import Gauge from "../components/Gauge";
 
 dayjs.extend(customParseFormat);
@@ -193,15 +192,62 @@ function Sensors2() {
             </div>
           </Flex>
 
-          <AlertCard
-            title="Temperature Alert"
-            icon={faExclamationTriangle}
-            condition={temperature > 73}
-            trueText="Too Hot"
-            falseText="Normal"
-            isLoading={isLoading}
-            isError={!isApiKeyValid}
-          />
+          <Card
+            title={
+              <div style={{ fontSize: '16px', textAlign: 'center' }}>
+                <FontAwesomeIcon icon={faExclamationTriangle} /> Temperature Alert
+              </div>
+            }
+            style={{
+              width: '100%',
+              height: 230,
+              background: 'white',
+              border: '1px solid #ddd',
+              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+              marginBottom: '10px'
+            }}>
+            {!selectedApiKey ? (
+              <Typography.Text strong className="loading-text">
+                Please Add API Token
+              </Typography.Text>
+            ) : isLoading ? (
+              <Typography.Text strong className="loading-text">
+                Loading...
+              </Typography.Text>
+            ) : !isApiKeyValid ? (
+              <Typography.Text strong className="error-text">
+                Invalid API Token
+              </Typography.Text>
+            ) : temperature > 73 ? (
+              <div>
+                <Typography.Text strong className="temperature-alert-icon">
+                  🔥 <br />
+                </Typography.Text>
+                <Typography.Text>
+                  Too Hot
+                </Typography.Text>
+              </div>
+            ) : temperature >= 15 && temperature <= 73 ? (
+              <div>
+                <Typography.Text strong className="temperature-alert-icon">
+                  ✅ <br />
+                </Typography.Text>
+                <Typography.Text strong className="temperature-alert-text">
+                  Normal
+                </Typography.Text>
+              </div>
+            ) : (
+              <div>
+                <Typography.Text strong className="temperature-alert-icon">
+                  ❄️ <br />
+                </Typography.Text>
+                <Typography.Text strong className="temperature-alert-text">
+                  Too Cold
+                </Typography.Text>
+              </div>
+            )}
+          </Card>
+
           <Card
             title={
               <div style={{ fontSize: '16px' }}>
