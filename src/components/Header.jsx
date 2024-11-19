@@ -80,7 +80,7 @@ function Header() {
         </a>
       </div>
       <div>
-        {/* {location.pathname === '/home' && (
+        {location.pathname === '/home' && (
           <a href='/forum'>
             <FontAwesomeIcon icon={faNewspaper} className='forum-icon'/>
           </a>
@@ -89,7 +89,7 @@ function Header() {
           <a href='/'>
            <FontAwesomeIcon icon={faHome} className='forum-icon'/>
           </a>
-        )} */}
+        )}
         {currentUser && (
           <FontAwesomeIcon
           icon={faUser}
@@ -110,7 +110,7 @@ function Header() {
       >
         <Avatar 
           size={80} 
-          src={currentUser?.photoURL} 
+          src={currentUser.photoURL || 'https://via.placeholder.com/50'} 
           style={{
             border: '3px solid #006400', 
             marginBottom: '10px', 

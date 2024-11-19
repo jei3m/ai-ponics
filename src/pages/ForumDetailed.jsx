@@ -191,7 +191,7 @@ function DetailedView() {
                 </div>
                 <div className="comment-text" dangerouslySetInnerHTML={{ __html: comment.comment }} />
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div>
+                  <div>  
                     <Button
                       className='forum-button'
                       type="normal"
@@ -247,9 +247,9 @@ function DetailedView() {
                             <p className="reply-date">{new Date(reply.createdAt).toLocaleString()}</p>
                           </div>
                         </div>
-                        <div className="comment-text" dangerouslySetInnerHTML={{ __html: reply.comment }} />
+                        <div style={{marginTop:'-4px'}} className="comment-text" dangerouslySetInnerHTML={{ __html: reply.comment }} />
                         {currentUser && reply.postedBy === currentUser && (
-                          <div style={{display:'flex', justifyContent:'right'}}>
+                          <div style={{display:'flex', justifyContent:'right', marginTop:'-3rem'}}>
                             <Popconfirm
                               title="Delete Reply"
                               description="Are you sure to delete this reply?"

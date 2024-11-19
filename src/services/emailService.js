@@ -1,4 +1,3 @@
-import { Resend } from 'resend';
 import ReactDOMServer from 'react-dom/server';
 import EmailTemplateHot from '../components/template/emailTemplateHot';
 import EmailTemplateCold from '../components/template/emailTemplateCold';
