@@ -31,7 +31,7 @@ const AiwithImage = () => {
   const [daysSincePlanting, setDaysSincePlanting] = useState(0);
   const [temperature, setTemperature] = useState(null);
   const [humidity, setHumidity] = useState(null);
-  const [ setBlynkApiKey] = useState('');
+  const [blynkApiKey, setBlynkApiKey] = useState('');
   const navigate = useNavigate();
   const { currentUser } = UserAuth();
   const [sensorDataLoaded, setSensorDataLoaded] = useState(false);
@@ -128,7 +128,7 @@ const AiwithImage = () => {
       return; 
     }
     const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash",
+      model: "gemini-1.5-pro-exp-0827",
     });
     const result = await model.generateContent(`Introduce yourself as AI-Ponics. Tell plant name is ${plantName} and it has been ${daysSincePlanting} days since planting, and sensor readings: temperature is ${temperature !== null ? temperature + '°C' : 'unavailable'} and humidity ${humidity !== null ? humidity + '%' : 'unavailable'}.`);
     const response = await result.response;
