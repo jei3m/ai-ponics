@@ -226,7 +226,7 @@ const AiwithImage = () => {
     <div className="App-Chat">
       <div className="chat-container">
         <ToastContainer />
-        <div className="header">
+        <div className="header" style={{display: "flex", justifyContent: "space-between"}}>
           <h2>Ask AI-Ponics!</h2>
           <button className="back-button" onClick={goBack}>
             <FontAwesomeIcon icon={faArrowLeft} />

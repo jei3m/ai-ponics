@@ -249,7 +249,7 @@ function DetailedView() {
                         </div>
                         <div style={{marginTop:'-4px'}} className="comment-text" dangerouslySetInnerHTML={{ __html: reply.comment }} />
                         {currentUser && reply.postedBy === currentUser && (
-                          <div style={{display:'flex', justifyContent:'right', marginTop:'-3rem'}}>
+                          <div style={{display:'flex', justifyContent:'right', marginTop:'-1rem'}}>
                             <Popconfirm
                               title="Delete Reply"
                               description="Are you sure to delete this reply?"
