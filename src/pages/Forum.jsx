@@ -168,7 +168,7 @@ function Forum() {
                         cancelText="No"
                       >
                         <Button danger size="small">Delete</Button>
-                      </Popconfirm>,
+                      </Popconfirm>
                     </div>
                   ]
                   : []
