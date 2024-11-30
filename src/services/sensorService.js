@@ -20,7 +20,6 @@ export const useSensorsLogic = () => {
   const [humidity, setHumidity] = useState(null);
   const [plantingDate, setPlantingDate] = useState(null);
   const [daysSincePlanting, setDaysSincePlanting] = useState(0);
-  const [temperatureAlert, setTemperatureAlert] = useState("");
   const [plantName, setPlantName] = useState("");
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -57,24 +56,21 @@ export const useSensorsLogic = () => {
         setTemperature(temperatureResponse.data);
         setHumidity(humidityResponse.data);
 
-        if (!deviceStatusResponse.data) {
-          setTemperatureAlert("Device Offline");
-        } else if (temperatureResponse.data > MAX_TEMPERATURE) {
-          setTemperatureAlert("Temperature too high!");
-          sendEmailHot(user, temperatureResponse.data);
-        } else if (temperatureResponse.data < MIN_TEMPERATURE) {
-          setTemperatureAlert("Temperature too low!");
-          sendEmailCold(user, temperatureResponse.data);
-        } else {
-          setTemperatureAlert("");
+        // Send email alerts only if device is online
+        if (deviceStatusResponse.data) {
+          if (temperatureResponse.data > MAX_TEMPERATURE) {
+            sendEmailHot(user, temperatureResponse.data);
+          } else if (temperatureResponse.data < MIN_TEMPERATURE) {
+            sendEmailCold(user, temperatureResponse.data);
+          }
         }
+
         setIsLoading(false);
       } catch (error) {
         console.error("Error fetching data from Blynk:", error);
         setIsApiKeyValid(false);
         setTemperature(null);
         setHumidity(null);
-        setTemperatureAlert("Error fetching data");
         if (!toastShown) {
           toast.error(
             "Error fetching data. Please check your API token and try again.",
@@ -153,7 +149,6 @@ export const useSensorsLogic = () => {
     humidity,
     plantingDate,
     daysSincePlanting,
-    temperatureAlert,
     plantName,
     user,
     isLoading,

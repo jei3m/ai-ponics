@@ -237,7 +237,7 @@ function Sensors2() {
                 <Typography.Text strong className="temperature-alert-icon">
                   🔥 <br />
                 </Typography.Text>
-                <Typography.Text>
+                <Typography.Text strong>
                   Too Hot
                 </Typography.Text>
               </div>
@@ -272,7 +272,7 @@ function Sensors2() {
             bordered={false}
             style={{
               width: '100%',
-              height: 'fit-content',              
+              height: 230,              
               background: 'white',
               border: '1px solid #ddd',
               boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
