@@ -11,6 +11,10 @@ import customParseFormat from 'dayjs/plugin/customParseFormat';
 
 dayjs.extend(customParseFormat);
 
+// Temperature thresholds in Celsius
+export const MAX_TEMPERATURE = 73; 
+export const MIN_TEMPERATURE = 15; 
+
 export const useSensorsLogic = () => {
   const [temperature, setTemperature] = useState(null);
   const [humidity, setHumidity] = useState(null);
@@ -22,6 +26,7 @@ export const useSensorsLogic = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isApiKeyValid, setIsApiKeyValid] = useState(true);
   const [toastShown, setToastShown] = useState(false);
+  const [isDeviceOnline, setIsDeviceOnline] = useState(false);
   const { selectedApiKey } = useApiKey();
 
   useEffect(() => {
@@ -35,19 +40,29 @@ export const useSensorsLogic = () => {
 
     const fetchSensorData = async () => {
       try {
+        // Check device online status
+        const deviceStatusResponse = await axios.get(
+          `https://blynk.cloud/external/api/isHardwareConnected?token=${selectedApiKey}`
+        );
+        setIsDeviceOnline(deviceStatusResponse.data);
+
         const temperatureResponse = await axios.get(
           `https://blynk.cloud/external/api/get?token=${selectedApiKey}&V0`,
         );
+
         const humidityResponse = await axios.get(
           `https://blynk.cloud/external/api/get?token=${selectedApiKey}&V1`,
         );
+        
         setTemperature(temperatureResponse.data);
         setHumidity(humidityResponse.data);
 
-        if (temperatureResponse.data > 73) {
+        if (!deviceStatusResponse.data) {
+          setTemperatureAlert("Device Offline");
+        } else if (temperatureResponse.data > MAX_TEMPERATURE) {
           setTemperatureAlert("Temperature too high!");
           sendEmailHot(user, temperatureResponse.data);
-        } else if (temperatureResponse.data < 15) {
+        } else if (temperatureResponse.data < MIN_TEMPERATURE) {
           setTemperatureAlert("Temperature too low!");
           sendEmailCold(user, temperatureResponse.data);
         } else {
@@ -150,5 +165,6 @@ export const useSensorsLogic = () => {
     db,
     setPlantingDate,
     setPlantName,
+    isDeviceOnline,
   };
 };

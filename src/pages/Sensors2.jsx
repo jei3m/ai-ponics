@@ -5,7 +5,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./css/Sensors.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useSensorsLogic } from "../services/sensorService";
+import { useSensorsLogic, MAX_TEMPERATURE, MIN_TEMPERATURE } from "../services/sensorService";
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { faThermometerHalf, faTint, faExclamationTriangle, faLeaf } from "@fortawesome/free-solid-svg-icons";
@@ -28,6 +28,7 @@ function Sensors2() {
     db,
     setPlantingDate,
     setPlantName,
+    isDeviceOnline,
   } = useSensorsLogic();
 
   const [isPlantInfoChanged, setIsPlantInfoChanged] = useState(false);
@@ -119,6 +120,7 @@ function Sensors2() {
             height: 'fit-content', 
             marginTop: '-14px' 
             }}>
+
             <div style={{ width: '94vw', maxWidth: '600px', display: 'flex', flexDirection: 'row', marginTop: '-20px', borderRadius: '10px', justifyContent: 'center', border: '1px solid #ddd', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', marginBottom: '10px' }}>
               <Card
                 title={
@@ -144,6 +146,10 @@ function Sensors2() {
                   ) : !isApiKeyValid ? (
                     <Typography.Text strong className="error-text">
                       Invalid API Token
+                    </Typography.Text>
+                  ) : !isDeviceOnline ? (
+                    <Typography.Text strong style={{ textAlign: 'center', color: '#ff4d4f' }}>
+                      Device Offline
                     </Typography.Text>
                   ) : temperature !== null ? (
                     <Gauge value={temperature} max={60} label="°C" />
@@ -180,7 +186,11 @@ function Sensors2() {
                     <Typography.Text strong className="error-text">
                       Invalid API Token
                     </Typography.Text>
-                  ) : temperature !== null ? (
+                  ) : !isDeviceOnline ? (
+                    <Typography.Text strong style={{ textAlign: 'center', color: '#ff4d4f' }}>
+                      Device Offline
+                    </Typography.Text>
+                  ) : humidity !== null ? (
                     <Gauge value={humidity} max={100} label="%" />
                   ) : (
                     <Typography.Text strong className="loading-text">
@@ -218,7 +228,11 @@ function Sensors2() {
               <Typography.Text strong className="error-text">
                 Invalid API Token
               </Typography.Text>
-            ) : temperature > 73 ? (
+            ) : !isDeviceOnline ? (
+              <Typography.Text strong style={{ textAlign: 'center', color: '#ff4d4f' }}>
+                Device Offline
+              </Typography.Text>
+            ) : temperature > MAX_TEMPERATURE ? (
               <div>
                 <Typography.Text strong className="temperature-alert-icon">
                   🔥 <br />
@@ -227,7 +241,7 @@ function Sensors2() {
                   Too Hot
                 </Typography.Text>
               </div>
-            ) : temperature >= 15 && temperature <= 73 ? (
+            ) : temperature >= MIN_TEMPERATURE && temperature <= MAX_TEMPERATURE ? (
               <div>
                 <Typography.Text strong className="temperature-alert-icon">
                   ✅ <br />
@@ -273,8 +287,12 @@ function Sensors2() {
               <Typography.Text strong style={{ textAlign: 'center' }}>
                 Invalid API Token
               </Typography.Text>
+            ) : !isDeviceOnline ? (
+              <Typography.Text strong style={{ textAlign: 'center', color: '#ff4d4f' }}>
+                Device Offline
+              </Typography.Text>
             ) : (
-              <>
+              <div>
                 <div style={{ width: '100%' }}>
                   <Input
                     type="text"
@@ -312,7 +330,7 @@ function Sensors2() {
                   )}
                 </div>
 
-              </>
+              </div>
             )}
           </Card>
         </div>
