@@ -12,6 +12,7 @@ import Webcam from 'react-webcam';
 import './css/Chat.css';
 import axios from 'axios';
 import { useApiKey } from "../context/ApiKeyContext";
+import ReactMarkdown from 'react-markdown';
 
 // Setting constants to process environment variables (API Keys)
 const apiKey = process.env.REACT_APP_API_KEY;
@@ -118,7 +119,7 @@ const AiwithImage = () => {
     setMessages((prevMessages) => [
       ...prevMessages,
       { user: true, text: textPrompt, image: imagePreview },
-      { user: false, text: sanitizeText(text) },
+      { user: false, text: text },
     ]);
   }
 
@@ -133,7 +134,7 @@ const AiwithImage = () => {
     const result = await model.generateContent(`Introduce yourself as AI-Ponics. Tell plant name is ${plantName} and it has been ${daysSincePlanting} days since planting, and sensor readings: temperature is ${temperature !== null ? temperature + '°C' : 'unavailable'} and humidity ${humidity !== null ? humidity + '%' : 'unavailable'}.`);
     const response = await result.response;
     const text = response.text();
-    setMessages([{ user: false, text: sanitizeText(text) }]);
+    setMessages([{ user: false, text: text }]);
   }
 
   useEffect(() => {
@@ -142,11 +143,12 @@ const AiwithImage = () => {
     }
   }, [plantName, daysSincePlanting, sensorDataLoaded]);
 
-  // Replacing asterisks from the output of AI.
-  const sanitizeText = (text) => {
-    return text
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      .replace(/\*/g, '<br />');
+  // Custom components for ReactMarkdown
+  const components = {
+    p: ({ children }) => <div style={{ margin: 0 }}>{children}</div>,
+    strong: ({ children }) => <strong>{children}</strong>,
+    br: () => <br />,
+    h2: ({ children }) => <h3>{children}</h3>
   };
 
   // Error when sending a prompt with cleared fields
@@ -236,11 +238,16 @@ const AiwithImage = () => {
         <div className="messages-container">
           {messages.map((msg, index) => (
             <div key={index} className={`message-container ${msg.user ? "user" : "ai"}`}>
-              <div
-                className={`message ${msg.user ? "user" : "ai"}`}
-                dangerouslySetInnerHTML={{ __html: msg.text }}
-              />
-              {msg.image && <img src={msg.image} alt="user-uploaded" className="uploaded-image" />}
+              <div className={`message ${msg.user ? "user" : "ai"}`}>
+                {msg.user ? (
+                  <>
+                    <p>{msg.text}</p>
+                    {msg.image && <img src={msg.image} alt="user-uploaded" className="uploaded-image" />}
+                  </>
+                ) : (
+                  <ReactMarkdown components={components}>{msg.text}</ReactMarkdown>
+                )}
+              </div>
             </div>
           ))}
         </div>
