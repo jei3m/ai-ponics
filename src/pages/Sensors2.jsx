@@ -283,6 +283,10 @@ function Sensors2() {
               <Typography.Text strong style={{ textAlign: 'center' }} className="loading-text">
                 Please Add API Token
               </Typography.Text>
+            ) : isLoading ? (
+              <Typography.Text strong className="loading-text">
+                Loading...
+              </Typography.Text>
             ) : !isApiKeyValid ? (
               <Typography.Text strong style={{ textAlign: 'center' }}>
                 Invalid API Token
