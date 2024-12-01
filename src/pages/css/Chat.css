@@ -75,7 +75,6 @@
 .messages-container {
     flex: 1;
     overflow-y: auto;
-    margin-bottom: 16px;
     scrollbar-width: none;
     -ms-overflow-style: none;
 }
@@ -127,11 +126,10 @@
     flex-direction: row; /* Stack input and buttons horizontally */
     align-items: center; /* Center items vertically */
     gap: 4px; /* Reduced gap between items */
-    padding-top: 8px; /* Reduced padding */
+    padding-top: 4px; /* Reduced padding */
     width: 100%; /* Ensure it takes full width of the chat-container */
     box-sizing: border-box; /* Ensure padding is included in width */
-    height: 60px; /* Adjust height to fit two lines of text */
-    
+    height: 50px; /* Adjust height to fit two lines of text */
 }
 
 /* Button container - Flex evenly */
@@ -140,12 +138,12 @@
     flex-direction: row;
     align-items: center;
     gap: 4px; /* Reduced gap */
-    padding-top: 8px; /* Reduced padding */
+    padding-top: 4px; /* Reduced padding */
     width: 100%; /* Ensure it takes full width of the input-container */
 }
 
 .message-input {
-    padding: 10px; /* Reduced padding for a more compact appearance */
+    padding: 8px; /* Reduced padding for a more compact appearance */
     background-color: #a2d3a4; /* Light green */
     border-radius: 12px;
     color: #000000; /* Black Text */
@@ -166,11 +164,11 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 36px; /* Reduced height */
+    height: 32px; /* Reduced height */
     flex: 1;
     padding: 0 8px; /* Reduced padding */
-    margin: 0 4px; /* Reduced margin */
-    font-size: 18px;
+    margin: 0 2px; /* Reduced margin */
+    font-size: 16px;
 }
 
 .camera-button.disabled {
@@ -379,5 +377,4 @@
   .message.user .markdown-content p{
     color: white;
   }
-  
   
