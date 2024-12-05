@@ -227,7 +227,9 @@ const AiwithImage = () => {
   return (
     <div className="App-Chat">
       <div className="chat-container">
+
         <ToastContainer />
+
         <div className="header" style={{display: "flex", justifyContent: "space-between"}}>
           <h2>Ask AI-Ponics!</h2>
           <button className="back-button" onClick={goBack}>
@@ -235,6 +237,7 @@ const AiwithImage = () => {
             Back
           </button>
         </div>
+
         <div className="messages-container">
           {messages.map((msg, index) => (
             <div key={index} className={`message-container ${msg.user ? "user" : "ai"}`}>
@@ -251,6 +254,7 @@ const AiwithImage = () => {
             </div>
           ))}
         </div>
+
         <div className="input-container">
           <input
             className="message-input"
@@ -260,6 +264,7 @@ const AiwithImage = () => {
             onKeyDown={(e) => e.key === "Enter" && sendMessage()}
           />
         </div>
+
         <div className="input-button-container">
           <input
             type="file"
@@ -319,6 +324,7 @@ const AiwithImage = () => {
             </button>
           </div>
         )}
+        
       </div>
     </div>
   );

@@ -93,7 +93,7 @@ function Forum() {
   };
 
   return (
-    <div style={{ backgroundColor: '#f5f5f5', minHeight: '100vh', overflow: 'auto' }}>
+    <div style={{ minHeight: '100vh', overflow: 'auto' }}>
       <Header />  
       <div style={{ maxWidth: '700px', margin: '0 auto', marginTop:'-30px', }}>
         <div style={{ padding: '0px 8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '-10px', marginTop: '10px' }}>
@@ -151,7 +151,7 @@ function Forum() {
             <List.Item
               style={{
                 backgroundColor: 'white',
-                borderRadius: '8px',
+                borderRadius: '0px',
                 marginTop: '0px',
                 padding: '1rem',
                 display: 'flex',

@@ -5,7 +5,7 @@
     height: 100dvh;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(to bottom, #e6f7e6, #c8e6c8);
+    /* background: linear-gradient(to bottom, #e6f7e6, #c8e6c8); */
     /* background-color: #FAF9F6; */
     overflow: hidden;
 }
@@ -143,13 +143,15 @@
 }
 
 .message-input {
-    padding: 8px; /* Reduced padding for a more compact appearance */
-    background-color: #a2d3a4; /* Light green */
-    border-radius: 12px;
-    color: #000000; /* Black Text */
+    padding: 8px; 
+    background-color: #c8e6c9; 
+    color: #004d00; 
+    border-radius: 8px;
     border: none;
     font-size: 16px;
-    width: 100%; /* Ensure it takes full width of the input-button-container */
+    width: 100%; 
+    outline: none ;
+    padding: 8px;
 }
 
 /* Buttons */

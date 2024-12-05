@@ -90,11 +90,31 @@ function Sensors2() {
     showToday: true,
   };
 
+  const statusConfig = [
+    {
+      when: !selectedApiKey,
+      message: 'Please Add API Token',
+      className: 'loading-text'
+    },
+    {
+      when: !isApiKeyValid,
+      message: 'Invalid API Token',
+      className: 'error-text'
+    },
+    {
+      when: !isDeviceOnline,
+      message: 'Device Offline',
+      style: { textAlign: 'center', color: '#ff4d4f' }
+    }
+  ];
+
   return (
     <div style={{ width: '100%', overflowX: 'hidden' }}>
+      
       <div>
         <Header />
       </div>
+
       <div style={{
         display: 'flex',
         justifyContent: 'center',
@@ -103,6 +123,7 @@ function Sensors2() {
         padding: '0.4rem',
         margin: '0 auto',
       }}>
+
         <div
           style={{
             maxWidth: '100vw',
@@ -139,21 +160,19 @@ function Sensors2() {
                 }}>
 
                 <div className="gauge-container">
-                  {!selectedApiKey ? (
-                    <Typography.Text strong className="loading-text">
-                      Please Add API Token
+                  {statusConfig.find(status => status.when) && (
+                    <Typography.Text 
+                      strong 
+                      className={statusConfig.find(status => status.when)?.className}
+                      style={statusConfig.find(status => status.when)?.style}
+                    >
+                      {statusConfig.find(status => status.when)?.message}
                     </Typography.Text>
-                  ) : !isApiKeyValid ? (
-                    <Typography.Text strong className="error-text">
-                      Invalid API Token
-                    </Typography.Text>
-                  ) : !isDeviceOnline ? (
-                    <Typography.Text strong style={{ textAlign: 'center', color: '#ff4d4f' }}>
-                      Device Offline
-                    </Typography.Text>
-                  ) : temperature !== null ? (
+                  )}
+                  {!(statusConfig.find(status => status.when)) && temperature !== null && (
                     <Gauge value={temperature} max={60} label="°C" />
-                  ) : (
+                  )}
+                  {!(statusConfig.find(status => status.when)) && temperature === null && (
                     <Typography.Text strong className="loading-text">
                       Loading...
                     </Typography.Text>
@@ -178,21 +197,19 @@ function Sensors2() {
                 }}
               >
                 <div className="gauge-container">
-                  {!selectedApiKey ? (
-                    <Typography.Text strong className="loading-text">
-                      Please Add API Token
+                  {statusConfig.find(status => status.when) && (
+                    <Typography.Text 
+                      strong 
+                      className={statusConfig.find(status => status.when)?.className}
+                      style={statusConfig.find(status => status.when)?.style}
+                    >
+                      {statusConfig.find(status => status.when)?.message}
                     </Typography.Text>
-                  ) : !isApiKeyValid ? (
-                    <Typography.Text strong className="error-text">
-                      Invalid API Token
-                    </Typography.Text>
-                  ) : !isDeviceOnline ? (
-                    <Typography.Text strong style={{ textAlign: 'center', color: '#ff4d4f' }}>
-                      Device Offline
-                    </Typography.Text>
-                  ) : humidity !== null ? (
+                  )}
+                  {!(statusConfig.find(status => status.when)) && humidity !== null && (
                     <Gauge value={humidity} max={100} label="%" />
-                  ) : (
+                  )}
+                  {!(statusConfig.find(status => status.when)) && humidity === null && (
                     <Typography.Text strong className="loading-text">
                       Loading...
                     </Typography.Text>
@@ -216,23 +233,21 @@ function Sensors2() {
               boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
               marginBottom: '10px'
             }}>
-            {!selectedApiKey ? (
+            {statusConfig.find(status => status.when) && (
+              <Typography.Text 
+                strong 
+                className={statusConfig.find(status => status.when)?.className}
+                style={statusConfig.find(status => status.when)?.style}
+              >
+                {statusConfig.find(status => status.when)?.message}
+              </Typography.Text>
+            )}
+            {!(statusConfig.find(status => status.when)) && isLoading && (
               <Typography.Text strong className="loading-text">
-                Please Add API Token
+                Loading.Config
               </Typography.Text>
-            ) : isLoading ? (
-              <Typography.Text strong className="loading-text">
-                Loading...
-              </Typography.Text>
-            ) : !isApiKeyValid ? (
-              <Typography.Text strong className="error-text">
-                Invalid API Token
-              </Typography.Text>
-            ) : !isDeviceOnline ? (
-              <Typography.Text strong style={{ textAlign: 'center', color: '#ff4d4f' }}>
-                Device Offline
-              </Typography.Text>
-            ) : temperature > MAX_TEMPERATURE ? (
+            )}
+            {!(statusConfig.find(status => status.when)) && !isLoading && temperature > MAX_TEMPERATURE && (
               <div>
                 <Typography.Text strong className="temperature-alert-icon">
                   🔥 <br />
@@ -241,7 +256,8 @@ function Sensors2() {
                   Too Hot
                 </Typography.Text>
               </div>
-            ) : temperature >= MIN_TEMPERATURE && temperature <= MAX_TEMPERATURE ? (
+            )}
+            {!(statusConfig.find(status => status.when)) && !isLoading && temperature >= MIN_TEMPERATURE && temperature <= MAX_TEMPERATURE && (
               <div>
                 <Typography.Text strong className="temperature-alert-icon">
                   ✅ <br />
@@ -250,7 +266,8 @@ function Sensors2() {
                   Normal
                 </Typography.Text>
               </div>
-            ) : (
+            )}
+            {!(statusConfig.find(status => status.when)) && !isLoading && temperature < MIN_TEMPERATURE && (
               <div>
                 <Typography.Text strong className="temperature-alert-icon">
                   ❄️ <br />
@@ -279,23 +296,21 @@ function Sensors2() {
               marginBottom: '10px'
             }}
           >
-            {!selectedApiKey ? (
-              <Typography.Text strong style={{ textAlign: 'center' }} className="loading-text">
-                Please Add API Token
+            {statusConfig.find(status => status.when) && (
+              <Typography.Text 
+                strong 
+                className={statusConfig.find(status => status.when)?.className}
+                style={statusConfig.find(status => status.when)?.style}
+              >
+                {statusConfig.find(status => status.when)?.message}
               </Typography.Text>
-            ) : isLoading ? (
+            )}
+            {!(statusConfig.find(status => status.when)) && isLoading && (
               <Typography.Text strong className="loading-text">
                 Loading...
               </Typography.Text>
-            ) : !isApiKeyValid ? (
-              <Typography.Text strong style={{ textAlign: 'center' }}>
-                Invalid API Token
-              </Typography.Text>
-            ) : !isDeviceOnline ? (
-              <Typography.Text strong style={{ textAlign: 'center', color: '#ff4d4f' }}>
-                Device Offline
-              </Typography.Text>
-            ) : (
+            )}
+            {!(statusConfig.find(status => status.when)) && !isLoading && (
               <div>
                 <div style={{ width: '100%' }}>
                   <Input
@@ -337,7 +352,9 @@ function Sensors2() {
               </div>
             )}
           </Card>
+
         </div>
+
         <div className="ask-aiponics-container">
           <a href="/chat" className="ask-aiponics-button">
             <img
@@ -347,6 +364,7 @@ function Sensors2() {
             />
           </a>
         </div>
+
         <ToastContainer />
       </div>
     </div>
