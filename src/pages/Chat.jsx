@@ -92,9 +92,9 @@ const AiwithImage = () => {
       setSensorDataLoaded(true);
 
       // Hardcoded to true for testing purposes
-      setSystemStatus(true);
+      // setSystemStatus(true);
 
-      // setSystemStatus(deviceResponse.data);
+      setSystemStatus(deviceResponse.data);
       
     } catch (error) {
       console.error('Error fetching sensor data:', error);
@@ -117,19 +117,19 @@ const AiwithImage = () => {
  
   async function greetUser() {
 
-    if (!sensorDataLoaded) {
-      setMessages([{ user:false, text: "Sensor data is still loading. Please wait."}])
-      return;
-    }
-
     if (!systemStatus) {
       console.log(systemStatus)
       setMessages([{ user:false, text: "I apologize, but I cannot provide readings as your Aeroponic System appears to be offline."}])
       return;
     }
 
+    if (!sensorDataLoaded) {
+      setMessages([{ user:false, text: "Sensor data is still loading. Please wait."}])
+      return;
+    }
+
     const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-pro-exp-0827",
+      model: "gemini-1.5-flash",
     });
     const result = await model.generateContent(`Be somehow concise and friendly. Introduce yourself as AI-Ponics an Aeroponic System Assistant. Share in a bullet form that the plant name is ${plantName}, planted ${daysSincePlanting} days ago, with sensor readings of ${temperature}°C and ${humidity}%.`);
     const response = await result.response;
@@ -142,10 +142,10 @@ const AiwithImage = () => {
   }, [sensorDataLoaded, systemStatus, plantName, daysSincePlanting, temperature, humidity]);
 
   async function aiRun() {
-    if (!sensorDataLoaded) {
-      toast.error('Sensor data is still loading. Please wait.');
-      return;
-    }
+    // if (!sensorDataLoaded) {
+    //   toast.error('Sensor data is still loading. Please wait.');
+    //   return;
+    // }
 
     if (!systemStatus) {
       return;
