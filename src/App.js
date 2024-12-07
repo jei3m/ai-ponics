@@ -6,7 +6,7 @@ import {
 import { auth } from './firebase';
 
 
-import Chat from './pages/AiwithImage';
+import Chat from './pages/Chat';
 import Login from './pages/Login';
 import Forum from './pages/Forum';
 import DetailedView from './pages/ForumDetailed';
@@ -72,6 +72,15 @@ function App() {
           element={
             <PrivateRoutes>
               <DetailedView />
+            </PrivateRoutes>
+          }
+        />
+
+        <Route
+          path="/loading"
+          element={
+            <PrivateRoutes>
+              <Loading/>
             </PrivateRoutes>
           }
         />
