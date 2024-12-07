@@ -5,7 +5,7 @@ import { UserAuth } from '../context/AuthContext';
 import { useLocation } from 'react-router-dom';
 import { useApiKey } from '../context/ApiKeyContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faLeaf, faNewspaper, faHome, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faLeaf, faNewspaper, faHome } from '@fortawesome/free-solid-svg-icons';
 import { fetchPlantName, fetchUserData, saveBlynkApiKey, addNewApiKey, deleteApiKey } from '../services/headerService';
 import "../pages/css/Header.css"
 
@@ -18,7 +18,6 @@ function Header() {
   const [plantName, setPlantName] = useState('');
   const [blynkApiKeys, setBlynkApiKeys] = useState([]);
   const [editableBlynkApiKey, setEditableBlynkApiKey] = useState('');
-  const [showBlynkApiKey, setShowBlynkApiKey] = useState(false);
   const [selectedApiKeyIndex, setSelectedApiKeyIndex] = useState(0);
   const location = useLocation();
   const { setSelectedApiKey } = useApiKey();

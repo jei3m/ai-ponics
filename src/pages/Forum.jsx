@@ -5,7 +5,7 @@ import { collection, getDocs, addDoc, deleteDoc, doc } from 'firebase/firestore'
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { Button, Modal, Input, List, Avatar, Typography, Space, Popconfirm } from 'antd';
-import { PlusOutlined, DeleteOutlined, CommentOutlined } from '@ant-design/icons';
+import { PlusOutlined, CommentOutlined } from '@ant-design/icons';
 import Header from '../components/Header';
 import "./css/Forum.css";
 

@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import {Typography, Box, Container } from '@mui/material';
 import { signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from '../firebase';
 import { useNavigate } from 'react-router-dom';
