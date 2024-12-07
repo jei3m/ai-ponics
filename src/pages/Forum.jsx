@@ -172,8 +172,8 @@ function Forum() {
                     </div>
                   ]
                   : []
-              }
-            >
+              }>
+                
               <List.Item.Meta
                 avatar={<Avatar style={{ width: '50px', height: '50px' }} src={forum.authorAvatar} />}
                 title={
