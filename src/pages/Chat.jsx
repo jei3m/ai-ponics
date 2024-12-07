@@ -2,21 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faImage, faCamera, faSearch, faSyncAlt, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import { UserAuth } from '../context/AuthContext';
 import { getBase64 } from '../helpers/imageHelper';
 import { db } from '../firebase'; 
 import { doc, getDoc } from 'firebase/firestore';
 import Webcam from 'react-webcam';
 import './css/Chat.css';
-import axios from 'axios';
 import { useApiKey } from "../context/ApiKeyContext";
 import ReactMarkdown from 'react-markdown';
 import { message } from 'antd';
-
-// Setting constants to process environment variables (API Keys)
-const apiKey = process.env.REACT_APP_API_KEY;
-const genAI = new GoogleGenerativeAI(apiKey);
+import { fetchSensorData, generateGreeting, generateAIResponse, fileToGenerativePart } from '../services/chatServices';
 
 const AiwithImage = () => {
   const [image, setImage] = useState('');
@@ -71,7 +66,7 @@ const AiwithImage = () => {
           return;
         }
   
-        fetchSensorData(selectedApiKey); // Fetch sensor data if API key is present
+        fetchSensorDataFromBlynk(selectedApiKey); // Fetch sensor data if API key is present
       } catch (error) {
         console.error('Error fetching user data:', error);
         setSensorDataLoaded(true); // Ensure sensor data loading state is updated on error
@@ -82,22 +77,16 @@ const AiwithImage = () => {
   }, [currentUser]);
 
   //Fetching sensor data from Blynk API
-  const fetchSensorData = async (selectedApiKey) => {
+  const fetchSensorDataFromBlynk = async (selectedApiKey) => {
     try {
-      const deviceResponse = await axios.get(`https://blynk.cloud/external/api/isHardwareConnected?token=${selectedApiKey}`);
-      const temperatureResponse = await axios.get(`https://blynk.cloud/external/api/get?token=${selectedApiKey}&V0`);
-      const humidityResponse = await axios.get(`https://blynk.cloud/external/api/get?token=${selectedApiKey}&V1`);
-      setTemperature(temperatureResponse.data);
-      setHumidity(humidityResponse.data);
+      const data = await fetchSensorData(selectedApiKey);
+      setTemperature(data.temperature);
+      setHumidity(data.humidity);
+      setSystemStatus(data.systemStatus);
       setSensorDataLoaded(true);
-
-      // Set to true for testing purposes
-      // setSystemStatus(true);
-
-      setSystemStatus(deviceResponse.data);
-      
     } catch (error) {
       console.error('Error fetching sensor data:', error);
+      setSystemStatus(false);  // Set system status to offline on error
       setSensorDataLoaded(true);
     }
   };
@@ -105,8 +94,8 @@ const AiwithImage = () => {
   useEffect(() => {
     let interval;
     if (selectedApiKey) {
-      fetchSensorData(selectedApiKey);
-      interval = setInterval(() => fetchSensorData(selectedApiKey), 1000);
+      fetchSensorDataFromBlynk(selectedApiKey);
+      interval = setInterval(() => fetchSensorDataFromBlynk(selectedApiKey), 1000);
     }
 
     return () => {
@@ -127,41 +116,36 @@ const AiwithImage = () => {
         return;
       }
 
-      const model = genAI.getGenerativeModel({
-        model: "gemini-1.5-flash",
-      });
-      const result = await model.generateContent(`Be somehow concise and friendly. Introduce yourself as AI-Ponics an Aeroponic System Assistant. Share in a bullet form that the plant name is ${plantName}, planted ${daysSincePlanting} days ago, with sensor readings of ${temperature}°C and ${humidity}%.`);
-      const response = await result.response;
-      const text = response.text();
-      setMessages([{ user: false, text: text }]);
+      try {
+        const greetingText = await generateGreeting(plantName, daysSincePlanting, temperature, humidity);
+        setMessages([{ user: false, text: greetingText }]);
+      } catch (error) {
+        console.error('Error generating greeting:', error);
+        setMessages([{ user: false, text: "Sorry, I encountered an error while generating a greeting." }]);
+      }
     }
 
     greetUser();
   }, [sensorDataLoaded, systemStatus, plantName, daysSincePlanting, temperature, humidity]);
 
   async function aiRun() {
-
     if (!systemStatus) {
       return;
     }
 
-    //List of models as of this moment for testing
-    //gemini-1.5-pro-exp-0827 Pro Experimental
-    //gemini-1.5-flash Flash
     setLoading(true);
-    const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-pro-exp-0827",
-      systemInstruction: `You are AI-Ponics, Aeroponics expert, answer concisely. Take note of plant name is ${plantName} and it has been ${daysSincePlanting} days since planting, sensor readings: temperature is ${temperature !== null ? temperature + '°C' : 'unavailable'} and humidity ${humidity !== null ? humidity + '%' : 'unavailable'}.`,
-    });
-    const result = await model.generateContent([textPrompt, imageInlineData]);
-    const response = await result.response;
-    const text = response.text();
+    try {
+      const response = await generateAIResponse(textPrompt, imageInlineData, plantName, daysSincePlanting, temperature, humidity);
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { user: true, text: textPrompt, image: imagePreview },
+        { user: false, text: response },
+      ]);
+    } catch (error) {
+      console.error('Error generating AI response:', error);
+      message.error('Failed to generate response. Please try again.');
+    }
     setLoading(false);
-    setMessages((prevMessages) => [
-      ...prevMessages,
-      { user: true, text: textPrompt, image: imagePreview },
-      { user: false, text: text },
-    ]);
   }
 
   // Custom components for ReactMarkdown
@@ -185,7 +169,6 @@ const AiwithImage = () => {
     }
   };
 
-  // It extracts the first selected file, converts it to Base64 format,
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -197,19 +180,6 @@ const AiwithImage = () => {
       setImagePreview(URL.createObjectURL(file));
     }
   };
-
-  // Converts a file (blob) into a format that can be passed to the generative AI model
-  async function fileToGenerativePart(blob) {
-    const base64EncodedDataPromise = new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result.split(',')[1]);
-      reader.readAsDataURL(blob);
-    });
-
-    return {
-      inlineData: { data: await base64EncodedDataPromise, mimeType: blob.type },
-    };
-  }
 
   const handleChange = (e) => {
     setTextPrompt(e.target.value);
@@ -262,14 +232,14 @@ const AiwithImage = () => {
             <div key={index} className={`message-container ${msg.user ? "user" : "ai"}`}>
               <div className={`message ${msg.user ? "user" : "ai"}`}>
                 {msg.user ? (
-                  <React.Fragment>
-                    <p>{msg.text}</p>
-                    {msg.image && <img src={msg.image} alt="user-uploaded" className="uploaded-image" />}
-                  </React.Fragment>
+                  <p>{msg.text}</p>
                 ) : (
                   <ReactMarkdown components={components}>{msg.text}</ReactMarkdown>
                 )}
               </div>
+              {msg.image && (
+                <img src={msg.image} alt="user-uploaded" className="uploaded-image" />
+              )}
             </div>
           ))}
         </div>
