@@ -34,7 +34,7 @@ To set up AI-Ponics locally, follow these steps:
 1. **Clone the Repository**
 
     ```bash
-    git clone https://github.com/yourusername/ai-ponics.git
+    git clone https://github.com/jei3m/ai-ponics.git
     cd ai-ponics
     ```
 
@@ -46,10 +46,17 @@ To set up AI-Ponics locally, follow these steps:
 
 3. **Set Up Environment Variables**
 
-    Create a `.env` file in the root directory and add your Gemini AI and Blynk API credentials.
+    Create a `.env` file in the root directory and add your Gemini AI and Firebase credentials.
 
     ```env
     REACT_APP_GEMINI_API_KEY=your_gemini_api_key
+    REACT_APP_FIREBASE_API_KEY=your_firebase_api_key
+    REACT_APP_FIREBASE_AUTH_DOMAIN=your_firebase_auth_domain
+    REACT_APP_FIREBASE_PROJECT_ID=your_firebase_project_id
+    REACT_APP_FIREBASE_STORAGE_BUCKET=your_firebase_storage_bucket
+    REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your_firebase_messaging_sender_id
+    REACT_APP_FIREBASE_APP_ID=your_firebase_app_id
+    REACT_APP_FIREBASE_MEASUREMENT_ID=your_firebase_measurement_id
     ```
 
 4. **Start the Development Server**
