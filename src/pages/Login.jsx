@@ -29,11 +29,10 @@ function Login() {
     };
 
     return (
-        <div className="Appokform"> {/* Wrapper for the form container, applies styling from a CSS class */}
-        <div className="Appcardform"> {/* Card-like container for the login form */}
-            <h2 style={{ fontSize: '2em', marginBottom:'20px', textAlign:'center' }}>Welcome to <br/> AI-Ponics</h2> {/* Header for the form with inline font size styling */}
+        <div className="Appokform"> 
+        <div className="Appcardform"> 
+            <h2 style={{ fontSize: '2em', marginBottom:'20px', textAlign:'center' }}>Welcome to <br/> AI-Ponics</h2> 
             
-            {/* New image area */}
             <div className="logo-container" style={{ marginBottom: '20px', textAlign: 'center' }}>
                 <img 
                     src="/logo192.png" 
