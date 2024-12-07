@@ -154,6 +154,16 @@
     padding: 8px;
 }
 
+.message-input:disabled {
+    background-color: #e0e0e0;
+    cursor: not-allowed;
+}
+
+.message-input:disabled::placeholder {
+    color: #ff4d4f;
+    font-weight: 500;
+}
+
 /* Buttons */
 .upload-button,
 .camera-button,
