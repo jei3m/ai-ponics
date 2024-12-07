@@ -1,11 +1,17 @@
 import React, { useState, useMemo } from "react";
 import { Typography, Card, Button, Flex, Input, DatePicker } from "antd";
 import Header from "../components/Header";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import "./css/Sensors.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useSensorsLogic, MAX_TEMPERATURE, MIN_TEMPERATURE } from "../services/sensorService";
+import { 
+  useSensorsLogic, 
+  MAX_TEMPERATURE, 
+  MIN_TEMPERATURE, 
+  calculateDaysSincePlanting, 
+  getDatePickerConfig, 
+  getStatusConfig, 
+  createHandlers 
+} from "../services/sensorService";
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { faThermometerHalf, faTint, faExclamationTriangle, faLeaf } from "@fortawesome/free-solid-svg-icons";
@@ -24,7 +30,6 @@ function Sensors2() {
     selectedApiKey,
     auth, 
     setDoc,
-    doc, 
     db,
     setPlantingDate,
     setPlantName,
@@ -32,13 +37,10 @@ function Sensors2() {
   } = useSensorsLogic();
 
   const [isPlantInfoChanged, setIsPlantInfoChanged] = useState(false);
-  const [isBlynkApiKeyChanged, setIsBlynkApiKeyChanged] = useState(false);
-
-  const daysSincePlanting = useMemo(() => {
-    if (!plantingDate) return 0;
-    const plantingDay = dayjs(plantingDate, 'DD/MM/YYYY');
-    return dayjs().diff(plantingDay, 'day');
-  }, [plantingDate]);
+  
+  const daysSincePlanting = useMemo(() => 
+    calculateDaysSincePlanting(plantingDate), [plantingDate]
+  );
 
   const handlePlantingDateChange = (date) => {
     setPlantingDate(date);
@@ -50,70 +52,25 @@ function Sensors2() {
     setIsPlantInfoChanged(true);
   };
 
-  const handleSave = (field) => {
-    const currentUser = auth.currentUser;
-    if (currentUser) {
-      let dataToUpdate = {};
-      if (field === "plantInfo") {
-        dataToUpdate = {
-          plantName,
-          plantingDate: plantingDate ? plantingDate.format('DD/MM/YYYY') : null,
-          daysSincePlanting,
-        };
-        setIsPlantInfoChanged(false);
-      } else if (field === "blynkApiKey") {
-        dataToUpdate = { selectedApiKey };
-        setIsBlynkApiKeyChanged(false);
-      }
+  const { handleSave } = createHandlers(auth, db, setDoc);
 
-      setDoc(doc(db, "users", currentUser.uid), dataToUpdate, { merge: true })
-        .then(() => {
-          window.location.reload();
-        })
-        .catch((error) => {
-          console.error("Error saving data: ", error);
-        });
-    }
+  const handleSaveChanges = () => {
+    handleSave("plantInfo", {
+      plantName,
+      plantingDate,
+      daysSincePlanting,
+      selectedApiKey
+    });
+    setIsPlantInfoChanged(false);
   };
 
-  const disabledDate = (current) => {
-    return current && current > dayjs().endOf('day');
-  };
-
-  const datePickerConfig = {
-    format: "DD/MM/YYYY",
-    disabledDate: disabledDate,
-    placeholder: "Select planting date",
-    style: { width: '100%', marginBottom: 8 },
-    onChange: handlePlantingDateChange,
-    allowClear: true,
-    showToday: true,
-  };
-
-  const statusConfig = [
-    {
-      when: !selectedApiKey,
-      message: 'Please Add API Token',
-      className: 'loading-text'
-    },
-    {
-      when: !isApiKeyValid,
-      message: 'Invalid API Token',
-      className: 'error-text'
-    },
-    {
-      when: !isDeviceOnline,
-      message: 'Device Offline',
-      style: { textAlign: 'center', color: '#ff4d4f' }
-    }
-  ];
+  const datePickerConfig = getDatePickerConfig(handlePlantingDateChange);
+  const statusConfig = getStatusConfig(selectedApiKey, isApiKeyValid, isDeviceOnline);
 
   return (
     <div style={{ width: '100%', overflowX: 'hidden' }}>
-      
-      <div>
-        <Header />
-      </div>
+
+      <Header />
 
       <div style={{
         display: 'flex',
@@ -342,7 +299,7 @@ function Sensors2() {
                     <Button
                       type="primary"
                       style={{ fontSize: '14px', marginBottom: '-10px' }}
-                      onClick={() => handleSave('plantInfo')}
+                      onClick={handleSaveChanges}
                     >
                       Save
                     </Button>
@@ -365,7 +322,6 @@ function Sensors2() {
           </a>
         </div>
 
-        <ToastContainer />
       </div>
     </div>
   );
