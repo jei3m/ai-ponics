@@ -14,8 +14,8 @@ function Loading() {
     };
 
     const spinnerStyle = {
-        border: '8px solid #f3f3f3', // Light grey
-        borderTop: '8px solid #007bff', // Blue
+        border: '8px solid #f3f3f3',
+        borderTop: '8px solid #3cb371', 
         borderRadius: '50%',
         width: '60px',
         height: '60px',
