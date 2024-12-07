@@ -162,6 +162,7 @@
 .message-input:disabled::placeholder {
     color: #ff4d4f;
     font-weight: 500;
+    font-size: 14px;
 }
 
 /* Buttons */
@@ -187,6 +188,24 @@
     background-color: #a5d6a7; /* Lighter green for disabled state */
     cursor: not-allowed;
     /* Optionally add more styling to indicate it's disabled */
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #cccccc;
+  border: 1px solid #999999;
+}
+
+button:disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.upload-button:disabled,
+.camera-button:disabled,
+.send-button:disabled {
+  color: #666666;
 }
 
 /* Loading spinner */
@@ -389,4 +408,3 @@
   .message.user .markdown-content p{
     color: white;
   }
-  

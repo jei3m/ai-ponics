@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ToastContainer, toast } from 'react-toastify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faImage, faCamera, faSearch, faSyncAlt, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { GoogleGenerativeAI } from "@google/generative-ai";
@@ -13,6 +12,7 @@ import './css/Chat.css';
 import axios from 'axios';
 import { useApiKey } from "../context/ApiKeyContext";
 import ReactMarkdown from 'react-markdown';
+import { message } from 'antd';
 
 // Setting constants to process environment variables (API Keys)
 const apiKey = process.env.REACT_APP_API_KEY;
@@ -91,7 +91,7 @@ const AiwithImage = () => {
       setHumidity(humidityResponse.data);
       setSensorDataLoaded(true);
 
-      // Hardcoded to true for testing purposes
+      // Set to true for testing purposes
       // setSystemStatus(true);
 
       setSystemStatus(deviceResponse.data);
@@ -114,38 +114,32 @@ const AiwithImage = () => {
     };
   }, [selectedApiKey]);
 
- 
-  async function greetUser() {
-
-    if (!systemStatus) {
-      console.log(systemStatus)
-      setMessages([{ user:false, text: "I apologize, but I cannot provide readings as your Aeroponic System appears to be offline."}])
-      return;
-    }
-
-    if (!sensorDataLoaded) {
-      setMessages([{ user:false, text: "Sensor data is still loading. Please wait."}])
-      return;
-    }
-
-    const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash",
-    });
-    const result = await model.generateContent(`Be somehow concise and friendly. Introduce yourself as AI-Ponics an Aeroponic System Assistant. Share in a bullet form that the plant name is ${plantName}, planted ${daysSincePlanting} days ago, with sensor readings of ${temperature}°C and ${humidity}%.`);
-    const response = await result.response;
-    const text = response.text();
-    setMessages([{ user: false, text: text }]);
-  }
-
   useEffect(() => {
+    async function greetUser() {
+      if (!systemStatus) {
+        console.log(systemStatus)
+        setMessages([{ user:false, text: "I apologize, but I cannot provide readings as your Aeroponic System appears to be offline."}])
+        return;
+      }
+
+      if (!sensorDataLoaded) {
+        setMessages([{ user:false, text: "Sensor data is still loading. Please wait."}])
+        return;
+      }
+
+      const model = genAI.getGenerativeModel({
+        model: "gemini-1.5-flash",
+      });
+      const result = await model.generateContent(`Be somehow concise and friendly. Introduce yourself as AI-Ponics an Aeroponic System Assistant. Share in a bullet form that the plant name is ${plantName}, planted ${daysSincePlanting} days ago, with sensor readings of ${temperature}°C and ${humidity}%.`);
+      const response = await result.response;
+      const text = response.text();
+      setMessages([{ user: false, text: text }]);
+    }
+
     greetUser();
   }, [sensorDataLoaded, systemStatus, plantName, daysSincePlanting, temperature, humidity]);
 
   async function aiRun() {
-    // if (!sensorDataLoaded) {
-    //   toast.error('Sensor data is still loading. Please wait.');
-    //   return;
-    // }
 
     if (!systemStatus) {
       return;
@@ -187,7 +181,7 @@ const AiwithImage = () => {
       setImage('');
       setImageInlineData('');
     } else {
-      toast.error('Please provide at least an image or text prompt.');
+      message.error('Please provide at least an image or text prompt.');
     }
   };
 
@@ -255,8 +249,6 @@ const AiwithImage = () => {
     <div className="App-Chat">
       <div className="chat-container">
 
-        <ToastContainer />
-
         <div className="header" style={{display: "flex", justifyContent: "space-between"}}>
           <h2>Ask AI-Ponics!</h2>
           <button className="back-button" onClick={goBack}>
@@ -270,10 +262,10 @@ const AiwithImage = () => {
             <div key={index} className={`message-container ${msg.user ? "user" : "ai"}`}>
               <div className={`message ${msg.user ? "user" : "ai"}`}>
                 {msg.user ? (
-                  <>
+                  <React.Fragment>
                     <p>{msg.text}</p>
                     {msg.image && <img src={msg.image} alt="user-uploaded" className="uploaded-image" />}
-                  </>
+                  </React.Fragment>
                 ) : (
                   <ReactMarkdown components={components}>{msg.text}</ReactMarkdown>
                 )}
@@ -304,18 +296,18 @@ const AiwithImage = () => {
           <button
             className="upload-button"
             onClick={() => document.getElementById('file-upload').click()}
-            disabled={loading}
+            disabled={loading || !systemStatus}
           >
             <FontAwesomeIcon icon={faImage} />
           </button>
           <button
             className={`camera-button ${imagePreview ? 'disabled' : ''}`}
             onClick={openCamera}
-            disabled={imagePreview || loading}
+            disabled={imagePreview || loading || !systemStatus}
           >
             <FontAwesomeIcon icon={faCamera} />
           </button>
-          <button className="send-button" onClick={sendMessage} disabled={loading}>
+          <button className="send-button" onClick={sendMessage} disabled={loading || !systemStatus}>
             {loading ? <div className="loading-spinner"></div> : <FontAwesomeIcon icon={faSearch} />}
           </button>
         </div>
