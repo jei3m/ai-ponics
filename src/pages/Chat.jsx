@@ -17,6 +17,7 @@ const AiwithImage = () => {
   const [image, setImage] = useState('');
   const [imageInlineData, setImageInlineData] = useState('');
   const [loading, setLoading] = useState(false);
+  const { selectedApiKey } = useApiKey();
   const [textPrompt, setTextPrompt] = useState('');
   const [imagePreview, setImagePreview] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -32,7 +33,6 @@ const AiwithImage = () => {
   const navigate = useNavigate();
   const { currentUser } = UserAuth();
   const [sensorDataLoaded, setSensorDataLoaded] = useState(false);
-  const { selectedApiKey } = useApiKey();
 
   useEffect(() => {
     if (!currentUser) {
@@ -86,7 +86,6 @@ const AiwithImage = () => {
       setSensorDataLoaded(true);
     } catch (error) {
       console.error('Error fetching sensor data:', error);
-      setSystemStatus(false);  // Set system status to offline on error
       setSensorDataLoaded(true);
     }
   };
@@ -103,10 +102,12 @@ const AiwithImage = () => {
     };
   }, [selectedApiKey]);
 
+  // Function for Greeting the User
   useEffect(() => {
     async function greetUser() {
+
       if (!systemStatus) {
-        console.log(systemStatus)
+        console.log(`System status:${systemStatus}`)
         setMessages([{ user:false, text: "I apologize, but I cannot provide readings as your Aeroponic System appears to be offline."}])
         return;
       }
