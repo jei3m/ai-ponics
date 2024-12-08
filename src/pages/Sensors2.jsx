@@ -201,7 +201,7 @@ function Sensors2() {
             )}
             {!(statusConfig.find(status => status.when)) && isLoading && (
               <Typography.Text strong className="loading-text">
-                Loading.Config
+                Loading...
               </Typography.Text>
             )}
             {!(statusConfig.find(status => status.when)) && !isLoading && temperature > MAX_TEMPERATURE && (
