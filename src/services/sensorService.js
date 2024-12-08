@@ -15,6 +15,70 @@ dayjs.extend(customParseFormat);
 export const MAX_TEMPERATURE = 73; 
 export const MIN_TEMPERATURE = 15; 
 
+// Time constants
+const EMAIL_COOLDOWN_MINUTES = 10;
+let lastEmailSent = null;
+
+// To check if an email can be sent based on the cooldown period
+const canSendEmail = () => {
+  if (!lastEmailSent) return true;
+  const now = dayjs(); // Using current time
+  const timeSinceLastEmail = now.diff(dayjs(lastEmailSent), 'minute');
+  const remainingMinutes = EMAIL_COOLDOWN_MINUTES - timeSinceLastEmail;
+  if (remainingMinutes > 0) {
+    console.log(`${remainingMinutes} minutes remaining before next email can be sent`);
+  }
+  return timeSinceLastEmail >= EMAIL_COOLDOWN_MINUTES;
+};
+
+export const fetchSensorData = async ({ selectedApiKey, user, setIsDeviceOnline, setTemperature, setHumidity, setIsApiKeyValid, setIsLoading }) => {
+  try {
+    // Check device online status
+    const deviceStatusResponse = await axios.get(
+      `https://blynk.cloud/external/api/isHardwareConnected?token=${selectedApiKey}`
+    );
+
+    setIsDeviceOnline(deviceStatusResponse.data);
+
+    // Pulling Temperature Data
+    const temperatureResponse = await axios.get(
+      `https://blynk.cloud/external/api/get?token=${selectedApiKey}&V0`,
+    );
+
+    // Pulling Humidity Data
+    const humidityResponse = await axios.get(
+      `https://blynk.cloud/external/api/get?token=${selectedApiKey}&V1`,
+    );
+    
+    setTemperature(temperatureResponse.data);
+    setHumidity(humidityResponse.data);
+
+    // Send email alerts only if device is online
+    if (deviceStatusResponse.data) {
+      if (canSendEmail()) {
+        if (temperatureResponse.data > MAX_TEMPERATURE) {
+          sendEmailHot(user, temperatureResponse.data);
+          console.log("Email for Hot Temperature Sent");
+          lastEmailSent = dayjs().toISOString(); // Using current time
+        } else if (temperatureResponse.data < MIN_TEMPERATURE) {
+          sendEmailCold(user, temperatureResponse.data);
+          console.log("Email for Cold Temperature Sent");
+          lastEmailSent = dayjs().toISOString(); // Using current time
+        }
+      }
+    }
+
+    setIsLoading(false);
+    
+  } catch (error) {
+      console.error("Error fetching data from Blynk:", error);
+      setIsApiKeyValid(false);
+      setTemperature(null);
+      setHumidity(null);
+      setIsLoading(false);
+    }
+};
+
 // Date-related utilities
 export const calculateDaysSincePlanting = (plantingDate) => {
   if (!plantingDate) return 0;
@@ -83,48 +147,6 @@ export const createHandlers = (auth, db, setDoc) => ({
   }
 });
 
-export const fetchSensorData = async ({ selectedApiKey, user, setIsDeviceOnline, setTemperature, setHumidity, setIsApiKeyValid, setIsLoading }) => {
-  try {
-    // Check device online status
-    const deviceStatusResponse = await axios.get(
-      `https://blynk.cloud/external/api/isHardwareConnected?token=${selectedApiKey}`
-    );
-
-    setIsDeviceOnline(deviceStatusResponse.data);
-
-    // Pulling Temperature Data
-    const temperatureResponse = await axios.get(
-      `https://blynk.cloud/external/api/get?token=${selectedApiKey}&V0`,
-    );
-
-    // Pulling Humidity Data
-    const humidityResponse = await axios.get(
-      `https://blynk.cloud/external/api/get?token=${selectedApiKey}&V1`,
-    );
-    
-    setTemperature(temperatureResponse.data);
-    setHumidity(humidityResponse.data);
-
-    // Send email alerts only if device is online
-    if (deviceStatusResponse.data) {
-      if (temperatureResponse.data > MAX_TEMPERATURE) {
-        sendEmailHot(user, temperatureResponse.data);
-      } else if (temperatureResponse.data < MIN_TEMPERATURE) {
-        sendEmailCold(user, temperatureResponse.data);
-      }
-    }
-
-    setIsLoading(false);
-    
-  } catch (error) {
-      console.error("Error fetching data from Blynk:", error);
-      setIsApiKeyValid(false);
-      setTemperature(null);
-      setHumidity(null);
-      setIsLoading(false);
-    }
-};
-
 export const useSensorsLogic = () => {
   const [temperature, setTemperature] = useState(null);
   const [humidity, setHumidity] = useState(null);
@@ -133,8 +155,8 @@ export const useSensorsLogic = () => {
   const [plantName, setPlantName] = useState("");
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [isApiKeyValid, setIsApiKeyValid] = useState(true);
-  const [isDeviceOnline, setIsDeviceOnline] = useState(false);
+  const [isApiKeyValid, setIsApiKeyValid] = useState(false);
+  const [isDeviceOnline, setIsDeviceOnline] = useState(true);
   const { selectedApiKey } = useApiKey();
 
   useEffect(() => {
@@ -156,7 +178,7 @@ export const useSensorsLogic = () => {
         setIsApiKeyValid,
         setIsLoading,
       });
-    }, 5000);
+    }, 3000);
 
     return () => { clearInterval(interval); };
   }, [selectedApiKey]);
