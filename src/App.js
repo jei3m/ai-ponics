@@ -15,7 +15,7 @@ import Sensors2 from './pages/Sensors2';
 // Import routes and context
 import PrivateRoutes from './routes/PrivateRoutes';
 import { ApiKeyProvider } from './context/ApiKeyContext';
-import Loading from './pages/Loading';
+import Loading from './components/Loading';
 
 function App() {
   const [user, setUser] = useState(null);
