@@ -7,7 +7,7 @@ import 'react-quill/dist/quill.snow.css';
 import "./css/Forum.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faComment, faReply, faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
-import Loading from './Loading';
+import Loading from '../components/Loading';
 import { Button, Popconfirm, Avatar } from 'antd';
 
 function DetailedView() {
