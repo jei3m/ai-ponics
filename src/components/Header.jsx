@@ -6,7 +6,7 @@ import { useLocation } from 'react-router-dom';
 import { useApiKey } from '../context/ApiKeyContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faLeaf, faNewspaper, faHome } from '@fortawesome/free-solid-svg-icons';
-import { fetchPlantName, fetchUserData, saveBlynkApiKey, addNewApiKey, deleteApiKey } from '../services/headerService';
+import { fetchUserData, saveBlynkApiKey, addNewApiKey, deleteApiKey } from '../services/headerService';
 import "../pages/css/Header.css"
 
 const { Option } = Select;
@@ -15,7 +15,6 @@ const { Text } = Typography;
 function Header() {
   const { logOut, currentUser } = UserAuth();
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [plantName, setPlantName] = useState('');
   const [blynkApiKeys, setBlynkApiKeys] = useState([]);
   const [editableBlynkApiKey, setEditableBlynkApiKey] = useState('');
   const [selectedApiKeyIndex, setSelectedApiKeyIndex] = useState(0);
@@ -24,8 +23,7 @@ function Header() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    fetchPlantName(currentUser, setPlantName);
-    fetchUserData(currentUser, setPlantName, setBlynkApiKeys, setSelectedApiKeyIndex, setEditableBlynkApiKey);
+    fetchUserData(currentUser, setBlynkApiKeys, setSelectedApiKeyIndex, setEditableBlynkApiKey);
   }, [currentUser]);
 
   useEffect(() => {
@@ -34,11 +32,6 @@ function Header() {
       localStorage.setItem('selectedApiKeyIndex', selectedApiKeyIndex);
     }
   }, [blynkApiKeys, selectedApiKeyIndex, setSelectedApiKey]);
-
-  // Used Input.Password component to hide/show password
-  // const toggleBlynkApiKeyVisibility = () => {
-  //   setShowBlynkApiKey(!showBlynkApiKey);
-  // };
 
   const openModal = () => setModalIsOpen(true);
   const closeModal = () => setModalIsOpen(false);
@@ -68,11 +61,6 @@ function Header() {
   return (
     <header style={{ marginBottom:'10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.5rem 1.5rem', backgroundColor: '#FAF9F6', borderBottom: '1px solid #dee2e6', position: 'sticky' }}>
       <div className="header-logo">
-
-        {/* <a href='/'>
-          <FontAwesomeIcon icon={faLeaf} className="header-logo-icon" />
-          <span>{plantName || 'AI-Ponics'}</span> Dashboard
-        </a> */}
 
         <a href='/'>
           <FontAwesomeIcon icon={faLeaf} className="header-logo-icon" />
