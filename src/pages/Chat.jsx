@@ -85,7 +85,7 @@ const AiwithImage = () => {
       setSensorDataLoaded(true);
     } catch (error) {
       console.error('Error fetching sensor data:', error);
-      setSensorDataLoaded(true);
+      setSensorDataLoaded(false);
     }
   };
 

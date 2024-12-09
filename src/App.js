@@ -12,6 +12,7 @@ import Forum from './pages/Forum';
 import DetailedView from './pages/ForumDetailed';
 import Sensors2 from './pages/Sensors2';
 
+
 // Import routes and context
 import PrivateRoutes from './routes/PrivateRoutes';
 import { ApiKeyProvider } from './context/ApiKeyContext';

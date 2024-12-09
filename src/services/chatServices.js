@@ -7,7 +7,7 @@ const genAI = new GoogleGenerativeAI(apiKey);
 // Fetch sensor data from Blynk API
 export const fetchSensorData = async (selectedApiKey) => {
   try {
-    const [deviceResponse, temperatureResponse, humidityResponse] = await Promise.all([
+    const [deviceStatusResponse, temperatureResponse, humidityResponse] = await Promise.all([
       axios.get(`https://blynk.cloud/external/api/isHardwareConnected?token=${selectedApiKey}`),
       axios.get(`https://blynk.cloud/external/api/get?token=${selectedApiKey}&V0`),
       axios.get(`https://blynk.cloud/external/api/get?token=${selectedApiKey}&V1`)
@@ -16,7 +16,7 @@ export const fetchSensorData = async (selectedApiKey) => {
     return {
       temperature: temperatureResponse.data,
       humidity: humidityResponse.data,
-      systemStatus: deviceResponse.data
+      systemStatus: deviceStatusResponse.data
     };
   } catch (error) {
     console.error('Error fetching sensor data:', error);
