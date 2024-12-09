@@ -189,7 +189,7 @@ function Sensors2() {
                 {statusConfig.find(status => status.when)?.message}
               </Typography.Text>
             )}
-            {!(statusConfig.find(status => status.when)) && !isLoading && temperature > MAX_TEMPERATURE && (
+            {!(statusConfig.find(status => status.when)) && temperature > MAX_TEMPERATURE && (
               <div>
                 <Typography.Text strong className="temperature-alert-icon">
                   🔥 <br />
@@ -199,7 +199,7 @@ function Sensors2() {
                 </Typography.Text>
               </div>
             )}
-            {!(statusConfig.find(status => status.when)) && !isLoading && temperature >= MIN_TEMPERATURE && temperature <= MAX_TEMPERATURE && (
+            {!(statusConfig.find(status => status.when)) && temperature >= MIN_TEMPERATURE && temperature <= MAX_TEMPERATURE && (
               <div>
                 <Typography.Text strong className="temperature-alert-icon">
                   ✅ <br />
@@ -209,7 +209,7 @@ function Sensors2() {
                 </Typography.Text>
               </div>
             )}
-            {!(statusConfig.find(status => status.when)) && !isLoading && temperature < MIN_TEMPERATURE && (
+            {!(statusConfig.find(status => status.when)) && temperature < MIN_TEMPERATURE && (
               <div>
                 <Typography.Text strong className="temperature-alert-icon">
                   ❄️ <br />
@@ -248,7 +248,7 @@ function Sensors2() {
               </Typography.Text>
             )}
             
-            {!(statusConfig.find(status => status.when)) && !isLoading && (
+            {!(statusConfig.find(status => status.when)) && (
               <div>
                 <div style={{ width: '100%' }}>
                   <Input
