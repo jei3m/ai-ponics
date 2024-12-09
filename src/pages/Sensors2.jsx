@@ -65,7 +65,7 @@ function Sensors2() {
   };
 
   const datePickerConfig = getDatePickerConfig(handlePlantingDateChange);
-  const statusConfig = getStatusConfig(selectedApiKey, isApiKeyValid, isDeviceOnline);
+  const statusConfig = getStatusConfig(selectedApiKey, isApiKeyValid, isDeviceOnline, isLoading);
 
   return (
     <div style={{ width: '100%', overflowX: 'hidden' }}>
@@ -92,7 +92,7 @@ function Sensors2() {
             flexDirection: 'column',
             padding: '1.8rem'
           }}>
-            
+
           <Flex gap="middle" style={{ 
             width: '100%', 
             height: 'fit-content', 
@@ -129,11 +129,6 @@ function Sensors2() {
                   {!(statusConfig.find(status => status.when)) && temperature !== null && (
                     <Gauge value={temperature} max={60} label="°C" />
                   )}
-                  {!(statusConfig.find(status => status.when)) && temperature === null && (
-                    <Typography.Text strong className="loading-text">
-                      Loading...
-                    </Typography.Text>
-                  )}
                 </div>
               </Card>
 
@@ -166,11 +161,6 @@ function Sensors2() {
                   {!(statusConfig.find(status => status.when)) && humidity !== null && (
                     <Gauge value={humidity} max={100} label="%" />
                   )}
-                  {!(statusConfig.find(status => status.when)) && humidity === null && (
-                    <Typography.Text strong className="loading-text">
-                      Loading...
-                    </Typography.Text>
-                  )}
                 </div>
               </Card>
             </div>
@@ -197,11 +187,6 @@ function Sensors2() {
                 style={statusConfig.find(status => status.when)?.style}
               >
                 {statusConfig.find(status => status.when)?.message}
-              </Typography.Text>
-            )}
-            {!(statusConfig.find(status => status.when)) && isLoading && (
-              <Typography.Text strong className="loading-text">
-                Loading...
               </Typography.Text>
             )}
             {!(statusConfig.find(status => status.when)) && !isLoading && temperature > MAX_TEMPERATURE && (
@@ -262,11 +247,7 @@ function Sensors2() {
                 {statusConfig.find(status => status.when)?.message}
               </Typography.Text>
             )}
-            {!(statusConfig.find(status => status.when)) && isLoading && (
-              <Typography.Text strong className="loading-text">
-                Loading...
-              </Typography.Text>
-            )}
+            
             {!(statusConfig.find(status => status.when)) && !isLoading && (
               <div>
                 <div style={{ width: '100%' }}>

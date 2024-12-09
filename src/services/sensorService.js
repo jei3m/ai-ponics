@@ -31,7 +31,7 @@ const canSendEmail = () => {
   return timeSinceLastEmail >= EMAIL_COOLDOWN_MINUTES;
 };
 
-export const fetchSensorData = async ({ selectedApiKey, user, setIsDeviceOnline, setTemperature, setHumidity, setIsLoading }) => {
+export const fetchSensorData = async ({ selectedApiKey, user, setIsDeviceOnline, setTemperature, setHumidity, setIsLoading, setIsApiKeyValid }) => {
   try {
     
     const [deviceStatusResponse, temperatureResponse, humidityResponse] = await Promise.all([
@@ -63,6 +63,10 @@ export const fetchSensorData = async ({ selectedApiKey, user, setIsDeviceOnline,
     
   } catch (error) {
     console.error("Error fetching data from Blynk:", error);
+    setIsApiKeyValid(false);
+    setTemperature(null);
+    setHumidity(null);
+    setIsLoading(false);
   }
 };
 
@@ -88,7 +92,12 @@ export const getDatePickerConfig = (handlePlantingDateChange) => ({
 });
 
 // Status configuration
-export const getStatusConfig = (selectedApiKey, isApiKeyValid, isDeviceOnline) => [
+export const getStatusConfig = (selectedApiKey, isApiKeyValid, isDeviceOnline, isLoading) => [
+  {
+    when: isLoading,
+    message: 'Loading...',
+    className: 'loading-text'
+  },
   {
     when: !selectedApiKey,
     message: 'Please Add API Token',
