@@ -40,7 +40,7 @@ export const generateGreeting = async (plantName, daysSincePlanting, temperature
 export const generateAIResponse = async function* (textPrompt, imageInlineData, plantName, daysSincePlanting, temperature, humidity) {
   const model = genAI.getGenerativeModel({
     model: "gemini-1.5-pro-exp-0827",
-    systemInstruction: `You are AI-Ponics, Aeroponics expert, answer concisely. Take note of plant name is ${plantName} and it has been ${daysSincePlanting} days since planting, sensor readings: temperature is ${temperature} and humidity ${humidity}.`,
+    systemInstruction: `You are AI-Ponics, an Aeroponics expert, answer concisely. Take note of plant name is ${plantName} and it has been ${daysSincePlanting} days since planting, sensor readings: temperature is ${temperature} and humidity ${humidity}.`,
   });
   
   const result = await model.generateContentStream([textPrompt, imageInlineData]);
