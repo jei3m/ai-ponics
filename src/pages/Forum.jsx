@@ -21,13 +21,60 @@ function Forum() {
 
   useEffect(() => {
     const fetchForums = async () => {
-      const querySnapshot = await getDocs(collection(db, 'forums'));
-      const forumsData = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setForums(forumsData);
+      try {
+        // Try to get cached forums data
+        const cachedForums = localStorage.getItem('forumsData');
+        const cachedTimestamp = localStorage.getItem('forumsTimestamp');
+        const currentTime = new Date().getTime();
+        
+        // Check if cache exists, is valid JSON, and is less than 5 minutes old
+        if (cachedForums && cachedTimestamp) {
+          try {
+            const parsedForums = JSON.parse(cachedForums);
+            if ((currentTime - parseInt(cachedTimestamp)) < 300000 && Array.isArray(parsedForums)) {
+              setForums(parsedForums);
+              return;
+            }
+          } catch (parseError) {
+            // Invalid JSON in cache, clear it
+            localStorage.removeItem('forumsData');
+            localStorage.removeItem('forumsTimestamp');
+          }
+        }
+        
+        // Fetch fresh data if cache is invalid, old, or doesn't exist
+        const querySnapshot = await getDocs(collection(db, 'forums'));
+        const forumsData = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setForums(forumsData);
+        
+        // Update cache with fresh data
+        try {
+          localStorage.setItem('forumsData', JSON.stringify(forumsData));
+          localStorage.setItem('forumsTimestamp', currentTime.toString());
+        } catch (storageError) {
+          // Handle localStorage quota exceeded or other storage errors
+          console.warn('Failed to cache forums data:', storageError);
+        }
+      } catch (error) {
+        console.error('Error fetching forums:', error);
+        // If there's an error fetching fresh data, try to use cached data regardless of age
+        try {
+          const cachedForums = localStorage.getItem('forumsData');
+          if (cachedForums) {
+            const parsedForums = JSON.parse(cachedForums);
+            if (Array.isArray(parsedForums)) {
+              setForums(parsedForums);
+            }
+          }
+        } catch (fallbackError) {
+          console.error('Failed to load cached forums as fallback:', fallbackError);
+        }
+      }
     };
+    
     fetchForums();
 
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -42,32 +89,62 @@ function Forum() {
 
   const handlePostForum = async () => {
     if (newForumTitle.trim() !== '' && newForumContent.trim() !== '') {
-      const newForum = {
-        title: newForumTitle,
-        content: newForumContent,
-        comments: [],
-        postedBy: currentUser,
-        authorName: auth.currentUser.displayName || 'Anonymous',
-        authorAvatar: auth.currentUser.photoURL || 'https://via.placeholder.com/50',
-        createdAt: new Date().toISOString(),
-      };
-      const docRef = await addDoc(collection(db, 'forums'), newForum);
-      setNewForumTitle('');
-      setNewForumContent('');
-      setForums([...forums, { ...newForum, id: docRef.id }]);
-      setShowModal(false);
+      try {
+        const newForum = {
+          title: newForumTitle,
+          content: newForumContent,
+          comments: [],
+          postedBy: currentUser,
+          authorName: auth.currentUser.displayName || 'Anonymous',
+          authorAvatar: auth.currentUser.photoURL || 'https://via.placeholder.com/50',
+          createdAt: new Date().toISOString(),
+        };
+        const docRef = await addDoc(collection(db, 'forums'), newForum);
+        const updatedForum = { ...newForum, id: docRef.id };
+        const updatedForums = [...forums, updatedForum];
+        setForums(updatedForums);
+        
+        // Update cache with new forum
+        try {
+          localStorage.setItem('forumsData', JSON.stringify(updatedForums));
+          localStorage.setItem('forumsTimestamp', new Date().getTime().toString());
+        } catch (storageError) {
+          console.warn('Failed to update cache after posting:', storageError);
+        }
+        
+        setNewForumTitle('');
+        setNewForumContent('');
+        setShowModal(false);
+      } catch (error) {
+        console.error('Error posting forum:', error);
+        alert('Failed to post forum. Please try again.');
+      }
     }
   };
 
   const handleDeleteForum = async (id) => {
     if (currentUser) {
-      const forumRef = doc(db, 'forums', id);
-      const forumData = forums.find((forum) => forum.id === id);
-      if (forumData.postedBy === currentUser) {
-        await deleteDoc(forumRef);
-        setForums(forums.filter((forum) => forum.id !== id));
-      } else {
-        alert('You do not have permission to delete this forum.');
+      try {
+        const forumRef = doc(db, 'forums', id);
+        const forumData = forums.find((forum) => forum.id === id);
+        if (forumData.postedBy === currentUser) {
+          await deleteDoc(forumRef);
+          const updatedForums = forums.filter((forum) => forum.id !== id);
+          setForums(updatedForums);
+          
+          // Update cache after deletion
+          try {
+            localStorage.setItem('forumsData', JSON.stringify(updatedForums));
+            localStorage.setItem('forumsTimestamp', new Date().getTime().toString());
+          } catch (storageError) {
+            console.warn('Failed to update cache after deletion:', storageError);
+          }
+        } else {
+          alert('You do not have permission to delete this forum.');
+        }
+      } catch (error) {
+        console.error('Error deleting forum:', error);
+        alert('Failed to delete forum. Please try again.');
       }
     } else {
       alert('Please log in to delete this forum.');
@@ -173,7 +250,7 @@ function Forum() {
                   ]
                   : []
               }>
-                
+
               <List.Item.Meta
                 avatar={<Avatar style={{ width: '50px', height: '50px' }} src={forum.authorAvatar} />}
                 title={

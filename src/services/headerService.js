@@ -3,13 +3,38 @@ import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { message } from 'antd';
 
+const CACHE_KEY = 'blynkApiKeysCache';
+
+// Load API keys from cache
+const loadFromCache = () => {
+  const cached = localStorage.getItem(CACHE_KEY);
+  return cached ? JSON.parse(cached) : null;
+};
+
+// Save API keys to cache
+const saveToCache = (data) => {
+  localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+};
+
 // To fetch the user data from Firestore, to be displayed in the user profile modal
 export const fetchUserData = async (currentUser, setBlynkApiKeys, setSelectedApiKeyIndex, setEditableBlynkApiKey) => {
   if (!currentUser) return;
+
+  // First load from cache
+  const cachedData = loadFromCache();
+  if (cachedData) {
+    setBlynkApiKeys(cachedData.blynkApiKeys || []);
+    const index = parseInt(localStorage.getItem('selectedApiKeyIndex'), 10) || 0;
+    setSelectedApiKeyIndex(index);
+    setEditableBlynkApiKey(cachedData.blynkApiKeys?.[index] || '');
+  }
+
+  // Then fetch from Firestore
   try {
     const docSnap = await getDoc(doc(db, 'users', currentUser.uid));
     if (docSnap.exists()) {
       const data = docSnap.data();
+      saveToCache(data);
       setBlynkApiKeys(data.blynkApiKeys || []);
       const index = parseInt(localStorage.getItem('selectedApiKeyIndex'), 10) || 0;
       setSelectedApiKeyIndex(index);
@@ -31,6 +56,7 @@ export const saveBlynkApiKey = async (currentUser, blynkApiKeys, selectedApiKeyI
       blynkApiKeys: updatedApiKeys,
       selectedApiKey: editableBlynkApiKey
     }, { merge: true });
+    saveToCache({ blynkApiKeys: updatedApiKeys });
     setBlynkApiKeys(updatedApiKeys);
     setSelectedApiKey(editableBlynkApiKey);
     message.success('Blynk API Key saved successfully!');
@@ -44,9 +70,11 @@ export const saveBlynkApiKey = async (currentUser, blynkApiKeys, selectedApiKeyI
 
 // Add a new Blynk API key
 export const addNewApiKey = (blynkApiKeys, setBlynkApiKeys, setSelectedApiKeyIndex, setEditableBlynkApiKey) => {
-  setBlynkApiKeys([...blynkApiKeys, '']);
+  const updatedKeys = [...blynkApiKeys, ''];
+  setBlynkApiKeys(updatedKeys);
   setSelectedApiKeyIndex(blynkApiKeys.length);
   setEditableBlynkApiKey('');
+  saveToCache({ blynkApiKeys: updatedKeys });
 };
 
 // Delete a Blynk API key
@@ -59,6 +87,7 @@ export const deleteApiKey = async (currentUser, blynkApiKeys, selectedApiKeyInde
       blynkApiKeys: updatedApiKeys,
       selectedApiKey: updatedApiKeys[0] || '' 
     }, { merge: true });
+    saveToCache({ blynkApiKeys: updatedApiKeys });
     setBlynkApiKeys(updatedApiKeys);
     setSelectedApiKeyIndex(0);
     setEditableBlynkApiKey(updatedApiKeys[0] || '');
