@@ -1,46 +1,98 @@
-import React, { useState, useMemo } from "react";
-import { Typography, Card, Button, Flex, Input, DatePicker } from "antd";
+import React, { useState, useEffect } from "react";
+import { Typography, Card, Button, Flex, Input, DatePicker, message } from "antd";
 import Header from "../components/Header";
 import "./css/Sensors.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { 
-  useSensorsLogic, 
-  MAX_TEMPERATURE, 
-  MIN_TEMPERATURE, 
-  calculateDaysSincePlanting, 
-  getDatePickerConfig, 
-  getStatusConfig, 
-  createHandlers 
-} from "../services/sensorService";
-import dayjs from 'dayjs';
-import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { faThermometerHalf, faTint, faExclamationTriangle, faLeaf } from "@fortawesome/free-solid-svg-icons";
 import Gauge from "../components/Gauge";
+import { db, auth } from "../firebase";
+import { doc, setDoc, getDoc } from "firebase/firestore";
+import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+import { useApiKey } from "../context/ApiKeyContext";
+import { StatusMessage } from "../services/sensorService";
+import { 
+  fetchSensorData,
+  MAX_TEMPERATURE,
+  MIN_TEMPERATURE,
+  calculateDaysSincePlanting,
+  getDatePickerConfig,
+  getStatusConfig
+} from '../services/sensorService';
 
 dayjs.extend(customParseFormat);
 
 function Sensors2() {
-  const {
-    temperature,
-    humidity,
-    plantingDate,
-    plantName,
-    isLoading,
-    isApiKeyValid,
-    selectedApiKey,
-    auth, 
-    setDoc,
-    db,
-    setPlantingDate,
-    setPlantName,
-    isDeviceOnline,
-  } = useSensorsLogic();
-
+  const [temperature, setTemperature] = useState(null);
+  const [humidity, setHumidity] = useState(null);
+  const [plantingDate, setPlantingDate] = useState(null);
+  const [plantName, setPlantName] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [isApiKeyValid, setIsApiKeyValid] = useState(true);
+  const [isDeviceOnline, setIsDeviceOnline] = useState(true);
   const [isPlantInfoChanged, setIsPlantInfoChanged] = useState(false);
-  
-  const daysSincePlanting = useMemo(() => 
-    calculateDaysSincePlanting(plantingDate), [plantingDate]
-  );
+  const { selectedApiKey } = useApiKey();
+  const [user, setUser] = useState(null);
+
+  // Fetch sensor data effect
+  useEffect(() => {
+    if (!selectedApiKey) {
+      setIsLoading(false);
+      return;
+    }
+
+    setIsLoading(true);
+    let isMounted = true;
+    const controller = new AbortController();
+
+    const fetchData = async () => {
+      if (isMounted) {
+        await fetchSensorData({
+          selectedApiKey,
+          user,
+          setIsDeviceOnline,
+          setTemperature,
+          setHumidity,
+          setIsLoading,
+          setIsApiKeyValid,
+          signal: controller.signal
+        });
+      }
+    };
+
+    fetchData();
+    const interval = setInterval(fetchData, 2000);
+
+    return () => {
+      isMounted = false;
+      controller.abort();
+      clearInterval(interval);
+    };
+  }, [selectedApiKey, user]);
+
+  // Fetch user data effect
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const currentUser = auth.currentUser;
+      if (currentUser) {
+        setUser(currentUser);
+        const docRef = doc(db, "users", currentUser.uid);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          if (data.plantingDate) {
+            setPlantingDate(dayjs(data.plantingDate, 'MM/DD/YYYY'));
+          }
+          if (data.plantName) {
+            setPlantName(data.plantName);
+          }
+        }
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   const handlePlantingDateChange = (date) => {
     setPlantingDate(date);
@@ -52,24 +104,32 @@ function Sensors2() {
     setIsPlantInfoChanged(true);
   };
 
-  const { handleSave } = createHandlers(auth, db, setDoc);
-
-  const handleSaveChanges = () => {
-    handleSave("plantInfo", {
-      plantName,
-      plantingDate,
-      daysSincePlanting,
-      selectedApiKey
-    });
-    setIsPlantInfoChanged(false);
+  const handleSaveChanges = async () => {
+    const currentUser = auth.currentUser;
+    if (currentUser) {
+      try {
+        await setDoc(doc(db, "users", currentUser.uid), {
+          plantName,
+          plantingDate: plantingDate ? plantingDate.format('MM/DD/YYYY') : null,
+          daysSincePlanting: calculateDaysSincePlanting(plantingDate)
+        }, { merge: true });
+        
+        message.success('Plant data saved successfully!');
+        setIsPlantInfoChanged(false);
+      } catch (error) {
+        console.error("Error saving changes:", error);
+        message.error('Failed to save plant data');
+      }
+    }
   };
 
+  const daysSincePlanting = calculateDaysSincePlanting(plantingDate);
   const datePickerConfig = getDatePickerConfig(handlePlantingDateChange);
-  const statusConfig = getStatusConfig(selectedApiKey, isApiKeyValid, isDeviceOnline, isLoading);
+  const status = getStatusConfig(selectedApiKey, isApiKeyValid, isDeviceOnline, isLoading)
+    .find(status => status.when);
 
   return (
     <div style={{ width: '100%', overflowX: 'hidden' }}>
-
       <Header />
 
       <div style={{
@@ -117,17 +177,11 @@ function Sensors2() {
                 }}>
 
                 <div className="gauge-container">
-                  {statusConfig.find(status => status.when) && (
-                    <Typography.Text 
-                      strong 
-                      className={statusConfig.find(status => status.when)?.className}
-                      style={statusConfig.find(status => status.when)?.style}
-                    >
-                      {statusConfig.find(status => status.when)?.message}
-                    </Typography.Text>
+                  {status && (
+                    <StatusMessage message={status.message} className={status.className} style={status.style} />
                   )}
-                  {!(statusConfig.find(status => status.when)) && temperature !== null && (
-                    <Gauge value={temperature} max={60} label="°C" />
+                  {!status && temperature !== null && (
+                    <Gauge value={temperature} max={MAX_TEMPERATURE} label="°C" />
                   )}
                 </div>
               </Card>
@@ -149,16 +203,10 @@ function Sensors2() {
                 }}
               >
                 <div className="gauge-container">
-                  {statusConfig.find(status => status.when) && (
-                    <Typography.Text 
-                      strong 
-                      className={statusConfig.find(status => status.when)?.className}
-                      style={statusConfig.find(status => status.when)?.style}
-                    >
-                      {statusConfig.find(status => status.when)?.message}
-                    </Typography.Text>
+                  {status && (
+                    <StatusMessage message={status.message} className={status.className} style={status.style} />
                   )}
-                  {!(statusConfig.find(status => status.when)) && humidity !== null && (
+                  {!status && humidity !== null && (
                     <Gauge value={humidity} max={100} label="%" />
                   )}
                 </div>
@@ -180,16 +228,10 @@ function Sensors2() {
               boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
               marginBottom: '10px'
             }}>
-            {statusConfig.find(status => status.when) && (
-              <Typography.Text 
-                strong 
-                className={statusConfig.find(status => status.when)?.className}
-                style={statusConfig.find(status => status.when)?.style}
-              >
-                {statusConfig.find(status => status.when)?.message}
-              </Typography.Text>
+            {status && (
+              <StatusMessage message={status.message} className={status.className} style={status.style} />
             )}
-            {!(statusConfig.find(status => status.when)) && temperature > MAX_TEMPERATURE && (
+            {!status && temperature > MAX_TEMPERATURE && (
               <div>
                 <Typography.Text strong className="temperature-alert-icon">
                   🔥 <br />
@@ -199,7 +241,7 @@ function Sensors2() {
                 </Typography.Text>
               </div>
             )}
-            {!(statusConfig.find(status => status.when)) && temperature >= MIN_TEMPERATURE && temperature <= MAX_TEMPERATURE && (
+            {!status && temperature >= MIN_TEMPERATURE && temperature <= MAX_TEMPERATURE && (
               <div>
                 <Typography.Text strong className="temperature-alert-icon">
                   ✅ <br />
@@ -209,7 +251,7 @@ function Sensors2() {
                 </Typography.Text>
               </div>
             )}
-            {!(statusConfig.find(status => status.when)) && temperature < MIN_TEMPERATURE && (
+            {!status && temperature < MIN_TEMPERATURE && (
               <div>
                 <Typography.Text strong className="temperature-alert-icon">
                   ❄️ <br />
@@ -238,17 +280,10 @@ function Sensors2() {
               marginBottom: '10px'
             }}
           >
-            {statusConfig.find(status => status.when) && (
-              <Typography.Text 
-                strong 
-                className={statusConfig.find(status => status.when)?.className}
-                style={statusConfig.find(status => status.when)?.style}
-              >
-                {statusConfig.find(status => status.when)?.message}
-              </Typography.Text>
+            {status && (
+              <StatusMessage message={status.message} className={status.className} style={status.style} />
             )}
-            
-            {!(statusConfig.find(status => status.when)) && (
+            {!status && (
               <div>
                 <div style={{ width: '100%' }}>
                   <Input
@@ -271,7 +306,7 @@ function Sensors2() {
                 <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div style={{ textAlign: 'left' }}>
                     {plantingDate && (
-                      <Typography.Text strong style={{ fontWeight: 540, fontFamily: 'Inter, sans-serif', marginTop: '-10px', textAlign: 'left', marginLeft:'1px' }}>
+                      <Typography.Text strong style={{ fontWeight: 540, fontFamily: 'Inter, sans-serif', marginTop: '12px', textAlign: 'left', marginLeft:'1px' }}>
                         Days planted: {daysSincePlanting}
                       </Typography.Text>
                     )}
@@ -279,7 +314,7 @@ function Sensors2() {
                   {isPlantInfoChanged && (
                     <Button
                       type="primary"
-                      style={{ fontSize: '14px', marginBottom: '-10px' }}
+                      style={{ fontSize: '14px', marginBottom: '-18px', marginTop:'10px'}}
                       onClick={handleSaveChanges}
                     >
                       Save

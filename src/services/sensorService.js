@@ -1,17 +1,12 @@
-import { useState, useEffect } from "react";
 import axios from "axios";
-import { differenceInDays } from "date-fns";
-import { doc, setDoc, getDoc } from "firebase/firestore";
-import { auth, db } from "../firebase";
-import { useApiKey } from "../context/ApiKeyContext";
-import { sendEmailHot, sendEmailCold } from './emailService';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
-import { message } from "antd";
+import { sendEmailHot, sendEmailCold } from './emailService';
+import { Typography } from "antd";
 
 dayjs.extend(customParseFormat);
 
-// Temperature thresholds in Celsius
+// Temperature thresholds
 export const MAX_TEMPERATURE = 73; 
 export const MIN_TEMPERATURE = 15; 
 
@@ -31,9 +26,10 @@ const canSendEmail = () => {
   return timeSinceLastEmail >= EMAIL_COOLDOWN_MINUTES;
 };
 
+
+// Functions for pulling sensor data from Blynk API
 export const fetchSensorData = async ({ selectedApiKey, user, setIsDeviceOnline, setTemperature, setHumidity, setIsLoading, setIsApiKeyValid }) => {
   try {
-    
     const [deviceStatusResponse, temperatureResponse, humidityResponse] = await Promise.all([
       axios.get(`https://blynk.cloud/external/api/isHardwareConnected?token=${selectedApiKey}`),
       axios.get(`https://blynk.cloud/external/api/get?token=${selectedApiKey}&V0`),
@@ -70,20 +66,17 @@ export const fetchSensorData = async ({ selectedApiKey, user, setIsDeviceOnline,
   }
 };
 
+
 // Date-related utilities
 export const calculateDaysSincePlanting = (plantingDate) => {
   if (!plantingDate) return 0;
-  const plantingDay = dayjs(plantingDate, 'DD/MM/YYYY');
+  const plantingDay = dayjs(plantingDate, 'MM/DD/YYYY');
   return dayjs().diff(plantingDay, 'day');
 };
 
-export const disabledDate = (current) => {
-  return current && current > dayjs().endOf('day');
-};
-
 export const getDatePickerConfig = (handlePlantingDateChange) => ({
-  format: "DD/MM/YYYY",
-  disabledDate: disabledDate,
+  format: "MM/DD/YYYY",
+  disabledDate: (current) => current && current.isAfter(dayjs(), 'day'),
   placeholder: "Select planting date",
   style: { width: '100%', marginBottom: 8 },
   onChange: handlePlantingDateChange,
@@ -116,133 +109,8 @@ export const getStatusConfig = (selectedApiKey, isApiKeyValid, isDeviceOnline, i
   }
 ];
 
-// State change handlers
-export const createHandlers = (auth, db, setDoc) => ({
-  handleSave: (field, { plantName, plantingDate, daysSincePlanting, selectedApiKey }) => {
-    const currentUser = auth.currentUser;
-    if (currentUser) {
-      let dataToUpdate = {};
-      if (field === "plantInfo") {
-        dataToUpdate = {
-          plantName,
-          plantingDate: plantingDate ? plantingDate.format('DD/MM/YYYY') : null,
-          daysSincePlanting,
-        };
-      } else if (field === "blynkApiKey") {
-        dataToUpdate = { selectedApiKey };
-      }
-
-      return setDoc(doc(db, "users", currentUser.uid), dataToUpdate, { merge: true })
-        .then(() => {
-          message.success('Plant Data saved successfully!');
-        })
-        .catch((error) => {
-          console.error("Error saving data: ", error);
-        });
-    }
-  }
-});
-
-export const useSensorsLogic = () => {
-  const [temperature, setTemperature] = useState(null);
-  const [humidity, setHumidity] = useState(null);
-  const [plantingDate, setPlantingDate] = useState(null);
-  const [daysSincePlanting, setDaysSincePlanting] = useState(0);
-  const [plantName, setPlantName] = useState("");
-  const [user, setUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isApiKeyValid, setIsApiKeyValid] = useState(false);
-  const [isDeviceOnline, setIsDeviceOnline] = useState(true);
-  const { selectedApiKey } = useApiKey();
-
-  useEffect(() => {
-    if (!selectedApiKey) {
-      setIsLoading(false);
-      return;
-    }
-
-    setIsLoading(true);
-    setIsApiKeyValid(true);
-
-    const interval = setInterval(() => {
-      fetchSensorData({
-        selectedApiKey,
-        user,
-        setIsDeviceOnline,
-        setTemperature,
-        setHumidity,
-        setIsApiKeyValid,
-        setIsLoading,
-      });
-    }, 2000);
-
-    return () => { clearInterval(interval); };
-  }, [selectedApiKey]);
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      const currentUser = auth.currentUser;
-      if (currentUser) {
-        setUser(currentUser);
-        const docRef = doc(db, "users", currentUser.uid);
-        const docSnap = await getDoc(docRef);
-
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          if (data.plantingDate) {
-            setPlantingDate(dayjs(data.plantingDate, 'DD/MM/YYYY'));
-          }
-          if (data.plantName) {
-            setPlantName(data.plantName);
-          }
-        } else {
-          console.log("No such document!");
-        }
-      }
-    };
-
-    fetchUserData();
-  }, []);
-
-  useEffect(() => {
-    if (plantingDate) {
-      const selectedDate = dayjs(plantingDate).toDate();
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-
-      const days = differenceInDays(today, selectedDate);
-      setDaysSincePlanting(days >= 0 ? days : 0);
-
-      const currentUser = auth.currentUser;
-      if (currentUser) {
-        setDoc(
-          doc(db, "users", currentUser.uid),
-          {
-            plantingDate: plantingDate.format('DD/MM/YYYY'),
-            daysSincePlanting: days >= 0 ? days : 0,
-          },
-          { merge: true },
-        );
-      }
-    }
-  }, [plantingDate]);
-
-  return {
-    temperature,
-    humidity,
-    plantingDate,
-    daysSincePlanting,
-    plantName,
-    user,
-    isLoading,
-    isApiKeyValid,
-    selectedApiKey, 
-    auth, 
-    setDoc, 
-    doc, 
-    db,
-    setPlantingDate,
-    setPlantName,
-    isDeviceOnline,
-  };
-};
+export const StatusMessage = ({ message, className, style }) => (
+  <Typography.Text strong className={className} style={style}>
+    {message}
+  </Typography.Text>
+);
