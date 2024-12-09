@@ -37,14 +37,20 @@ export const generateGreeting = async (plantName, daysSincePlanting, temperature
 };
 
 // Generate AI response for user queries
-export const generateAIResponse = async (textPrompt, imageInlineData, plantName, daysSincePlanting, temperature, humidity) => {
+export const generateAIResponse = async function* (textPrompt, imageInlineData, plantName, daysSincePlanting, temperature, humidity) {
   const model = genAI.getGenerativeModel({
     model: "gemini-1.5-pro-exp-0827",
-    systemInstruction: `You are AI-Ponics, Aeroponics expert, answer concisely. Take note of plant name is ${plantName} and it has been ${daysSincePlanting} days since planting, sensor readings: temperature is ${temperature !== null ? temperature + '°C' : 'unavailable'} and humidity ${humidity !== null ? humidity + '%' : 'unavailable'}.`,
+    systemInstruction: `You are AI-Ponics, Aeroponics expert, answer concisely. Take note of plant name is ${plantName} and it has been ${daysSincePlanting} days since planting, sensor readings: temperature is ${temperature} and humidity ${humidity}.`,
   });
-  const result = await model.generateContent([textPrompt, imageInlineData]);
-  const response = await result.response;
-  return response.text();
+  
+  const result = await model.generateContentStream([textPrompt, imageInlineData]);
+  
+  for await (const chunk of result.stream) {
+    const chunkText = chunk.text();
+    if (chunkText) {
+      yield chunkText;
+    }
+  }
 };
 
 // Convert file to generative part

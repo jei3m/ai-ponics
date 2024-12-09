@@ -51,7 +51,7 @@ const AiwithImage = () => {
         }
   
         const {
-          plantName = 'AI-Ponics', // Default values directly in destructuring
+          plantName = '', 
           daysSincePlanting = 0,
           selectedApiKey = '',
         } = docSnap.data();
@@ -135,15 +135,49 @@ const AiwithImage = () => {
 
     setLoading(true);
     try {
-      const response = await generateAIResponse(textPrompt, imageInlineData, plantName, daysSincePlanting, temperature, humidity);
+      // Add user's message immediately
       setMessages((prevMessages) => [
         ...prevMessages,
-        { user: true, text: textPrompt, image: imagePreview },
-        { user: false, text: response },
+        { user: true, text: textPrompt, image: imagePreview }
       ]);
+
+      // Add an empty AI message that will be updated with streaming content
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { user: false, text: '', isStreaming: true }
+      ]);
+
+      const responseStream = generateAIResponse(textPrompt, imageInlineData, plantName, daysSincePlanting, temperature, humidity);
+      let accumulatedText = '';
+
+      for await (const chunk of responseStream) {
+        accumulatedText += chunk;
+        setMessages((prevMessages) => {
+          const newMessages = [...prevMessages];
+          newMessages[newMessages.length - 1] = {
+            user: false,
+            text: accumulatedText,
+            isStreaming: true
+          };
+          return newMessages;
+        });
+      }
+
+      // Mark streaming as complete
+      setMessages((prevMessages) => {
+        const newMessages = [...prevMessages];
+        newMessages[newMessages.length - 1] = {
+          user: false,
+          text: accumulatedText,
+          isStreaming: false
+        };
+        return newMessages;
+      });
     } catch (error) {
       console.error('Error generating AI response:', error);
       message.error('Failed to generate response. Please try again.');
+      // Remove the streaming message if there was an error
+      setMessages((prevMessages) => prevMessages.slice(0, -1));
     }
     setLoading(false);
   }
@@ -230,7 +264,7 @@ const AiwithImage = () => {
         <div className="messages-container">
           {messages.map((msg, index) => (
             <div key={index} className={`message-container ${msg.user ? "user" : "ai"}`}>
-              <div className={`message ${msg.user ? "user" : "ai"}`}>
+              <div className={`message ${msg.user ? "user" : "ai"} ${msg.isStreaming ? "streaming" : ""}`}>
                 {msg.user ? (
                   <p>{msg.text}</p>
                 ) : (
