@@ -23,7 +23,7 @@ const AiwithImage = () => {
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [currentFacingMode, setCurrentFacingMode] = useState('environment'); // Back camera by default
   const [webcamRef, setWebcamRef] = useState(null); 
-  const [plantName, setPlantName] = useState('AI-Ponics');
+  const [plantName, setPlantName] = useState('');
   const [daysSincePlanting, setDaysSincePlanting] = useState(0);
   const [temperature, setTemperature] = useState(null);
   const [humidity, setHumidity] = useState(null);
