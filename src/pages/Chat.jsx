@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faImage, faCamera, faSearch, faSyncAlt, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { UserAuth } from '../context/AuthContext';
-import { getBase64 } from '../helpers/imageHelper';
 import { db } from '../firebase'; 
 import { doc, getDoc } from 'firebase/firestore';
 import Webcam from 'react-webcam';
@@ -11,7 +10,7 @@ import './css/Chat.css';
 import { useApiKey } from "../context/ApiKeyContext";
 import ReactMarkdown from 'react-markdown';
 import { message } from 'antd';
-import { fetchSensorData, generateGreeting, generateAIResponse, fileToGenerativePart } from '../services/chatServices';
+import { fetchSensorData, generateGreeting, generateAIResponse, fileToGenerativePart, getBase64 } from '../services/chatServices';
 
 const AiwithImage = () => {
   const [image, setImage] = useState('');
@@ -106,14 +105,14 @@ const AiwithImage = () => {
   useEffect(() => {
     async function greetUser() {
 
-      if (!systemStatus) {
-        console.log(`System status:${systemStatus}`)
-        setMessages([{ user:false, text: "I apologize, but I cannot provide readings as your Aeroponic System appears to be offline."}])
+      if (!sensorDataLoaded) {
+        setMessages([{ user:false, text: "Sensor data is still loading. Please wait."}])
         return;
       }
 
-      if (!sensorDataLoaded) {
-        setMessages([{ user:false, text: "Sensor data is still loading. Please wait."}])
+      if (!systemStatus) {
+        console.log(`System status:${systemStatus}`)
+        setMessages([{ user:false, text: "I apologize, but I cannot provide readings as your Aeroponic System appears to be offline."}])
         return;
       }
 
