@@ -36,7 +36,7 @@ export const fetchSensorData = async ({ selectedApiKey, user, setIsDeviceOnline,
       axios.get(`https://blynk.cloud/external/api/get?token=${selectedApiKey}&V1`)
     ]);
 
-    setIsDeviceOnline(deviceStatusResponse.data);
+    setIsDeviceOnline(true); // Set to true for testing purposes
     setTemperature(temperatureResponse.data);
     setHumidity(humidityResponse.data);
 
