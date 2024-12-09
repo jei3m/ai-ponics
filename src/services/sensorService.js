@@ -31,25 +31,16 @@ const canSendEmail = () => {
   return timeSinceLastEmail >= EMAIL_COOLDOWN_MINUTES;
 };
 
-export const fetchSensorData = async ({ selectedApiKey, user, setIsDeviceOnline, setTemperature, setHumidity, setIsApiKeyValid, setIsLoading }) => {
+export const fetchSensorData = async ({ selectedApiKey, user, setIsDeviceOnline, setTemperature, setHumidity, setIsLoading }) => {
   try {
-    // Check device online status
-    const deviceStatusResponse = await axios.get(
-      `https://blynk.cloud/external/api/isHardwareConnected?token=${selectedApiKey}`
-    );
+    
+    const [deviceStatusResponse, temperatureResponse, humidityResponse] = await Promise.all([
+      axios.get(`https://blynk.cloud/external/api/isHardwareConnected?token=${selectedApiKey}`),
+      axios.get(`https://blynk.cloud/external/api/get?token=${selectedApiKey}&V0`),
+      axios.get(`https://blynk.cloud/external/api/get?token=${selectedApiKey}&V1`)
+    ]);
 
     setIsDeviceOnline(deviceStatusResponse.data);
-
-    // Pulling Temperature Data
-    const temperatureResponse = await axios.get(
-      `https://blynk.cloud/external/api/get?token=${selectedApiKey}&V0`,
-    );
-
-    // Pulling Humidity Data
-    const humidityResponse = await axios.get(
-      `https://blynk.cloud/external/api/get?token=${selectedApiKey}&V1`,
-    );
-    
     setTemperature(temperatureResponse.data);
     setHumidity(humidityResponse.data);
 
@@ -59,11 +50,11 @@ export const fetchSensorData = async ({ selectedApiKey, user, setIsDeviceOnline,
         if (temperatureResponse.data > MAX_TEMPERATURE) {
           sendEmailHot(user, temperatureResponse.data);
           console.log("Email for Hot Temperature Sent");
-          lastEmailSent = dayjs().toISOString(); // Using current time
+          lastEmailSent = dayjs().toISOString();
         } else if (temperatureResponse.data < MIN_TEMPERATURE) {
           sendEmailCold(user, temperatureResponse.data);
           console.log("Email for Cold Temperature Sent");
-          lastEmailSent = dayjs().toISOString(); // Using current time
+          lastEmailSent = dayjs().toISOString();
         }
       }
     }
@@ -71,12 +62,8 @@ export const fetchSensorData = async ({ selectedApiKey, user, setIsDeviceOnline,
     setIsLoading(false);
     
   } catch (error) {
-      console.error("Error fetching data from Blynk:", error);
-      setIsApiKeyValid(false);
-      setTemperature(null);
-      setHumidity(null);
-      setIsLoading(false);
-    }
+    console.error("Error fetching data from Blynk:", error);
+  }
 };
 
 // Date-related utilities
@@ -178,7 +165,7 @@ export const useSensorsLogic = () => {
         setIsApiKeyValid,
         setIsLoading,
       });
-    }, 3000);
+    }, 2000);
 
     return () => { clearInterval(interval); };
   }, [selectedApiKey]);
