@@ -62,8 +62,9 @@ To set up AI-Ponics locally, follow these steps:
 4. **Start the Development Server**
 
     ```bash
-    npm start
+    npm start -- --host 10.10.0.73
     ```
+    Note: Replace `10.10.0.73` with your local IP address.
 
 5. **Open Your Browser**
 
