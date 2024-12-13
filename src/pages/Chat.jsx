@@ -84,7 +84,7 @@ const AiwithImage = () => {
       setSensorDataLoaded(true);
     } catch (error) {
       console.error('Error fetching sensor data:', error);
-      setMessages([{ user:false, text: "Invalid API key. Please check your API key and try again." }]);
+      setMessages([{ user:false, text: "Your API key is invalid. Please check your API key and try again." }]);
       setSensorDataLoaded(true);
     }
   };
