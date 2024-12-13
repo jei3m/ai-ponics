@@ -27,7 +27,7 @@ export const fetchSensorData = async (selectedApiKey) => {
 // Generate AI greeting message
 export const generateGreeting = async (plantName, daysSincePlanting, temperature, humidity) => {
   const model = genAI.getGenerativeModel({
-    model: "gemini-1.5-flash",
+    model: "gemini-2.0-flash-exp", //Recently release 2.0 Flash Model
   });
   const result = await model.generateContent(
     `Be somehow concise and friendly. Introduce yourself as AI-Ponics an Aeroponic System Assistant. Share in a bullet form that the plant name is ${plantName}, planted ${daysSincePlanting} days ago, with sensor readings of ${temperature}°C and ${humidity}%.`
@@ -39,11 +39,17 @@ export const generateGreeting = async (plantName, daysSincePlanting, temperature
 // Generate AI response for user queries
 export const generateAIResponse = async function* (textPrompt, imageInlineData, plantName, daysSincePlanting, temperature, humidity) {
   const model = genAI.getGenerativeModel({
-    model: "gemini-1.5-pro-exp-0827",
+    model: "gemini-2.0-flash-exp", //Recently released 2.0 Flash Model
     systemInstruction: `You are AI-Ponics, an Aeroponics expert, answer concisely. Take note of plant name is ${plantName} and it has been ${daysSincePlanting} days since planting, sensor readings: temperature is ${temperature} and humidity ${humidity}.`,
   });
+
+  // Create content parts array
+  const parts = [{ text: textPrompt }];
+  if (imageInlineData) {
+    parts.push(imageInlineData);
+  }
   
-  const result = await model.generateContentStream([textPrompt, imageInlineData]);
+  const result = await model.generateContentStream(parts);
   
   for await (const chunk of result.stream) {
     const chunkText = chunk.text();
