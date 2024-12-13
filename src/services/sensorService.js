@@ -36,7 +36,7 @@ export const fetchSensorData = async ({ selectedApiKey, user, setIsDeviceOnline,
       axios.get(`https://blynk.cloud/external/api/get?token=${selectedApiKey}&V1`)
     ]);
 
-    setIsDeviceOnline(true); // Set to true for testing purposes
+    setIsDeviceOnline(deviceStatusResponse.data); 
     setTemperature(temperatureResponse.data);
     setHumidity(humidityResponse.data);
 
@@ -93,12 +93,12 @@ export const getStatusConfig = (selectedApiKey, isApiKeyValid, isDeviceOnline, i
   },
   {
     when: !selectedApiKey,
-    message: 'Please Add API Token',
+    message: 'Please Add API Key',
     className: 'loading-text'
   },
   {
     when: !isApiKeyValid,
-    message: 'Invalid API Token',
+    message: 'Invalid API Key',
     className: 'error-text',
     style: { textAlign: 'center', color: '#ff4d4f' }
   },
