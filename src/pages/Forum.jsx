@@ -255,20 +255,20 @@ function Forum() {
                 avatar={<Avatar style={{ width: '50px', height: '50px' }} src={forum.authorAvatar} />}
                 title={
                   <Link to={`/forum/${forum.id}`} style={{ textDecoration: 'none' }}>
-                    <div style={{ marginBottom: '-14px', marginTop: '-10px' }}>
-                      <Text strong style={{ fontSize: '20px' }}>{forum.title}</Text>
+                    <div style={{ marginBottom: '-14px', marginTop: '-6px' }}>
+                      <Text strong style={{ fontSize: '20px'}}>{forum.title}</Text>
                     </div>
                   </Link>
                 }
                 description={
                   <Space direction="vertical">
-                    <div style={{ marginTop: '-20px' }}>
+                    <div>
                       <Text type="secondary" style={{ fontSize: '14px' }}>Posted by: {forum.authorName}</Text>
                     </div>
                     <div style={{ marginTop: '-10px' }}>
                       <Text type="secondary" style={{ fontSize: '12px' }}>{new Date(forum.createdAt).toLocaleString()}</Text>
                     </div>
-                    <div style={{ marginTop: '0.5rem' }}>
+                    <div style={{ marginTop: '0.5rem', marginBottom: '-1rem' }}>
                       <CommentOutlined style={{ marginRight: '0.5rem' }} />
                       <Text type="secondary">{forum.comments.length} comments</Text>
                     </div>
