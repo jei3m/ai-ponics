@@ -14,7 +14,7 @@ export const fetchSensorData = async (selectedApiKey) => {
     ]);
     
     return {
-      systemStatus: true, // Set to true for testing purposes
+      systemStatus: deviceStatusResponse.data, 
       temperature: Math.round(temperatureResponse.data),
       humidity: Math.round(humidityResponse.data)
     };
@@ -37,14 +37,17 @@ export const generateGreeting = async (plantName, daysSincePlanting, temperature
 };
 
 // Generate AI response for user queries
-export const generateAIResponse = async function* (textPrompt, imageInlineData, plantName, daysSincePlanting, temperature, humidity) {
+export const generateAIResponse = async function* (textPrompt, imageInlineData, plantName, daysSincePlanting, temperature, humidity, previousMessages = []) {
   const model = genAI.getGenerativeModel({
     model: "gemini-2.0-flash-exp", //Recently released 2.0 Flash Model
     systemInstruction: `You are AI-Ponics, an Aeroponics expert, answer concisely. Take note of plant name is ${plantName} and it has been ${daysSincePlanting} days since planting, sensor readings: temperature is ${temperature} and humidity ${humidity}.`,
   });
 
+  const chatHistory = previousMessages.map(msg => `${msg.user ? 'User' : 'Assistant'} : ${msg.text}`).join('\n');
+  
   // Create content parts array
-  const parts = [{ text: textPrompt }];
+  const parts = [{ text: chatHistory ? `Previous conversation \n ${chatHistory} \n \n Current message: ${textPrompt}` : textPrompt}];
+
   if (imageInlineData) {
     parts.push(imageInlineData);
   }
