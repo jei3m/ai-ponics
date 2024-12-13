@@ -5,7 +5,7 @@ import { UserAuth } from '../context/AuthContext';
 import { useLocation } from 'react-router-dom';
 import { useApiKey } from '../context/ApiKeyContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faLeaf, faNewspaper, faHome } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faLeaf, faNewspaper, faHome, faImage } from '@fortawesome/free-solid-svg-icons';
 import { fetchUserData, saveBlynkApiKey, addNewApiKey, deleteApiKey } from '../services/headerService';
 import "../pages/css/Header.css"
 
@@ -69,7 +69,23 @@ function Header() {
 
       </div>
 
+
+
       <div>
+
+        {location.pathname === '/home' && (
+          <a href='/detect'>
+            <FontAwesomeIcon icon={faImage} className='forum-icon'/>
+          </a>
+        )}
+
+        {location.pathname === '/detect' && (
+          <a href='/home'>
+            <FontAwesomeIcon icon={faHome} className='forum-icon'/>
+          </a>
+        )}
+
+
         {location.pathname === '/home' && (
           <a href='/forum'>
             <FontAwesomeIcon icon={faNewspaper} className='forum-icon'/>
@@ -80,6 +96,7 @@ function Header() {
            <FontAwesomeIcon icon={faHome} className='forum-icon'/>
           </a>
         )}
+
         {currentUser && (
           <FontAwesomeIcon
           icon={faUser}

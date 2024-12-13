@@ -11,6 +11,7 @@ import Login from './pages/Login';
 import Forum from './pages/Forum';
 import DetailedView from './pages/ForumDetailed';
 import Sensors2 from './pages/Sensors2';
+import DiseaseDetection from './pages/DiseaseDetection';
 
 
 // Import routes and context
@@ -82,6 +83,15 @@ function App() {
           element={
             <PrivateRoutes>
               <Loading/>
+            </PrivateRoutes>
+          }
+        />
+
+        <Route
+          path="/detect"
+          element={
+            <PrivateRoutes>
+              <DiseaseDetection/>
             </PrivateRoutes>
           }
         />

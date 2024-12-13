@@ -134,6 +134,26 @@
     text-align: left;
 }
 
+.message.streaming {
+  position: relative;
+}
+
+.message.streaming::after {
+  content: '...';
+  display: inline-block;
+  font-size: 20px;
+  margin-left: 4px;
+  animation: typing 1.4s infinite;
+  letter-spacing: 2px;
+  color: #006400;
+}
+
+@keyframes typing {
+  0%, 20% { content: '.'; }
+  40% { content: '..'; }
+  60%, 100% { content: '...'; }
+}
+
 /* Input container */
 .input-container {
     display: flex;
@@ -154,6 +174,7 @@
     gap: 4px; /* Reduced gap */
     padding-top: 4px; /* Reduced padding */
     width: 100%; /* Ensure it takes full width of the input-container */
+    margin-bottom: 10px;
 }
 
 .message-input {

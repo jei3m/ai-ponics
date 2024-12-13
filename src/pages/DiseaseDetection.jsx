@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Card, Upload, Button, Typography, Space, Progress, Tag } from 'antd';
 import { UploadOutlined, CheckCircleOutlined } from '@ant-design/icons';
+import Header from '../components/Header';
 
 const { Title, Text } = Typography;
 
@@ -11,6 +12,16 @@ const DiseaseDetection = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [results, setResults] = useState(null);
     const [error, setError] = useState(null);
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 768);
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     const handleImageChange = (info) => {
         if (info.file) {
@@ -90,85 +101,115 @@ const DiseaseDetection = () => {
     };
 
     return (
-        <div style={{ 
-            padding: '24px', 
-            maxWidth: '100dvw', 
-            margin: '0 auto',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center'
-        }}>
-            <Title level={2} style={{ marginBottom: '12px' }}>Plant Disease Detection</Title>
-            
-            <Card 
-                hoverable
-                className="upload-card"
-                style={{
-                    background: '#fafafa',
-                    borderRadius: '8px',
-                    minHeight: '480px',
-                    width: '500px'
+        <div className="disease-detection-container">
+            <Header/>
+            <div style={{ 
+                padding: isMobile ? '16px' : '24px', 
+                maxWidth: '1200px', 
+                margin: '0 auto',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                minHeight: 'calc(100vh - 64px)',
+            }}>
+                <Title level={2} style={{ 
+                    marginBottom: '24px',
+                    fontSize: isMobile ? '24px' : '32px',
+                    textAlign: 'center'
                 }}>
-                    
-                <Space direction="vertical" style={{ width: '100%' }}>
-                    <div style={{ textAlign: 'center'}}>
-                        <Upload
-                            beforeUpload={(file) => {
-                                handleImageChange({ file });
-                                return false;
-                            }}
-                            accept="image/*"
-                            maxCount={1}
-                            showUploadList={false}
-                        >
-                            <Button 
-                                icon={<UploadOutlined />} 
-                                size="large"
-                                style={{ width: '200px' }}
+                    Plant Disease Detection
+                </Title>
+                
+                <Card 
+                    hoverable
+                    className="upload-card"
+                    style={{
+                        background: '#ffffff',
+                        borderRadius: '12px',
+                        minHeight: '480px',
+                        width: '100%',
+                        maxWidth: isMobile ? '100%' : '600px',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                        transition: 'all 0.3s ease'
+                    }}>
+                        
+                    <Space direction="vertical" style={{ width: '100%', gap: '20px' }}>
+                        <div style={{ 
+                            textAlign: 'center',
+                            padding: isMobile ? '16px' : '24px'
+                        }}>
+                            <Upload
+                                beforeUpload={(file) => {
+                                    handleImageChange({ file });
+                                    return false;
+                                }}
+                                accept="image/*"
+                                maxCount={1}
+                                showUploadList={false}
                             >
-                                Select Image
-                            </Button>
-                        </Upload>
-                        {renderPredictions()}
-                    </div>
+                                <Button 
+                                    icon={<UploadOutlined />} 
+                                    size={isMobile ? 'middle' : 'large'}
+                                    style={{ 
+                                        width: isMobile ? '160px' : '200px',
+                                        height: isMobile ? '36px' : '40px',
+                                        borderRadius: '8px'
+                                    }}
+                                >
+                                    Select Image
+                                </Button>
+                            </Upload>
+                        </div>
 
-                    {previewUrl && (
-                        <div 
+                        {previewUrl && (
+                            <div 
+                                style={{ 
+                                    textAlign: 'center',
+                                    padding: isMobile ? '12px' : '16px',
+                                    background: '#f8f8f8',
+                                    borderRadius: '12px',
+                                    boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
+                                }}
+                            >
+                                <img 
+                                    src={previewUrl} 
+                                    alt="Preview" 
+                                    style={{ 
+                                        maxWidth: '100%', 
+                                        maxHeight: isMobile ? '200px' : '300px',
+                                        objectFit: 'contain',
+                                        borderRadius: '8px',
+                                        transition: 'all 0.3s ease'
+                                    }} 
+                                />
+                            </div>
+                        )}
+
+                        <div style={{ width: '100%' }}>
+                            {renderPredictions()}
+                        </div>
+
+                        <Button 
+                            type="primary" 
+                            onClick={detectDisease}
+                            disabled={!base64Image || isLoading}
+                            loading={isLoading}
+                            size={isMobile ? 'middle' : 'large'}
                             style={{ 
-                                textAlign: 'center',
-                                marginTop: '16px',
-                                padding: '16px',
-                                background: '#fff',
+                                width: '100%',
+                                height: isMobile ? '40px' : '48px',
                                 borderRadius: '8px',
-                                boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                                marginTop: '12px',
+                                background: '#1890ff',
+                                fontWeight: 500
                             }}
                         >
-                            <img 
-                                src={previewUrl} 
-                                alt="Preview" 
-                                style={{ 
-                                    maxWidth: '100%', 
-                                    maxHeight: '300px',
-                                    objectFit: 'contain',
-                                    borderRadius: '4px'
-                                }} 
-                            />
-                        </div>
-                    )}
-
-                    <Button 
-                        type="primary" 
-                        onClick={detectDisease}
-                        disabled={!base64Image || isLoading}
-                        loading={isLoading}
-                        size="large"
-                        style={{ width: '100%', marginTop: '20px' }}
-                    >
-                        {isLoading ? 'Detecting...' : 'Detect Disease'}
-                    </Button>
-                </Space>
-            </Card>
-        
+                            {isLoading ? 'Detecting...' : 'Detect Disease'}
+                        </Button>
+                    </Space>
+                </Card>
+            
+            </div>
         </div>
     );
 };

@@ -23,7 +23,7 @@ const AiwithImage = () => {
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [currentFacingMode, setCurrentFacingMode] = useState('environment'); // Back camera by default
   const [webcamRef, setWebcamRef] = useState(null); 
-  const [plantName, setPlantName] = useState('AI-Ponics');
+  const [plantName, setPlantName] = useState('');
   const [daysSincePlanting, setDaysSincePlanting] = useState(0);
   const [temperature, setTemperature] = useState(null);
   const [humidity, setHumidity] = useState(null);
@@ -51,7 +51,7 @@ const AiwithImage = () => {
         }
   
         const {
-          plantName = 'AI-Ponics', // Default values directly in destructuring
+          plantName = '', 
           daysSincePlanting = 0,
           selectedApiKey = '',
         } = docSnap.data();
@@ -75,17 +75,17 @@ const AiwithImage = () => {
     fetchUserData();
   }, [currentUser]);
 
-  //Fetching sensor data from Blynk API
   const fetchSensorDataFromBlynk = async (selectedApiKey) => {
     try {
-      const data = await fetchSensorData(selectedApiKey);
-      setTemperature(data.temperature);
-      setHumidity(data.humidity);
-      setSystemStatus(data.systemStatus);
+      const sensorData = await fetchSensorData(selectedApiKey);
+      setSystemStatus(sensorData.systemStatus);
+      setTemperature(sensorData.temperature);
+      setHumidity(sensorData.humidity);
       setSensorDataLoaded(true);
     } catch (error) {
       console.error('Error fetching sensor data:', error);
-      setSensorDataLoaded(false);
+      setMessages([{ user:false, text: "Invalid API key. Please check your API key and try again." }]);
+      setSensorDataLoaded(true);
     }
   };
 
@@ -106,7 +106,12 @@ const AiwithImage = () => {
     async function greetUser() {
 
       if (!sensorDataLoaded) {
-        setMessages([{ user:false, text: "Sensor data is still loading. Please wait."}])
+        setMessages([{ user:false, text: "Sensor data is still loading... Please wait."}])
+        return;
+      }
+
+      if (systemStatus == null) {
+        setMessages([{ user:false, text: "Your API key missing. Please provide a valid API key to proceed."}])
         return;
       }
 
@@ -133,17 +138,65 @@ const AiwithImage = () => {
       return;
     }
 
-    setLoading(true);
-    try {
-      const response = await generateAIResponse(textPrompt, imageInlineData, plantName, daysSincePlanting, temperature, humidity);
+    // Error message from the AI if image is sent with no text
+    if (!textPrompt || textPrompt.trim() === '') {
       setMessages((prevMessages) => [
         ...prevMessages,
-        { user: true, text: textPrompt, image: imagePreview },
-        { user: false, text: response },
+        {user: true, image: imagePreview}
       ]);
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        {user: false, text: "Please add some information about the image."}
+      ]);
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // Add user's message immediately
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { user: true, text: textPrompt, image: imagePreview }
+      ]);
+
+      // Add an empty AI message that will be updated with streaming content
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { user: false, text: '', isStreaming: true }
+      ]);
+
+      const previousMessages = messages;
+      const responseStream = generateAIResponse(textPrompt, imageInlineData, plantName, daysSincePlanting, temperature, humidity, previousMessages);
+      let accumulatedText = '';
+
+      for await (const chunk of responseStream) {
+        accumulatedText += chunk;
+        setMessages((prevMessages) => {
+          const newMessages = [...prevMessages];
+          newMessages[newMessages.length - 1] = {
+            user: false,
+            text: accumulatedText,
+            isStreaming: true
+          };
+          return newMessages;
+        });
+      }
+
+      // Mark streaming as complete
+      setMessages((prevMessages) => {
+        const newMessages = [...prevMessages];
+        newMessages[newMessages.length - 1] = {
+          user: false,
+          text: accumulatedText,
+          isStreaming: false
+        };
+        return newMessages;
+      });
     } catch (error) {
       console.error('Error generating AI response:', error);
       message.error('Failed to generate response. Please try again.');
+      // Remove the streaming message if there was an error
+      setMessages((prevMessages) => prevMessages.slice(0, -1));
     }
     setLoading(false);
   }
@@ -165,7 +218,7 @@ const AiwithImage = () => {
       setImage('');
       setImageInlineData('');
     } else {
-      message.error('Please provide at least an image or text prompt.');
+      message.error('Please provide a prompt.');
     }
   };
 
@@ -230,7 +283,7 @@ const AiwithImage = () => {
         <div className="messages-container">
           {messages.map((msg, index) => (
             <div key={index} className={`message-container ${msg.user ? "user" : "ai"}`}>
-              <div className={`message ${msg.user ? "user" : "ai"}`}>
+              <div className={`message ${msg.user ? "user" : "ai"} ${msg.isStreaming ? "streaming" : ""}`}>
                 {msg.user ? (
                   <p>{msg.text}</p>
                 ) : (
