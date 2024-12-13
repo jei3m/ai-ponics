@@ -133,6 +133,19 @@ const AiwithImage = () => {
       return;
     }
 
+    // Error message from the AI if image is sent with no text
+    if (!textPrompt || textPrompt.trim() === '') {
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        {user: true, image: imagePreview}
+      ]);
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        {user: false, text: "Please add some information about the image."}
+      ]);
+      return;
+    }
+
     setLoading(true);
     try {
       // Add user's message immediately
@@ -199,7 +212,7 @@ const AiwithImage = () => {
       setImage('');
       setImageInlineData('');
     } else {
-      message.error('Please provide at least an image or text prompt.');
+      message.error('Please provide a prompt.');
     }
   };
 
