@@ -76,6 +76,27 @@ function Sensors2() {
       const currentUser = auth.currentUser;
       if (currentUser) {
         setUser(currentUser);
+
+        // Check cache first
+        const cachedData = localStorage.getItem(`plantData_${currentUser.uid}`);
+        if (cachedData) {
+          const parsedData = JSON.parse(cachedData);
+          const cacheTimestamp = parsedData.timestamp;
+          const currentTime = new Date().getTime(); // This is in UTC format
+
+          // Check if cache is less than 5 minutes old
+          if ( currentTime - cacheTimestamp < 5 * 60 * 1000) {
+            if (parsedData.plantingDate) {
+              setPlantingDate(dayjs(parsedData.plantingDate, 'MM/DD/YYYY'))
+            }
+            if (parsedData.plantName) {
+              setPlantName(parsedData.plantName);
+            }
+            return;
+          }
+        }
+
+        // If cache is not available or expired, fetch from Firestore
         const docRef = doc(db, "users", currentUser.uid);
         const docSnap = await getDoc(docRef);
 
@@ -87,6 +108,12 @@ function Sensors2() {
           if (data.plantName) {
             setPlantName(data.plantName);
           }
+
+          // Update cache after fetching
+          localStorage.setItem(`plantData_${currentUser.uid}`, JSON.stringify({
+            ...data,
+            timestamp: new Date().getTime()
+          }));
         }
       }
     };
@@ -113,12 +140,19 @@ function Sensors2() {
           plantingDate: plantingDate ? plantingDate.format('MM/DD/YYYY') : null,
           daysSincePlanting: calculateDaysSincePlanting(plantingDate)
         }, { merge: true });
+
+        // Update cache data upon saving
+        localStorage.setItem(`plantData_${currentUser.uid}`, JSON.stringify({
+          plantName,
+          plantingDate: plantingDate ? plantingDate.format('MM/DD/YYYY') : null,
+          daysSincePlanting: calculateDaysSincePlanting(plantingDate),
+          timestamp: new Date().getTime()
+        }));
         
         message.success('Plant data saved successfully!');
         setIsPlantInfoChanged(false);
       } catch (error) {
-        console.error("Error saving changes:", error);
-        message.error('Failed to save plant data');
+        message.error('Failed to save plant data:', error);
       }
     }
   };
