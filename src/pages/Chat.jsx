@@ -75,17 +75,17 @@ const AiwithImage = () => {
     fetchUserData();
   }, [currentUser]);
 
-  //Fetching sensor data from Blynk API
   const fetchSensorDataFromBlynk = async (selectedApiKey) => {
     try {
-      const data = await fetchSensorData(selectedApiKey);
-      setTemperature(data.temperature);
-      setHumidity(data.humidity);
-      setSystemStatus(data.systemStatus);
+      const sensorData = await fetchSensorData(selectedApiKey);
+      setSystemStatus(sensorData.systemStatus);
+      setTemperature(sensorData.temperature);
+      setHumidity(sensorData.humidity);
       setSensorDataLoaded(true);
     } catch (error) {
       console.error('Error fetching sensor data:', error);
-      setSensorDataLoaded(false);
+      setMessages([{ user:false, text: "Invalid API key. Please check your API key and try again." }]);
+      setSensorDataLoaded(true);
     }
   };
 
@@ -106,7 +106,12 @@ const AiwithImage = () => {
     async function greetUser() {
 
       if (!sensorDataLoaded) {
-        setMessages([{ user:false, text: "Sensor data is still loading. Please wait."}])
+        setMessages([{ user:false, text: "Sensor data is still loading... Please wait."}])
+        return;
+      }
+
+      if (systemStatus == null) {
+        setMessages([{ user:false, text: "Your API key missing. Please provide a valid API key to proceed."}])
         return;
       }
 
@@ -160,7 +165,8 @@ const AiwithImage = () => {
         { user: false, text: '', isStreaming: true }
       ]);
 
-      const responseStream = generateAIResponse(textPrompt, imageInlineData, plantName, daysSincePlanting, temperature, humidity);
+      const previousMessages = messages;
+      const responseStream = generateAIResponse(textPrompt, imageInlineData, plantName, daysSincePlanting, temperature, humidity, previousMessages);
       let accumulatedText = '';
 
       for await (const chunk of responseStream) {
