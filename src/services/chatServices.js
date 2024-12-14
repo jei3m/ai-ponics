@@ -14,7 +14,7 @@ export const fetchSensorData = async (selectedApiKey) => {
     ]);
     
     return {
-      systemStatus: true, // Set to true for testing purposes 
+      systemStatus: deviceStatusResponse.data, 
       temperature: Math.round(temperatureResponse.data),
       humidity: Math.round(humidityResponse.data)
     };
