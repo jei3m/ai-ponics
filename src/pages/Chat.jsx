@@ -85,8 +85,8 @@ const AiwithImage = () => {
       setSensorDataLoaded(true);
     } catch (error) {
       console.error('Error fetching sensor data:', error);
-      setMessages([{ user:false, text: "Your API key is invalid. Please check your API key and try again." }]);
       setSensorDataLoaded(true);
+      setBlynkApiKey(false);
       return;
     }
   };
@@ -112,12 +112,17 @@ const AiwithImage = () => {
         return;
       }
 
-      if (systemStatus == null) {
+      if (blynkApiKey === false) {
+        setMessages([{ user:false, text: "Your API key is invalid. Please check your API key and try again." }]);
+        return;
+      }
+
+      if (systemStatus === null) {
         setMessages([{ user:false, text: "Your API key missing. Please provide a valid API key to proceed."}])
         return;
       }
 
-      if (!systemStatus) {
+      if (systemStatus === false) {
         console.log(`System status:${systemStatus}`)
         setMessages([{ user:false, text: "I apologize, but I cannot provide readings as your Aeroponic System appears to be offline."}])
         return;
