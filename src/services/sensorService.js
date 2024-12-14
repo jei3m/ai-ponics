@@ -1,7 +1,6 @@
 import axios from "axios";
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
-import { sendEmailHot, sendEmailCold } from './emailService';
 import { Typography } from "antd";
 
 dayjs.extend(customParseFormat);
@@ -9,23 +8,6 @@ dayjs.extend(customParseFormat);
 // Temperature thresholds
 export const MAX_TEMPERATURE = 73; 
 export const MIN_TEMPERATURE = 15; 
-
-// Time constants
-const EMAIL_COOLDOWN_MINUTES = 10;
-let lastEmailSent = null;
-
-// To check if an email can be sent based on the cooldown period
-const canSendEmail = () => {
-  if (!lastEmailSent) return true;
-  const now = dayjs(); // Using current time
-  const timeSinceLastEmail = now.diff(dayjs(lastEmailSent), 'minute');
-  const remainingMinutes = EMAIL_COOLDOWN_MINUTES - timeSinceLastEmail;
-  if (remainingMinutes > 0) {
-    console.log(`${remainingMinutes} minutes remaining before next email can be sent`);
-  }
-  return timeSinceLastEmail >= EMAIL_COOLDOWN_MINUTES;
-};
-
 
 // Functions for pulling sensor data from Blynk API
 export const fetchSensorData = async ({ selectedApiKey, user, setIsDeviceOnline, setTemperature, setHumidity, setIsLoading, setIsApiKeyValid }) => {
@@ -39,22 +21,6 @@ export const fetchSensorData = async ({ selectedApiKey, user, setIsDeviceOnline,
     setIsDeviceOnline(deviceStatusResponse.data); 
     setTemperature(temperatureResponse.data);
     setHumidity(humidityResponse.data);
-
-    // Send email alerts only if device is online
-    if (deviceStatusResponse.data) {
-      if (canSendEmail()) {
-        if (temperatureResponse.data > MAX_TEMPERATURE) {
-          sendEmailHot(user, temperatureResponse.data);
-          console.log("Email for Hot Temperature Sent");
-          lastEmailSent = dayjs().toISOString();
-        } else if (temperatureResponse.data < MIN_TEMPERATURE) {
-          sendEmailCold(user, temperatureResponse.data);
-          console.log("Email for Cold Temperature Sent");
-          lastEmailSent = dayjs().toISOString();
-        }
-      }
-    }
-
     setIsLoading(false);
     
   } catch (error) {
@@ -65,7 +31,6 @@ export const fetchSensorData = async ({ selectedApiKey, user, setIsDeviceOnline,
     setIsLoading(false);
   }
 };
-
 
 // Date-related utilities
 export const calculateDaysSincePlanting = (plantingDate) => {

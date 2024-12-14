@@ -11,6 +11,7 @@ import { useApiKey } from "../context/ApiKeyContext";
 import ReactMarkdown from 'react-markdown';
 import { message } from 'antd';
 import { fetchSensorData, generateGreeting, generateAIResponse, fileToGenerativePart, getBase64 } from '../services/chatServices';
+import { MAX_TEMPERATURE } from "../services/sensorService"
 
 const AiwithImage = () => {
   const [image, setImage] = useState('');
@@ -84,7 +85,7 @@ const AiwithImage = () => {
       setSensorDataLoaded(true);
     } catch (error) {
       console.error('Error fetching sensor data:', error);
-      setMessages([{ user:false, text: "Invalid API key. Please check your API key and try again." }]);
+      setMessages([{ user:false, text: "Your API key is invalid. Please check your API key and try again." }]);
       setSensorDataLoaded(true);
     }
   };
@@ -122,8 +123,19 @@ const AiwithImage = () => {
       }
 
       try {
-        const greetingText = await generateGreeting(plantName, daysSincePlanting, temperature, humidity);
-        setMessages([{ user: false, text: greetingText }]);
+        const warningMessage = temperature > MAX_TEMPERATURE ? "**Warning:** Temperature is too Hot" : "Need help or have questions? Don&apos;t hesitate to ask!";
+
+        const greetingText = 
+`Hey there, I'm AI-Ponics, your friendly Aeroponic System Assistant! 👋 \n
+* Here's a quick update on your system:\n
+     *   **Plant:** ${plantName}
+     *   **Age:** ${daysSincePlanting}
+     *   **Temperature:** ${temperature}
+     *   **Humidity:** ${humidity}\n
+${warningMessage}`
+
+        // const greetingText = await generateGreeting(plantName, daysSincePlanting, temperature, humidity);
+        setMessages([{ user: false, text: greetingText}]);
       } catch (error) {
         console.error('Error generating greeting:', error);
         setMessages([{ user: false, text: "Sorry, I encountered an error while generating a greeting." }]);

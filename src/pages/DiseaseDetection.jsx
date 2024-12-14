@@ -70,7 +70,10 @@ const DiseaseDetection = () => {
 
         return results.predictions.map((prediction, index) => {
             const confidence = Math.round(prediction.confidence * 100);
-            const color = confidence > 70 ? 'red' : confidence > 50 ? 'orange' : 'green';
+            const color = prediction.class === 'normal_lettuce' ? 'green' : confidence > 70 ? 'red' : confidence > 50 ? 'orange' : 'green';
+            const labelText = prediction.class === 'normal_lettuce' ? "Healthy" : `${confidence}% with Disease`
+            const icon = prediction.class === 'normal_lettuce' ? <CheckCircleOutlined /> : <CheckCircleOutlined />;
+
 
             return (
                 <Card 
@@ -84,16 +87,16 @@ const DiseaseDetection = () => {
                             <Text strong style={{ fontSize: 16 }}>
                                 {prediction.class}
                             </Text>
-                            <Tag color={color} icon={<CheckCircleOutlined />}>
-                                {confidence}% with Disease
+                            <Tag color={color} icon={icon}>
+                                {labelText}
                             </Tag>
                         </div>
-                        <Progress 
+                        {prediction.class !== 'normal_lettuce' && <Progress 
                             percent={confidence} 
                             status="active"
                             strokeColor={color}
                             size="small"
-                        />
+                        />}
                     </Space>
                 </Card>
             );
