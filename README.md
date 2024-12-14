@@ -1,4 +1,5 @@
-# AI-Ponics
+
+![aiponics-header](https://github.com/user-attachments/assets/a548adbf-15fe-4a52-8c93-8f899280ab0d)
 
 ## Overview
 
