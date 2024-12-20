@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faImage, faCamera, faSearch, faSyncAlt, faTimes } from '@fortawesome/free-solid-svg-icons';
@@ -152,20 +152,8 @@ ${warningMessage}`
   }, [sensorDataLoaded, systemStatus, plantName, daysSincePlanting, temperature, humidity]);
 
   async function aiRun() {
+    
     if (!systemStatus) {
-      return;
-    }
-
-    // Error message from the AI if image is sent with no text
-    if (!textPrompt || textPrompt.trim() === '') {
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        {user: true, image: imagePreview}
-      ]);
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        {user: false, text: "Please add some information about the image."}
-      ]);
       return;
     }
 
@@ -174,7 +162,7 @@ ${warningMessage}`
       // Add user's message immediately
       setMessages((prevMessages) => [
         ...prevMessages,
-        { user: true, text: textPrompt, image: imagePreview }
+        { user: true, text: textPrompt, image: imagePreview, imageInlineData: imageInlineData, isStreaming: false }
       ]);
 
       // Add an empty AI message that will be updated with streaming content
@@ -229,12 +217,14 @@ ${warningMessage}`
 
   // Error when sending a prompt with cleared fields
   const sendMessage = () => {
-    if (textPrompt || imageInlineData) {
+    if (textPrompt) {
       aiRun();
       setTextPrompt('');
       setImagePreview(null);
       setImage('');
       setImageInlineData('');
+    } else if (imageInlineData && !textPrompt) {
+      message.error('Please add additional information when sending an image.')
     } else {
       message.error('Please provide a prompt.');
     }
@@ -282,9 +272,22 @@ ${warningMessage}`
     }
   };
 
-  const exitCamera = () => {
-    setIsCameraOpen(false);
-  };
+  // Remove button clears all data related to the image
+  const handleRemoveImage = () => {
+    setImagePreview(null);
+    setImageInlineData('');
+    setImage('');
+  }
+
+  // const exitCamera = () => {
+  //   setIsCameraOpen(false);
+  // };
+
+  const messageEnd = useRef(null);
+
+  useEffect(() => {
+    messageEnd.current?.scrollIntoView({behavior: "smooth"})
+  },[messages])
 
   return (
     <div className="App-Chat">
@@ -313,6 +316,7 @@ ${warningMessage}`
               )}
             </div>
           ))}
+          <div ref={messageEnd} />
         </div>
 
         <div className="input-container">
@@ -364,7 +368,7 @@ ${warningMessage}`
               className="video-feed"
             />
             <div className="camera-controls">
-              <button className="exit-button" onClick={exitCamera}>
+              <button className="exit-button" onClick={() => setIsCameraOpen(false)}>
                 <FontAwesomeIcon icon={faTimes} />
               </button>
               <button className="camera-toggle-button" onClick={switchCamera}>
@@ -380,7 +384,7 @@ ${warningMessage}`
         {imagePreview && (
           <div className="image-preview-container">
             <img src={imagePreview} alt="preview" className="image-preview" />
-            <button className="remove-image-button" onClick={() => setImagePreview(null)}>
+            <button className="remove-image-button" onClick={handleRemoveImage}>
               Remove
             </button>
           </div>

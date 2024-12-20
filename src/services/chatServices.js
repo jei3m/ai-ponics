@@ -42,17 +42,32 @@ export const generateAIResponse = async function* (textPrompt, imageInlineData, 
     model: "gemini-2.0-flash-exp", //Recently released 2.0 Flash Model
     systemInstruction: `You are AI-Ponics, an Aeroponics expert, answer concisely. Take note of plant name is ${plantName} and it has been ${daysSincePlanting} days since planting, sensor readings: temperature is ${temperature} and humidity ${humidity}.`,
   });
-
-  const chatHistory = previousMessages.map(msg => `${msg.user ? 'User' : 'Assistant'} : ${msg.text}`).join('\n');
   
-  // Create content parts array
-  const parts = [{ text: chatHistory ? `Previous conversation \n ${chatHistory} \n \n Current message: ${textPrompt}` : textPrompt}];
+  // Create content messageHistory array
+  // const messageHistory = [{ text: chatHistory ? `Previous conversation \n ${chatHistory} \n \n Current message: ${textPrompt}` : textPrompt}];
+
+  const messageHistory = [];
+
+  previousMessages.forEach(msg => {
+    if (msg.text || msg.imageInlineData) {
+      if (msg.text) {
+        messageHistory.push({text: `${msg.user ? 'User' : 'Assistant'} : ${msg.text}`});
+      }
+      if (msg.imageInlineData) {
+        messageHistory.push(msg.imageInlineData);
+      }
+    }
+  });
+
+  if (textPrompt) {
+    messageHistory.push({text: textPrompt});
+  }
 
   if (imageInlineData) {
-    parts.push(imageInlineData);
+    messageHistory.push(imageInlineData);
   }
   
-  const result = await model.generateContentStream(parts);
+  const result = await model.generateContentStream(messageHistory);
   
   for await (const chunk of result.stream) {
     const chunkText = chunk.text();
@@ -60,6 +75,9 @@ export const generateAIResponse = async function* (textPrompt, imageInlineData, 
       yield chunkText;
     }
   }
+
+  // Code below is to log the message history
+  // console.log(JSON.stringify(messageHistory)) 
 };
 
 // Convert file to generative part
