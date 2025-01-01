@@ -131,6 +131,7 @@ const AiwithImage = () => {
       try {
         const warningMessage = temperature > MAX_TEMPERATURE ? "**Warning:** Temperature is too Hot" : "Need help or have questions? Don&apos;t hesitate to ask!";
 
+        // Hard-coded message greeting, to reduce loading time from AI generated greeting
         const greetingText = 
 `Hey there, I'm AI-Ponics, your friendly Aeroponic System Assistant! 👋 \n
 * Here's a quick update on your system:\n
@@ -246,9 +247,9 @@ ${warningMessage}`
     setTextPrompt(e.target.value);
   };
 
-  const goBack = () => {
-    navigate(-1);
-  };
+  // const goBack = () => {
+  //   navigate(-1);
+  // };
 
   const openCamera = () => {
     setIsCameraOpen(true);
@@ -295,7 +296,7 @@ ${warningMessage}`
 
         <div className="header" style={{display: "flex", justifyContent: "space-between"}}>
           <h2>Ask AI-Ponics!</h2>
-          <button className="back-button" onClick={goBack}>
+          <button className="back-button" onClick={() => navigate(-1)}>
             <FontAwesomeIcon icon={faArrowLeft} />
             Back
           </button>
