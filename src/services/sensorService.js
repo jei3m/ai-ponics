@@ -39,6 +39,7 @@ export const calculateDaysSincePlanting = (plantingDate) => {
   return dayjs().diff(plantingDay, 'day');
 };
 
+// Configuration for date picker
 export const getDatePickerConfig = (handlePlantingDateChange) => ({
   format: "MM/DD/YYYY",
   disabledDate: (current) => current && current.isAfter(dayjs(), 'day'),
@@ -74,6 +75,7 @@ export const getStatusConfig = (selectedApiKey, isApiKeyValid, isDeviceOnline, i
   }
 ];
 
+// Status message component
 export const StatusMessage = ({ message, className, style }) => (
   <Typography.Text strong className={className} style={style}>
     {message}
