@@ -10,7 +10,7 @@ import Chat from './pages/Chat';
 import Login from './pages/Login';
 import Forum from './pages/Forum';
 import DetailedView from './pages/ForumDetailed';
-import Sensors2 from './pages/Sensors2';
+import Sensors from './pages/Sensors';
 import DiseaseDetection from './pages/DiseaseDetection';
 
 
@@ -55,7 +55,7 @@ function App() {
           path="/home"
           element={
             <PrivateRoutes>
-              <Sensors2 />
+              <Sensors />
             </PrivateRoutes>
           }
         />
