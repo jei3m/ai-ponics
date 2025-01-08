@@ -22,7 +22,7 @@ import {
 
 dayjs.extend(customParseFormat);
 
-function Sensors2() {
+function Sensors() {
   const [temperature, setTemperature] = useState(null);
   const [humidity, setHumidity] = useState(null);
   const [plantingDate, setPlantingDate] = useState(null);
@@ -377,4 +377,4 @@ function Sensors2() {
   );
 }
 
-export default Sensors2;
+export default Sensors;
