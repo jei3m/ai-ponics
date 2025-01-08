@@ -29,6 +29,7 @@ import {
 
 import { 
   MAX_TEMPERATURE, 
+  MIN_TEMPERATURE,
   fetchSensorData 
 } from "../services/sensorService";
 
@@ -163,7 +164,13 @@ const Chat = () => {
       }
 
       try {
-        const warningMessage = temperature > MAX_TEMPERATURE ? "**Warning:** Temperature is too Hot" : "Need help or have questions? Don&apos;t hesitate to ask!";
+        const warningMessage =
+          temperature > MAX_TEMPERATURE
+          ? "**Warning:** Temperature is too Hot"
+          : temperature < MIN_TEMPERATURE
+          ? "**Warning:** Temperature is too Cold"
+          : "Need help or have questions? Don&apos;t hesitate to ask!";
+
 
         // Hard-coded message greeting, to reduce loading time from AI generated greeting
         const greetingText = 
