@@ -13,7 +13,7 @@ import { message } from 'antd';
 import { generateGreeting, generateAIResponse, fileToGenerativePart, getBase64, components } from '../services/chatServices';
 import { MAX_TEMPERATURE, fetchSensorData } from "../services/sensorService";
 
-const AiwithImage = () => {
+const Chat = () => {
   const [image, setImage] = useState('');
   const [imageInlineData, setImageInlineData] = useState('');
   const [loading, setLoading] = useState(false);
@@ -395,4 +395,4 @@ ${warningMessage}`
   );
 };
 
-export default AiwithImage;
+export default Chat;
