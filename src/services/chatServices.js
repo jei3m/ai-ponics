@@ -5,24 +5,24 @@ const apiKey = process.env.REACT_APP_API_KEY;
 const genAI = new GoogleGenerativeAI(apiKey);
 
 // Fetch sensor data from Blynk API
-export const fetchSensorData = async (selectedApiKey) => {
-  try {
-    const [deviceStatusResponse, temperatureResponse, humidityResponse] = await Promise.all([
-      axios.get(`https://blynk.cloud/external/api/isHardwareConnected?token=${selectedApiKey}`),
-      axios.get(`https://blynk.cloud/external/api/get?token=${selectedApiKey}&V0`),
-      axios.get(`https://blynk.cloud/external/api/get?token=${selectedApiKey}&V1`)
-    ]);
+// export const fetchSensorData = async (selectedApiKey) => {
+//   try {
+//     const [deviceStatusResponse, temperatureResponse, humidityResponse] = await Promise.all([
+//       axios.get(`https://blynk.cloud/external/api/isHardwareConnected?token=${selectedApiKey}`),
+//       axios.get(`https://blynk.cloud/external/api/get?token=${selectedApiKey}&V0`),
+//       axios.get(`https://blynk.cloud/external/api/get?token=${selectedApiKey}&V1`)
+//     ]);
     
-    return {
-      systemStatus: true, // Set to true for testing purposes
-      temperature: Math.round(temperatureResponse.data),
-      humidity: Math.round(humidityResponse.data)
-    };
-  } catch (error) {
-    console.error('Error fetching sensor data:', error);
-    throw error;
-  }
-};
+//     return {
+//       systemStatus: true, // Set to true for testing purposes
+//       temperature: Math.round(temperatureResponse.data),
+//       humidity: Math.round(humidityResponse.data)
+//     };
+//   } catch (error) {
+//     console.error('Error fetching sensor data:', error);
+//     throw error;
+//   }
+// };
 
 // Generate AI greeting message
 export const generateGreeting = async (plantName, daysSincePlanting, temperature, humidity) => {
@@ -100,3 +100,11 @@ export const getBase64 = (file) => new Promise(function (resolve, reject) {
   reader.onload = () => resolve(reader.result)
   reader.onerror = (error) => reject('Error: ', error);
 })
+
+// Custom components for ReactMarkdown
+export const components = {
+  p: ({ children }) => <div style={{ margin: 0 }}>{children}</div>,
+  strong: ({ children }) => <strong>{children}</strong>,
+  br: () => <br />,
+  h2: ({ children }) => <h3>{children}</h3>
+};
