@@ -14,61 +14,68 @@ import { generateGreeting, generateAIResponse, fileToGenerativePart, getBase64, 
 import { MAX_TEMPERATURE, fetchSensorData } from "../services/sensorService";
 
 const Chat = () => {
-  const [image, setImage] = useState('');
-  const [imageInlineData, setImageInlineData] = useState('');
-  const [loading, setLoading] = useState(false);
-  const { selectedApiKey } = useApiKey();
-  const [textPrompt, setTextPrompt] = useState('');
-  const [imagePreview, setImagePreview] = useState(null);
-  const [messages, setMessages] = useState([]);
-  const [isCameraOpen, setIsCameraOpen] = useState(false);
-  const [currentFacingMode, setCurrentFacingMode] = useState('environment'); // Back camera by default
-  const [webcamRef, setWebcamRef] = useState(null); 
-  const [plantName, setPlantName] = useState('');
-  const [daysSincePlanting, setDaysSincePlanting] = useState(0);
-  const [temperature, setTemperature] = useState(null);
-  const [humidity, setHumidity] = useState(null);
-  const [systemStatus, setSystemStatus] = useState(null);
-  const [blynkApiKey, setBlynkApiKey] = useState('');
   const navigate = useNavigate();
-  const { currentUser } = UserAuth();
-  const [sensorDataLoaded, setSensorDataLoaded] = useState(false);
-  const messageEnd = useRef(null);
 
-    // Fetch sensor data from Blynk API
-    const fetchSensorDataFromBlynk = async (selectedApiKey) => {
-      try {
-        const sensorData = await fetchSensorData({ 
-          selectedApiKey, 
-          setIsDeviceOnline: setSystemStatus, 
-          setTemperature, 
-          setHumidity, 
-          setIsLoading: setSensorDataLoaded, 
-          setIsApiKeyValid: setBlynkApiKey 
-        });
-        setSensorDataLoaded(true);
-      } catch (error) {
-        console.error('Error fetching sensor data:', error);
-        setSensorDataLoaded(true);
-        setBlynkApiKey(false);
-        return;
-      }
+  // States for chat messages
+  const [textPrompt, setTextPrompt] = useState('');
+  const [messages, setMessages] = useState([]);
+  const [image, setImage] = useState('');
+  const [imagePreview, setImagePreview] = useState(null);
+  const [imageInlineData, setImageInlineData] = useState('');
+
+  // Planting Information States
+  const [daysSincePlanting, setDaysSincePlanting] = useState(0);
+  const [plantName, setPlantName] = useState('');
+
+
+  // API Key States
+  const { selectedApiKey } = useApiKey();
+  const [blynkApiKey, setBlynkApiKey] = useState('');
+
+  // Loading States
+  const [loading, setLoading] = useState(false);
+  const [sensorDataLoaded, setSensorDataLoaded] = useState(false);
+
+  // Sensor Data States
+  const [humidity, setHumidity] = useState(null);
+  const [temperature, setTemperature] = useState(null);
+  const [systemStatus, setSystemStatus] = useState(null);
+
+  // Fetch sensor data from Blynk API
+  const fetchSensorDataFromBlynk = async (selectedApiKey) => {
+    try {
+      const sensorData = await fetchSensorData({ 
+        selectedApiKey, 
+        setIsDeviceOnline: setSystemStatus, 
+        setTemperature, 
+        setHumidity, 
+        setIsLoading: setSensorDataLoaded, 
+        setIsApiKeyValid: setBlynkApiKey 
+      });
+      setSensorDataLoaded(true);
+    } catch (error) {
+      console.error('Error fetching sensor data:', error);
+      setSensorDataLoaded(true);
+      setBlynkApiKey(false);
+      return;
+    }
+  };
+  
+  // Fetch sensor data from Blynk API on API key change
+  useEffect(() => {
+    let interval;
+    if (selectedApiKey) {
+      fetchSensorDataFromBlynk(selectedApiKey);
+      interval = setInterval(() => fetchSensorDataFromBlynk(selectedApiKey), 1000);
+    }
+
+    return () => {
+      if (interval) clearInterval(interval);
     };
-  
-    // Fetch sensor data from Blynk API on API key change
-    useEffect(() => {
-      let interval;
-      if (selectedApiKey) {
-        fetchSensorDataFromBlynk(selectedApiKey);
-        interval = setInterval(() => fetchSensorDataFromBlynk(selectedApiKey), 1000);
-      }
-  
-      return () => {
-        if (interval) clearInterval(interval);
-      };
-    }, [selectedApiKey]);
+  }, [selectedApiKey]);
 
   // Fetch user data and sensor data
+  const { currentUser } = UserAuth();
   useEffect(() => {
     if (!currentUser) {
       setSensorDataLoaded(true); // Exit early if no user is logged in
@@ -234,6 +241,11 @@ ${warningMessage}`
     }
   };
 
+  // For text input
+  const handleChange = (e) => {
+    setTextPrompt(e.target.value);
+  };
+
   // For file upload
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
@@ -247,23 +259,24 @@ ${warningMessage}`
     }
   };
 
-  // For text input
-  const handleChange = (e) => {
-    setTextPrompt(e.target.value);
+  // Switch camera facing mode
+  const [currentFacingMode, setCurrentFacingMode] = useState('environment'); // Back camera by default
+
+  const switchCamera = () => {
+    const newFacingMode = currentFacingMode === 'user' ? 'environment' : 'user';
+    setCurrentFacingMode(newFacingMode);
   };
+
+  // Camera states
+  const [isCameraOpen, setIsCameraOpen] = useState(false);
 
   // Open Camera
   const openCamera = () => {
     setIsCameraOpen(true);
   };
 
-  // Switch camera facing mode
-  const switchCamera = () => {
-    const newFacingMode = currentFacingMode === 'user' ? 'environment' : 'user';
-    setCurrentFacingMode(newFacingMode);
-  };
-
   // Capture photo from camera
+  const [webcamRef, setWebcamRef] = useState(null); 
   const capturePhoto = () => {
     if (webcamRef) {
       const imageSrc = webcamRef.getScreenshot();
@@ -285,6 +298,7 @@ ${warningMessage}`
   }
 
   // Scroll to latest generated message
+  const messageEnd = useRef(null);
   useEffect(() => {
     messageEnd.current?.scrollIntoView({behavior: "smooth"})
   },[messages])
