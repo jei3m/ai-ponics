@@ -10,8 +10,8 @@ import './css/Chat.css';
 import { useApiKey } from "../context/ApiKeyContext";
 import ReactMarkdown from 'react-markdown';
 import { message } from 'antd';
-import { fetchSensorData, generateGreeting, generateAIResponse, fileToGenerativePart, getBase64 } from '../services/chatServices';
-import { MAX_TEMPERATURE } from "../services/sensorService"
+import { generateGreeting, generateAIResponse, fileToGenerativePart, getBase64, components } from '../services/chatServices';
+import { MAX_TEMPERATURE, fetchSensorData } from "../services/sensorService";
 
 const AiwithImage = () => {
   const [image, setImage] = useState('');
@@ -33,7 +33,42 @@ const AiwithImage = () => {
   const navigate = useNavigate();
   const { currentUser } = UserAuth();
   const [sensorDataLoaded, setSensorDataLoaded] = useState(false);
+  const messageEnd = useRef(null);
 
+    // Fetch sensor data from Blynk API
+    const fetchSensorDataFromBlynk = async (selectedApiKey) => {
+      try {
+        const sensorData = await fetchSensorData({ 
+          selectedApiKey, 
+          setIsDeviceOnline: setSystemStatus, 
+          setTemperature, 
+          setHumidity, 
+          setIsLoading: setSensorDataLoaded, 
+          setIsApiKeyValid: setBlynkApiKey 
+        });
+        setSensorDataLoaded(true);
+      } catch (error) {
+        console.error('Error fetching sensor data:', error);
+        setSensorDataLoaded(true);
+        setBlynkApiKey(false);
+        return;
+      }
+    };
+  
+    // Fetch sensor data from Blynk API on API key change
+    useEffect(() => {
+      let interval;
+      if (selectedApiKey) {
+        fetchSensorDataFromBlynk(selectedApiKey);
+        interval = setInterval(() => fetchSensorDataFromBlynk(selectedApiKey), 1000);
+      }
+  
+      return () => {
+        if (interval) clearInterval(interval);
+      };
+    }, [selectedApiKey]);
+
+  // Fetch user data and sensor data
   useEffect(() => {
     if (!currentUser) {
       setSensorDataLoaded(true); // Exit early if no user is logged in
@@ -75,33 +110,6 @@ const AiwithImage = () => {
   
     fetchUserData();
   }, [currentUser]);
-
-  const fetchSensorDataFromBlynk = async (selectedApiKey) => {
-    try {
-      const sensorData = await fetchSensorData(selectedApiKey);
-      setSystemStatus(sensorData.systemStatus);
-      setTemperature(sensorData.temperature);
-      setHumidity(sensorData.humidity);
-      setSensorDataLoaded(true);
-    } catch (error) {
-      console.error('Error fetching sensor data:', error);
-      setSensorDataLoaded(true);
-      setBlynkApiKey(false);
-      return;
-    }
-  };
-
-  useEffect(() => {
-    let interval;
-    if (selectedApiKey) {
-      fetchSensorDataFromBlynk(selectedApiKey);
-      interval = setInterval(() => fetchSensorDataFromBlynk(selectedApiKey), 1000);
-    }
-
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [selectedApiKey]);
 
   // Function for Greeting the User
   useEffect(() => {
@@ -152,8 +160,10 @@ ${warningMessage}`
     greetUser();
   }, [sensorDataLoaded, systemStatus, plantName, daysSincePlanting, temperature, humidity]);
 
+  // AI conversation after greeting
   async function aiRun() {
     
+    // If system is offline, do not proceed
     if (!systemStatus) {
       return;
     }
@@ -176,6 +186,7 @@ ${warningMessage}`
       const responseStream = generateAIResponse(textPrompt, imageInlineData, plantName, daysSincePlanting, temperature, humidity, previousMessages);
       let accumulatedText = '';
 
+      // Seperate the response into chunks
       for await (const chunk of responseStream) {
         accumulatedText += chunk;
         setMessages((prevMessages) => {
@@ -208,15 +219,7 @@ ${warningMessage}`
     setLoading(false);
   }
 
-  // Custom components for ReactMarkdown
-  const components = {
-    p: ({ children }) => <div style={{ margin: 0 }}>{children}</div>,
-    strong: ({ children }) => <strong>{children}</strong>,
-    br: () => <br />,
-    h2: ({ children }) => <h3>{children}</h3>
-  };
-
-  // Error when sending a prompt with cleared fields
+  // Send Message function
   const sendMessage = () => {
     if (textPrompt) {
       aiRun();
@@ -231,6 +234,7 @@ ${warningMessage}`
     }
   };
 
+  // For file upload
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -243,23 +247,23 @@ ${warningMessage}`
     }
   };
 
+  // For text input
   const handleChange = (e) => {
     setTextPrompt(e.target.value);
   };
 
-  // const goBack = () => {
-  //   navigate(-1);
-  // };
-
+  // Open Camera
   const openCamera = () => {
     setIsCameraOpen(true);
   };
 
+  // Switch camera facing mode
   const switchCamera = () => {
     const newFacingMode = currentFacingMode === 'user' ? 'environment' : 'user';
     setCurrentFacingMode(newFacingMode);
   };
 
+  // Capture photo from camera
   const capturePhoto = () => {
     if (webcamRef) {
       const imageSrc = webcamRef.getScreenshot();
@@ -273,19 +277,14 @@ ${warningMessage}`
     }
   };
 
-  // Remove button clears all data related to the image
+  // Clears all data related to the image
   const handleRemoveImage = () => {
     setImagePreview(null);
     setImageInlineData('');
     setImage('');
   }
 
-  // const exitCamera = () => {
-  //   setIsCameraOpen(false);
-  // };
-
-  const messageEnd = useRef(null);
-
+  // Scroll to latest generated message
   useEffect(() => {
     messageEnd.current?.scrollIntoView({behavior: "smooth"})
   },[messages])
