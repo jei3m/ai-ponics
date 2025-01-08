@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft, faImage, faCamera, faSearch, faSyncAlt, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { UserAuth } from '../context/AuthContext';
 import { db } from '../firebase'; 
 import { doc, getDoc } from 'firebase/firestore';
@@ -10,8 +9,28 @@ import './css/Chat.css';
 import { useApiKey } from "../context/ApiKeyContext";
 import ReactMarkdown from 'react-markdown';
 import { message } from 'antd';
-import { generateGreeting, generateAIResponse, fileToGenerativePart, getBase64, components } from '../services/chatServices';
-import { MAX_TEMPERATURE, fetchSensorData } from "../services/sensorService";
+
+import { 
+  faArrowLeft, 
+  faImage, 
+  faCamera, 
+  faSearch, 
+  faSyncAlt, 
+  faTimes 
+} from '@fortawesome/free-solid-svg-icons';
+
+import { 
+  generateGreeting, 
+  generateAIResponse, 
+  fileToGenerativePart, 
+  getBase64, 
+  components 
+} from '../services/chatServices';
+
+import { 
+  MAX_TEMPERATURE, 
+  fetchSensorData 
+} from "../services/sensorService";
 
 const Chat = () => {
   const navigate = useNavigate();
