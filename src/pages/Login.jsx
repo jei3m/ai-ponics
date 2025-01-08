@@ -28,7 +28,7 @@ function Login() {
     };
 
     return (
-        <div className="Appokform"> 
+    <div className="Appokform"> 
         <div className="Appcardform"> 
             <h2 style={{ fontSize: '2em', marginBottom:'20px', textAlign:'center' }}>Welcome to <br/> AI-Ponics</h2> 
             
