@@ -18,9 +18,13 @@ export const fetchSensorData = async ({ selectedApiKey, user, setIsDeviceOnline,
       axios.get(`https://blynk.cloud/external/api/get?token=${selectedApiKey}&V1`)
     ]);
 
+    // Round temperature and humidity values
+    const roundedTemperature = Math.round(temperatureResponse.data);
+    const roundedHumidity = Math.round(humidityResponse.data);
+
     setIsDeviceOnline(true); // Set to true for testing purposes
-    setTemperature(temperatureResponse.data);
-    setHumidity(humidityResponse.data);
+    setTemperature(roundedTemperature);
+    setHumidity(roundedHumidity);
     setIsLoading(false);
     
   } catch (error) {
