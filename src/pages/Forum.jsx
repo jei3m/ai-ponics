@@ -5,7 +5,7 @@ import { collection, getDocs, addDoc, deleteDoc, doc } from 'firebase/firestore'
 import ReactQuill from 'react-quill-new'; // fork of react-quill since it is no longer maintained
 import 'react-quill-new/dist/quill.snow.css';
 import { Button, Modal, Input, List, Avatar, Typography, Space, Popconfirm } from 'antd';
-import { PlusOutlined, CommentOutlined } from '@ant-design/icons';
+import { PlusOutlined, CommentOutlined, DeleteOutlined } from '@ant-design/icons';
 import Header from '../pages/components/Header';
 import "./css/Forum.css";
 
@@ -162,12 +162,6 @@ function Forum() {
     },
   };
 
-  // const modules = {
-  //   toolbar: {
-  //     container: TOOL_BAR_OPTIONS,
-  //   },
-  // };
-
   const adjustModalHeight = () => {
     if (modalRef.current) {
       const contentHeight = modalRef.current.querySelector('.ql-editor').scrollHeight;
@@ -176,13 +170,13 @@ function Forum() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', overflow: 'auto' }}>
+    <div style={{ minHeight: '100vh', overflow: 'auto', backgroundColor:'white' }}>
       <Header />  
       <div style={{ maxWidth: '700px', margin: '0 auto', marginTop:'-30px', }}>
         <div style={{ padding: '0px 8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '-10px', marginTop: '10px' }}>
           <Title level={2} style={{ textAlign: 'center', fontWeight: 'bold' }}>Forums</Title>
           <Button style={{ marginTop: '10px' }} type="primary" icon={<PlusOutlined />} onClick={() => setShowModal(true)}>
-            Create New Forum
+            Create Forum
           </Button>
         </div>
         <Modal
@@ -238,11 +232,12 @@ function Forum() {
                 marginTop: '0px',
                 padding: '1rem',
                 display: 'flex',
+                borderBottom: '1px solid #dee2e6',
               }}
               actions={
                 currentUser && forum.postedBy === currentUser
                   ? [
-                    <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', marginLeft: 'auto' }}>
+                    <div style={{ display: 'flex', justifyContent: 'flex-end'}}>
                       <Popconfirm
                         title="Delete Forum"
                         description="Are you sure to delete this forum?"
@@ -250,7 +245,7 @@ function Forum() {
                         okText="Yes"
                         cancelText="No"
                       >
-                        <Button danger size="small">Delete</Button>
+                        <DeleteOutlined style={{color: 'red'}} />
                       </Popconfirm>
                     </div>
                   ]
@@ -269,14 +264,10 @@ function Forum() {
                 description={
                   <Space direction="vertical">
                     <div>
-                      <Text type="secondary" style={{ fontSize: '14px' }}>Posted by: {forum.authorName}</Text>
+                      <Text type="secondary" style={{ fontSize: '14px'}}>Posted by: {forum.authorName}</Text>
                     </div>
-                    <div style={{ marginTop: '-10px' }}>
-                      <Text type="secondary" style={{ fontSize: '12px' }}>{new Date(forum.createdAt).toLocaleString()}</Text>
-                    </div>
-                    <div style={{ marginTop: '0.5rem', marginBottom: '-1rem' }}>
-                      <CommentOutlined style={{ marginRight: '0.5rem' }} />
-                      <Text type="secondary">{forum.comments.length} comments</Text>
+                    <div style={{ marginTop: '-10px', marginBottom: '-30px' }}>
+                      <Text type="secondary" style={{ fontSize: '12px' }}>{new Date(forum.createdAt).toLocaleString()} | <CommentOutlined/> {forum.comments.length} </Text>
                     </div>
                   </Space>
                 }
