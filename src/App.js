@@ -17,7 +17,7 @@ import DiseaseDetection from './pages/DiseaseDetection';
 // Import routes and context
 import PrivateRoutes from './routes/PrivateRoutes';
 import { ApiKeyProvider } from './context/ApiKeyContext';
-import Loading from './components/Loading';
+import Loading from './pages/components/Loading';
 
 function App() {
   const [user, setUser] = useState(null);
