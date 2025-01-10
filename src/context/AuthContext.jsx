@@ -6,7 +6,7 @@ import {
     signOut,
 } from 'firebase/auth';
 import { auth } from '../firebase';
-import Loading from '../components/Loading';
+import Loading from '../pages/components/Loading';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 const AuthContext = createContext();

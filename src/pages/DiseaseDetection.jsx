@@ -2,9 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { Card, Button, Typography, Space, Progress, Tag, Input, message } from 'antd';
 import { CameraOutlined, CheckCircleOutlined } from '@ant-design/icons';
-import Header from '../components/Header';
+import Header from './components/Header';
 import ReactDOMServer from 'react-dom/server';
-import EmailTemplateHot from '../components/template/emailTemplateHot'; // Assume this is your email template
+import EmailTemplateHot from './components/template/emailTemplateHot'; // Assume this is your email template
 
 const { Title, Text } = Typography;
 

@@ -25,7 +25,7 @@ import {
   fileToGenerativePart, 
   getBase64, 
   components 
-} from '../services/chatServices';
+} from '../services/chatService';
 
 import { 
   MAX_TEMPERATURE, 
