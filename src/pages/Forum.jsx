@@ -2,11 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { db, auth } from '../firebase';
 import { collection, getDocs, addDoc, deleteDoc, doc } from 'firebase/firestore';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+import ReactQuill from 'react-quill-new'; // fork of react-quill since it is no longer maintained
+import 'react-quill-new/dist/quill.snow.css';
 import { Button, Modal, Input, List, Avatar, Typography, Space, Popconfirm } from 'antd';
 import { PlusOutlined, CommentOutlined } from '@ant-design/icons';
-import Header from '../components/Header';
+import Header from '../pages/components/Header';
 import "./css/Forum.css";
 
 const { Title, Text } = Typography;
@@ -161,6 +161,12 @@ function Forum() {
       container: TOOL_BAR_OPTIONS,
     },
   };
+
+  // const modules = {
+  //   toolbar: {
+  //     container: TOOL_BAR_OPTIONS,
+  //   },
+  // };
 
   const adjustModalHeight = () => {
     if (modalRef.current) {

@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { db, auth } from '../firebase';
 import { doc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+import ReactQuill from 'react-quill-new';
+import 'react-quill-new/dist/quill.snow.css';
 import "./css/Forum.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faComment, faReply, faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
-import Loading from '../components/Loading';
+import Loading from '../pages/components/Loading';
 import { Button, Popconfirm, Avatar } from 'antd';
 
 function DetailedView() {
