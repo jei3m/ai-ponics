@@ -29,12 +29,13 @@
 
 .forum-content p, .comment-text p, .reply-text p {
   font-size: 20px;
-  margin: 20px 0;
+  margin: 0px;
   font-weight: normal;
-  line-height: 1.1em;
+  line-height: 1.4em;
 }
 
 .forum-content li, .comment-text li, .reply-text li {
+  margin-top: 10px;
   margin: 20px 0;
   line-height: 0.5em;
   font-weight: normal;
@@ -119,6 +120,10 @@
   margin-left: -10px;
 }
 
+/* Remove numbers from list items with data-list="bullet" */
+li[data-list="bullet"]::before {
+  content: none !important; /* Remove any default numbering */
+}
 
 /* Responsive Styles */
 @media screen and (max-width: 768px) {
