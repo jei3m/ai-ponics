@@ -4,26 +4,6 @@ import axios from 'axios';
 const apiKey = process.env.REACT_APP_API_KEY;
 const genAI = new GoogleGenerativeAI(apiKey);
 
-// Fetch sensor data from Blynk API
-// export const fetchSensorData = async (selectedApiKey) => {
-//   try {
-//     const [deviceStatusResponse, temperatureResponse, humidityResponse] = await Promise.all([
-//       axios.get(`https://blynk.cloud/external/api/isHardwareConnected?token=${selectedApiKey}`),
-//       axios.get(`https://blynk.cloud/external/api/get?token=${selectedApiKey}&V0`),
-//       axios.get(`https://blynk.cloud/external/api/get?token=${selectedApiKey}&V1`)
-//     ]);
-    
-//     return {
-//       systemStatus: true, // Set to true for testing purposes
-//       temperature: Math.round(temperatureResponse.data),
-//       humidity: Math.round(humidityResponse.data)
-//     };
-//   } catch (error) {
-//     console.error('Error fetching sensor data:', error);
-//     throw error;
-//   }
-// };
-
 // Generate AI greeting message
 export const generateGreeting = async (plantName, daysSincePlanting, temperature, humidity) => {
   const model = genAI.getGenerativeModel({
@@ -35,51 +15,6 @@ export const generateGreeting = async (plantName, daysSincePlanting, temperature
   const response = await result.response;
   return response.text();
 };
-
-// Generate AI response for user queries
-// export const generateAIResponse = async function* (textPrompt, imageInlineData, plantName, daysSincePlanting, temperature, humidity, previousMessages = []) {
-//   const model = genAI.getGenerativeModel({
-//     model: "gemini-2.0-flash-exp", // Recently released 2.0 Flash Model
-//     systemInstruction: `You are AI-Ponics, an Aeroponics expert. Provide concise and friendly answers to user queries. Always identify yourself when asked "Who are you?" or "What are you?" by responding, "I am AI-Ponics, an Aeroponics expert here to help you." Keep your responses relevant to the user's input. Take note that the plant name is ${plantName}, and it has been ${daysSincePlanting} days since planting. Sensor readings: temperature is ${temperature}°C and humidity is ${humidity}%.`,
-//   });
-
-  
-//   // Create content messageHistory array
-//   // const messageHistory = [{ text: chatHistory ? `Previous conversation \n ${chatHistory} \n \n Current message: ${textPrompt}` : textPrompt}];
-
-//   const messageHistory = [];
-
-//   previousMessages.forEach(msg => {
-//     if (msg.text || msg.imageInlineData) {
-//       if (msg.text) {
-//         messageHistory.push({text: `${msg.user ? 'User' : 'AI-Ponics'} : ${msg.text}`});
-//       }
-//       if (msg.imageInlineData) {
-//         messageHistory.push(msg.imageInlineData);
-//       }
-//       if (textPrompt) {
-//         messageHistory.push({text: textPrompt});
-//       }
-//       if (imageInlineData) {
-//         messageHistory.push(imageInlineData);
-//       }
-//     }
-//   });
-
-//   console.log(`textPrompt: ${textPrompt}`);
-
-//   const result = await model.generateContentStream(messageHistory);
-  
-//   for await (const chunk of result.stream) {
-//     const chunkText = chunk.text();
-//     if (chunkText) {
-//       yield chunkText;
-//     }
-//   }
-
-//   // Code below is to log the message history
-//   console.log(JSON.stringify(messageHistory)) 
-// };
 
 // Generate AI response for user queries
 export const generateAIResponse = async function* ( textPrompt, imageInlineData, plantName, daysSincePlanting, temperature, humidity, previousMessages = [] ) {
@@ -95,7 +30,7 @@ export const generateAIResponse = async function* ( textPrompt, imageInlineData,
     Sensor readings: temperature is ${temperature}°C and humidity is ${humidity}%.`,
   });
 
-  // Start with the previous message history
+  // Start with the previous messages (AI Greeting)
   const messageHistory = previousMessages.map((msg) => ({
     text: `${msg.user ? "User" : "AI-Ponics"} : ${msg.text}`,
   }));
@@ -110,8 +45,8 @@ export const generateAIResponse = async function* ( textPrompt, imageInlineData,
   }
 
   // Logging message history for debugging
-  console.log(`textPrompt: ${textPrompt}`);
-  console.log(`messageHistory: ${JSON.stringify(messageHistory)}`);
+  // console.log(`textPrompt: ${textPrompt}`);
+  // console.log(`messageHistory: ${JSON.stringify(messageHistory)}`);
 
   // Generate content stream then yield generated chunks
   const result = await model.generateContentStream(messageHistory);
