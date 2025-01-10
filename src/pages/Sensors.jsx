@@ -1,20 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { Typography, Card, Button, Flex, Input, DatePicker, message } from "antd";
-import Header from "../components/Header";
+import Header from "./components/Header";
 import "./css/Sensors.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faThermometerHalf, faTint, faExclamationTriangle, faLeaf } from "@fortawesome/free-solid-svg-icons";
-import Gauge from "../components/Gauge";
+import TempHumidCard from "./components/Sensors/TempHumid";
+import TempStatus from "./components/Sensors/TempStatus";
+import PlantInfo from "./components/Sensors/PlantInfo";
 import { db, auth } from "../firebase";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { useApiKey } from "../context/ApiKeyContext";
-import { StatusMessage } from "../services/sensorService";
 import { 
   fetchSensorData,
-  MAX_TEMPERATURE,
-  MIN_TEMPERATURE,
   calculateDaysSincePlanting,
   getDatePickerConfig,
   getStatusConfig
@@ -187,178 +184,27 @@ function Sensors() {
             padding: '1.8rem'
           }}>
 
-          <Flex gap="middle" style={{ 
-            width: '100%', 
-            height: 'fit-content', 
-            marginTop: '-14px' 
-            }}>
+          <TempHumidCard
+            temperature={temperature}
+            humidity={humidity}
+            status={status}
+          />
 
-            <div style={{ width: '94vw', maxWidth: '600px', display: 'flex', flexDirection: 'row', marginTop: '-20px', borderRadius: '10px', justifyContent: 'center', border: '1px solid #ddd', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', marginBottom: '10px' }}>
-              <Card
-                title={
-                  <div style={{ fontSize: '16px' }}>
-                    <FontAwesomeIcon icon={faThermometerHalf} style={{ marginRight: 10 }} />
-                    Temperature
-                  </div>
-                }
-                bordered={false}
-                style={{
-                  minWidth: '50%',
-                  height: 230,
-                  background: 'white',
-                  borderBottomRightRadius: '0',
-                  borderTopRightRadius: '0',
-                }}>
+          <TempStatus
+            temperature={temperature}
+            status={status}
+          />
 
-                <div className="gauge-container">
-                  {status && (
-                    <StatusMessage message={status.message} className={status.className} style={status.style} />
-                  )}
-                  {!status && temperature !== null && (
-                    <Gauge value={temperature} max={MAX_TEMPERATURE} label="°C" />
-                  )}
-                </div>
-              </Card>
-
-              <Card
-                title={
-                  <div style={{ fontSize: '16px' }}>
-                    <FontAwesomeIcon icon={faTint} style={{ marginRight: 10 }} />
-                    Humidity
-                  </div>
-                }
-                bordered={false}
-                style={{
-                  minWidth: '50%',
-                  height: 230,
-                  overflowY: 'hidden',
-                  borderBottomLeftRadius: '0',
-                  borderTopLeftRadius: '0',
-                }}
-              >
-                <div className="gauge-container">
-                  {status && (
-                    <StatusMessage message={status.message} className={status.className} style={status.style} />
-                  )}
-                  {!status && humidity !== null && (
-                    <Gauge value={humidity} max={100} label="%" />
-                  )}
-                </div>
-              </Card>
-            </div>
-          </Flex>
-
-          <Card
-            title={
-              <div style={{ fontSize: '16px', textAlign: 'center' }}>
-                <FontAwesomeIcon icon={faExclamationTriangle} /> Temperature Alert
-              </div>
-            }
-            style={{
-              width: '100%',
-              height: 230,
-              background: 'white',
-              border: '1px solid #ddd',
-              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-              marginBottom: '10px'
-            }}>
-            {status && (
-              <StatusMessage message={status.message} className={status.className} style={status.style} />
-            )}
-            {!status && temperature > MAX_TEMPERATURE && (
-              <div>
-                <Typography.Text strong className="temperature-alert-icon">
-                  🔥 <br />
-                </Typography.Text>
-                <Typography.Text strong>
-                  Too Hot
-                </Typography.Text>
-              </div>
-            )}
-            {!status && temperature >= MIN_TEMPERATURE && temperature <= MAX_TEMPERATURE && (
-              <div>
-                <Typography.Text strong className="temperature-alert-icon">
-                  ✅ <br />
-                </Typography.Text>
-                <Typography.Text strong className="temperature-alert-text">
-                  Normal
-                </Typography.Text>
-              </div>
-            )}
-            {!status && temperature < MIN_TEMPERATURE && (
-              <div>
-                <Typography.Text strong className="temperature-alert-icon">
-                  ❄️ <br />
-                </Typography.Text>
-                <Typography.Text strong className="temperature-alert-text">
-                  Too Cold
-                </Typography.Text>
-              </div>
-            )}
-          </Card>
-
-          <Card
-            title={
-              <div style={{ fontSize: '16px' }}>
-                <FontAwesomeIcon icon={faLeaf} style={{ marginRight: 10 }} />
-                Plant Information
-              </div>
-            }
-            bordered={false}
-            style={{
-              width: '100%',
-              height: 230,              
-              background: 'white',
-              border: '1px solid #ddd',
-              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-              marginBottom: '10px'
-            }}
-          >
-            {status && (
-              <StatusMessage message={status.message} className={status.className} style={status.style} />
-            )}
-            {!status && (
-              <div>
-                <div style={{ width: '100%' }}>
-                  <Input
-                    type="text"
-                    id="plantName"
-                    name="plantName"
-                    value={plantName}
-                    onChange={handlePlantNameChange}
-                    placeholder="Enter plant name"
-                    style={{ width: '100%', marginBottom: 16 }}
-                  />
-                  <DatePicker
-                    {...datePickerConfig}
-                    id="plantingDate"
-                    name="plantingDate"
-                    onFocus={e => e.target.blur()}
-                    value={plantingDate ? dayjs(plantingDate, 'DD/MM/YYYY') : null}
-                  />
-                </div>
-                <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div style={{ textAlign: 'left' }}>
-                    {plantingDate && (
-                      <Typography.Text strong style={{ fontWeight: 540, fontFamily: 'Inter, sans-serif', marginTop: '12px', textAlign: 'left', marginLeft:'1px' }}>
-                        Days planted: {daysSincePlanting}
-                      </Typography.Text>
-                    )}
-                  </div>
-                  {isPlantInfoChanged && (
-                    <Button
-                      type="primary"
-                      style={{ fontSize: '14px', marginBottom: '-18px', marginTop:'10px'}}
-                      onClick={handleSaveChanges}
-                    >
-                      Save
-                    </Button>
-                  )}
-                </div>
-
-              </div>
-            )}
-          </Card>
+          <PlantInfo
+            status={status}
+            plantName={plantName}
+            handlePlantNameChange={handlePlantNameChange}
+            datePickerConfig={datePickerConfig}
+            plantingDate={plantingDate}
+            daysSincePlanting={daysSincePlanting}
+            isPlantInfoChanged={isPlantInfoChanged}
+            handleSaveChanges={handleSaveChanges}
+          />
 
         </div>
 
