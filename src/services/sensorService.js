@@ -10,7 +10,7 @@ export const MAX_TEMPERATURE = 73;
 export const MIN_TEMPERATURE = 15; 
 
 // Functions for pulling sensor data from Blynk API
-export const fetchSensorData = async ({ selectedApiKey, user, setIsDeviceOnline, setTemperature, setHumidity, setIsLoading, setIsApiKeyValid }) => {
+export const fetchSensorData = async ({ selectedApiKey, setIsDeviceOnline, setTemperature, setHumidity, setIsLoading, setIsApiKeyValid }) => {
   try {
     const [deviceStatusResponse, temperatureResponse, humidityResponse] = await Promise.all([
       axios.get(`https://blynk.cloud/external/api/isHardwareConnected?token=${selectedApiKey}`),
