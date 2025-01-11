@@ -58,7 +58,7 @@ function Sensors() {
     };
 
     fetchData();
-    const interval = setInterval(fetchData, 2000);
+    const interval = setInterval(fetchData, 10000); // 10 seconds
 
     return () => {
       isMounted = false;
@@ -69,69 +69,54 @@ function Sensors() {
 
   // Fetch user data effect
   useEffect(() => {
-    let isMounted = true;
-    const controller = new AbortController();
-  
     const fetchUserData = async () => {
       const currentUser = auth.currentUser;
-      if (currentUser && isMounted) { // Only proceed if the component is still mounted
+      if (currentUser) {
         setUser(currentUser);
-  
+
         // Check cache first
         const cachedData = localStorage.getItem(`plantData_${currentUser.uid}`);
         if (cachedData) {
           const parsedData = JSON.parse(cachedData);
           const cacheTimestamp = parsedData.timestamp;
           const currentTime = new Date().getTime(); // This is in UTC format
-  
+
           // Check if cache is less than 5 minutes old
-          if (currentTime - cacheTimestamp < 5 * 60 * 1000) {
-            if (parsedData.plantingDate && isMounted) {
-              setPlantingDate(dayjs(parsedData.plantingDate, 'MM/DD/YYYY'));
+          if ( currentTime - cacheTimestamp < 5 * 60 * 1000) {
+            if (parsedData.plantingDate) {
+              setPlantingDate(dayjs(parsedData.plantingDate, 'MM/DD/YYYY'))
             }
-            if (parsedData.plantName && isMounted) {
+            if (parsedData.plantName) {
               setPlantName(parsedData.plantName);
             }
             return;
           }
         }
-  
+
         // If cache is not available or expired, fetch from Firestore
-        try {
-          const docRef = doc(db, "users", currentUser.uid);
-          const docSnap = await getDoc(docRef);
-  
-          if (docSnap.exists() && isMounted) { // Only update state if the component is still mounted
-            const data = docSnap.data();
-            if (data.plantingDate) {
-              setPlantingDate(dayjs(data.plantingDate, 'MM/DD/YYYY'));
-            }
-            if (data.plantName) {
-              setPlantName(data.plantName);
-            }
-  
-            // Update cache after fetching
-            localStorage.setItem(`plantData_${currentUser.uid}`, JSON.stringify({
-              ...data,
-              timestamp: new Date().getTime(),
-            }));
+        const docRef = doc(db, "users", currentUser.uid);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          if (data.plantingDate) {
+            setPlantingDate(dayjs(data.plantingDate, 'MM/DD/YYYY'));
           }
-        } catch (error) {
-          if (error.name !== 'AbortError') { // Ignore errors caused by aborting
-            console.error("Error fetching user data:", error);
+          if (data.plantName) {
+            setPlantName(data.plantName);
           }
+
+          // Update cache after fetching
+          localStorage.setItem(`plantData_${currentUser.uid}`, JSON.stringify({
+            ...data,
+            timestamp: new Date().getTime()
+          }));
         }
       }
     };
-  
+
     fetchUserData();
-  
-    // Cleanup function
-    return () => {
-      isMounted = false;
-      controller.abort();
-    };
-  }, [isPlantInfoChanged]); 
+  }, [isPlantInfoChanged]);
 
   const handlePlantingDateChange = (date) => {
     setPlantingDate(date);
