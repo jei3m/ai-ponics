@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { db, auth } from '../firebase';
 import { collection, getDocs, addDoc, deleteDoc, doc } from 'firebase/firestore';
@@ -17,7 +17,6 @@ function Forum() {
   const [newForumContent, setNewForumContent] = useState('');
   const [currentUser, setCurrentUser] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const modalRef = useRef(null);
 
   useEffect(() => {
     const fetchForums = async () => {
@@ -162,13 +161,6 @@ function Forum() {
     },
   };
 
-  const adjustModalHeight = () => {
-    if (modalRef.current) {
-      const contentHeight = modalRef.current.querySelector('.ql-editor').scrollHeight;
-      modalRef.current.style.height = `${contentHeight + 200}px`; // Adjust the height based on content
-    }
-  };
-
   return (
     <div style={{ minHeight: '100vh', overflow: 'auto', backgroundColor:'white' }}>
       <Header />  
@@ -192,7 +184,6 @@ function Forum() {
               Post
             </Button>,
           ]}
-          ref={modalRef}
           style={{
             overflowY: 'hidden',
             scrollbarWidth: 'thin',
@@ -213,7 +204,6 @@ function Forum() {
               value={newForumContent}
               onChange={(content) => {
                 setNewForumContent(content);
-                adjustModalHeight();
               }}
               placeholder="Content of your forum"
               style={{ height: 'calc(86vh - 300px)', marginBottom: '2rem' }}
