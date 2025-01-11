@@ -37,28 +37,35 @@ function Sensors() {
       setIsLoading(false);
       return;
     }
-  
+
     setIsLoading(true);
-  
+    let isMounted = true;
+    const controller = new AbortController();
+
     const fetchData = async () => {
-      await fetchSensorData({
-        selectedApiKey,
-        user,
-        setIsDeviceOnline,
-        setTemperature,
-        setHumidity,
-        setIsLoading,
-        setIsApiKeyValid,
-      });
+      if (isMounted) {
+        await fetchSensorData({
+          selectedApiKey,
+          user,
+          setIsDeviceOnline,
+          setTemperature,
+          setHumidity,
+          setIsLoading,
+          setIsApiKeyValid,
+          signal: controller.signal
+        });
+      }
     };
-  
+
     fetchData();
-    const interval = setInterval(fetchData, 10000); // 10 seconds
-  
+    const interval = setInterval(fetchData, 2000);
+
     return () => {
+      isMounted = false;
+      controller.abort();
       clearInterval(interval);
     };
-  }, [selectedApiKey]);
+  }, [selectedApiKey, user]);
 
   // Fetch user data effect
   useEffect(() => {
