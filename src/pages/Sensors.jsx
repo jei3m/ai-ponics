@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Typography, Card, Button, Flex, Input, DatePicker, message } from "antd";
+import { message } from "antd";
 import Header from "./components/Header";
 import "./css/Sensors.css";
 import TempHumidCard from "./components/Sensors/TempHumid";
@@ -136,6 +136,7 @@ function Sensors() {
           // console.log('Days since planting synced successfully!');
         } catch (error) {
           console.error('Failed to sync days since planting:', error);
+          message.error('Failed to sync days since planting:', error.message);
         }
       }
     };
