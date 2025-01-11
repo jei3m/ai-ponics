@@ -109,7 +109,39 @@ function Sensors() {
     };
 
     fetchUserData();
-  }, [isPlantInfoChanged]);
+  }, []);
+
+  // Automatically sync daysSincePlanting
+  useEffect(() => {
+    const syncDaysSincePlanting = async () => {
+      const currentUser = auth.currentUser;
+      if (currentUser && plantingDate) {
+        try {
+          const daysSincePlanting = calculateDaysSincePlanting(plantingDate);
+
+          await setDoc(doc(db, "users", currentUser.uid), {
+            plantName,
+            plantingDate: plantingDate ? plantingDate.format('MM/DD/YYYY') : null,
+            daysSincePlanting
+          }, { merge: true });
+
+          // Update cache data upon syncing
+          localStorage.setItem(`plantData_${currentUser.uid}`, JSON.stringify({
+            plantName,
+            plantingDate: plantingDate ? plantingDate.format('MM/DD/YYYY') : null,
+            daysSincePlanting,
+            timestamp: new Date().getTime()
+          }));
+
+          // console.log('Days since planting synced successfully!');
+        } catch (error) {
+          console.error('Failed to sync days since planting:', error);
+        }
+      }
+    };
+
+    syncDaysSincePlanting();
+  }, [plantingDate]);
 
   const handlePlantingDateChange = (date) => {
     setPlantingDate(date);
