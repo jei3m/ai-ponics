@@ -1,4 +1,3 @@
-// headerService.js
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { message } from 'antd';
@@ -31,17 +30,20 @@ export const fetchUserData = async (currentUser, setBlynkApiKeys, setSelectedApi
 
   // Then fetch from Firestore
   try {
-    const docSnap = await getDoc(doc(db, 'users', currentUser.uid));
+    const docRef = doc(db, 'users', currentUser.uid);
+    const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
       const data = docSnap.data();
-      saveToCache(data);
-      setBlynkApiKeys(data.blynkApiKeys || []);
+      const apiKeys = data.blynkApiKeys || [];
+      saveToCache({ blynkApiKeys: apiKeys });
+      setBlynkApiKeys(apiKeys);
       const index = parseInt(localStorage.getItem('selectedApiKeyIndex'), 10) || 0;
       setSelectedApiKeyIndex(index);
-      setEditableBlynkApiKey(data.blynkApiKeys?.[index] || '');
+      setEditableBlynkApiKey(apiKeys[index] || '');
     }
   } catch (error) {
     console.error('Error fetching user data:', error);
+    message.error('Failed to fetch user data');
   }
 };
 
@@ -60,7 +62,6 @@ export const saveBlynkApiKey = async (currentUser, blynkApiKeys, selectedApiKeyI
     setBlynkApiKeys(updatedApiKeys);
     setSelectedApiKey(editableBlynkApiKey);
     message.success('Blynk API Key saved successfully!');
-    window.location.reload();
   } catch (error) {
     console.error('Error saving Blynk API Key:', error);
     message.error('Failed to save Blynk API Key');
