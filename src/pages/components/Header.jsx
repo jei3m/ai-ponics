@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Modal, Button, Select, Input, Avatar, Typography, message, Popconfirm } from 'antd';
-import { EyeInvisibleOutlined, EyeTwoTone, PlusOutlined, SaveOutlined, DeleteOutlined, LogoutOutlined} from '@ant-design/icons';
+import { EyeInvisibleOutlined, EyeTwoTone, PlusOutlined, SaveOutlined, DeleteOutlined, LogoutOutlined } from '@ant-design/icons';
 import { UserAuth } from '../../context/AuthContext';
 import { useLocation } from 'react-router-dom';
 import { useApiKey } from '../../context/ApiKeyContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faLeaf, faNewspaper, faHome, faImage } from '@fortawesome/free-solid-svg-icons';
 import { fetchUserData, saveBlynkApiKey, addNewApiKey, deleteApiKey } from '../../services/headerService';
-import "../css/Header.css"
+import "../css/Header.css";
 
 const { Option } = Select;
 const { Text } = Typography;
@@ -21,13 +21,34 @@ function Header() {
   const location = useLocation();
   const { setSelectedApiKey } = useApiKey();
   const [loading, setLoading] = useState(false);
+  const isMounted = useRef(true); // Track if the component is mounted
 
   useEffect(() => {
-    fetchUserData(currentUser, setBlynkApiKeys, setSelectedApiKeyIndex, setEditableBlynkApiKey);
+    // Set isMounted to true when the component mounts
+    isMounted.current = true;
+
+    // Fetch user data when the component mounts
+    const fetchData = async () => {
+      if (currentUser) {
+        try {
+          await fetchUserData(currentUser, setBlynkApiKeys, setSelectedApiKeyIndex, setEditableBlynkApiKey);
+        } catch (error) {
+          console.error('Error fetching user data:', error);
+          message.error('Failed to fetch user data');
+        }
+      }
+    };
+
+    fetchData();
+
+    // Cleanup function to set isMounted to false when the component unmounts
+    return () => {
+      isMounted.current = false;
+    };
   }, [currentUser]);
 
   useEffect(() => {
-    if (blynkApiKeys.length > 0) {
+    if (blynkApiKeys.length > 0 && isMounted.current) {
       setSelectedApiKey(blynkApiKeys[selectedApiKeyIndex]);
       localStorage.setItem('selectedApiKeyIndex', selectedApiKeyIndex);
     }
@@ -41,74 +62,73 @@ function Header() {
   };
 
   const handleSaveBlynkApiKey = async () => {
-    await saveBlynkApiKey(currentUser, blynkApiKeys, selectedApiKeyIndex, editableBlynkApiKey, setBlynkApiKeys, setSelectedApiKey, setLoading);
+    if (isMounted.current) {
+      await saveBlynkApiKey(currentUser, blynkApiKeys, selectedApiKeyIndex, editableBlynkApiKey, setBlynkApiKeys, setSelectedApiKey, setLoading);
+    }
   };
 
   const handleAddNewApiKey = () => {
-    // Check if there is any blank API key
-    const hasBlankKey = blynkApiKeys.some(key => key.trim() === '');
-    if (!hasBlankKey) {
-      addNewApiKey(blynkApiKeys, setBlynkApiKeys, setSelectedApiKeyIndex, setEditableBlynkApiKey);
-    } else {
-      message.warning('Please fill in the existing blank API key.');
+    if (isMounted.current) {
+      const hasBlankKey = blynkApiKeys.some(key => key.trim() === '');
+      if (!hasBlankKey) {
+        addNewApiKey(blynkApiKeys, setBlynkApiKeys, setSelectedApiKeyIndex, setEditableBlynkApiKey);
+      } else {
+        message.warning('Please fill in the existing blank API key.');
+      }
     }
   };
 
   const handleDeleteApiKey = async () => {
-    await deleteApiKey(currentUser, blynkApiKeys, selectedApiKeyIndex, setBlynkApiKeys, setSelectedApiKeyIndex, setEditableBlynkApiKey, setLoading);
+    if (isMounted.current) {
+      await deleteApiKey(currentUser, blynkApiKeys, selectedApiKeyIndex, setBlynkApiKeys, setSelectedApiKeyIndex, setEditableBlynkApiKey, setLoading);
+    }
   };
 
   return (
-    <header style={{ marginBottom:'10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.5rem 1.5rem', backgroundColor: '#FAF9F6', borderBottom: '1px solid #dee2e6', position: 'sticky' }}>
+    <header style={{ marginBottom: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.5rem 1.5rem', backgroundColor: '#FAF9F6', borderBottom: '1px solid #dee2e6', position: 'sticky' }}>
       <div className="header-logo">
-
         <a href='/'>
           <FontAwesomeIcon icon={faLeaf} className="header-logo-icon" />
           <span>AI</span>-Ponics
         </a>
-
       </div>
 
-
-
       <div>
-
         {location.pathname === '/home' && (
           <a href='/detect'>
-            <FontAwesomeIcon icon={faImage} className='forum-icon'/>
+            <FontAwesomeIcon icon={faImage} className='forum-icon' />
           </a>
         )}
 
         {location.pathname === '/detect' && (
           <a href='/home'>
-            <FontAwesomeIcon icon={faHome} className='forum-icon'/>
+            <FontAwesomeIcon icon={faHome} className='forum-icon' />
           </a>
         )}
 
-
         {location.pathname === '/home' && (
           <a href='/forum'>
-            <FontAwesomeIcon icon={faNewspaper} className='forum-icon'/>
+            <FontAwesomeIcon icon={faNewspaper} className='forum-icon' />
           </a>
         )}
         {location.pathname === '/forum' && (
           <a href='/'>
-           <FontAwesomeIcon icon={faHome} className='forum-icon'/>
+            <FontAwesomeIcon icon={faHome} className='forum-icon' />
           </a>
         )}
 
         {currentUser && (
           <FontAwesomeIcon
-          icon={faUser}
-          className="header-user-icon"
-          onClick={openModal}
+            icon={faUser}
+            className="header-user-icon"
+            onClick={openModal}
           />
         )}
       </div>
 
       <Modal
         title={
-          <div style={{fontSize: '20px', textAlign: 'center' }}>
+          <div style={{ fontSize: '20px', textAlign: 'center' }}>
             User Profile
           </div>
         }
@@ -116,19 +136,19 @@ function Header() {
         onCancel={closeModal}
         footer={null}
       >
-        <Avatar 
-          size={80} 
-          src={currentUser.photoURL || 'https://via.placeholder.com/50'} 
+        <Avatar
+          size={80}
+          src={currentUser.photoURL || 'https://via.placeholder.com/50'}
           style={{
-            border: '3px solid #006400', 
-            marginBottom: '10px', 
-            display: 'block', 
+            border: '3px solid #006400',
+            marginBottom: '10px',
+            display: 'block',
             margin: '0 auto'
           }}
         />
-          <div style={{ marginTop: '10px', display: 'flex', justifyContent: 'center' }}>
-           <Button icon={<LogoutOutlined />} onClick={logOut}>Log Out</Button>
-          </div>
+        <div style={{ marginTop: '10px', display: 'flex', justifyContent: 'center' }}>
+          <Button icon={<LogoutOutlined />} onClick={logOut}>Log Out</Button>
+        </div>
 
         <div style={{ marginTop: '1rem' }}>
           <Text strong>Name:</Text>
@@ -143,16 +163,17 @@ function Header() {
         </div>
 
         <div style={{ marginTop: '1rem' }}>
-
           <Text strong>Blynk API Keys:</Text>
 
           <Select
             value={selectedApiKeyIndex}
             onChange={(value) => {
-              setSelectedApiKeyIndex(value);
-              setEditableBlynkApiKey(blynkApiKeys[value] || '');
+              if (isMounted.current) {
+                setSelectedApiKeyIndex(value);
+                setEditableBlynkApiKey(blynkApiKeys[value] || '');
+              }
             }}
-            style={{ width: '100%', marginTop: '0.5rem'}}
+            style={{ width: '100%', marginTop: '0.5rem' }}
           >
             {blynkApiKeys.map((key, index) => (
               <Option key={index} value={index}>API Key {index + 1}</Option>
@@ -169,45 +190,38 @@ function Header() {
           />
 
           <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', marginTop: '1rem' }}>
+            <Popconfirm
+              title="Delete API Key"
+              description="Are you sure to delete this API Key?"
+              onConfirm={() => handleDeleteApiKey()}
+              okText="Yes"
+              cancelText="No"
+            >
+              <Button icon={<DeleteOutlined />} danger loading={loading}>Delete</Button>
+            </Popconfirm>
 
-          <Popconfirm
-            title="Delete Forum"
-            description="Are you sure to delete this API Key?"
-            onConfirm={() => handleDeleteApiKey()}
-            okText="Yes"
-            cancelText="No">
-
-           <Button icon={<DeleteOutlined />} danger loading={loading} >Delete</Button>
-
-          </Popconfirm>  
-
-          <Button 
-              icon={<PlusOutlined />} 
+            <Button
+              icon={<PlusOutlined />}
               onClick={handleAddNewApiKey}
-              style={{ 
+              style={{
                 backgroundColor: 'transparent',
                 borderColor: '#bbbbbb',
                 color: 'black'
               }}
-            > 
-             Add 
-            </Button>
-
-            {/* <Button icon={<SaveOutlined />} onClick={handleSaveBlynkApiKey} loading={loading}>Save</Button> */}
-
-            <Button 
-              icon={<SaveOutlined />} 
-              onClick={handleSaveBlynkApiKey} 
-              loading={loading}
-              style={{ borderColor: "#52c41a", color:"#52c41a" }}
             >
-             Save
+              Add
             </Button>
 
+            <Button
+              icon={<SaveOutlined />}
+              onClick={handleSaveBlynkApiKey}
+              loading={loading}
+              style={{ borderColor: "#52c41a", color: "#52c41a" }}
+            >
+              Save
+            </Button>
           </div>
-
         </div>
-
       </Modal>
     </header>
   );
