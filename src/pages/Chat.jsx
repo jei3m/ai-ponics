@@ -64,7 +64,7 @@ const Chat = () => {
   // Fetch sensor data from Blynk API
   const fetchSensorDataFromBlynk = async (selectedApiKey) => {
     try {
-      const sensorData = await fetchSensorData({ 
+      await fetchSensorData({ 
         selectedApiKey, 
         setIsDeviceOnline: setSystemStatus, 
         setTemperature, 
@@ -75,6 +75,7 @@ const Chat = () => {
       setSensorDataLoaded(true);
     } catch (error) {
       console.error('Error fetching sensor data:', error);
+      message.error('Error fetching sensor data. Please try again.');
       setSensorDataLoaded(true);
       setBlynkApiKey(false);
       return;
@@ -131,6 +132,7 @@ const Chat = () => {
         fetchSensorDataFromBlynk(selectedApiKey); // Fetch sensor data if API key is present
       } catch (error) {
         console.error('Error fetching user data:', error);
+        message.error('Error fetching user data. Please try again.');
         setSensorDataLoaded(true); // Ensure sensor data loading state is updated on error
       }
     };
