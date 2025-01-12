@@ -5,13 +5,15 @@ import {
 } from 'react-router-dom';
 import { auth } from './firebase';
 
-
+// Pages
 import Chat from './pages/Chat';
 import Login from './pages/Login';
 import Forum from './pages/Forum';
 import DetailedView from './pages/ForumDetailed';
 import Sensors from './pages/Sensors';
 import DiseaseDetection from './pages/DiseaseDetection';
+import NotFound from './pages/NotFound';
+
 
 
 // Import routes and context
@@ -41,6 +43,7 @@ function App() {
       <Routes>
 
         <Route path="/" element={<Login />} />
+        <Route path="*" element={<NotFound />} />
 
         <Route
           path="/chat"
