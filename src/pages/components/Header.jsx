@@ -6,7 +6,7 @@ import { useLocation } from 'react-router-dom';
 import { useApiKey } from '../../context/ApiKeyContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faLeaf, faNewspaper, faHome, faImage } from '@fortawesome/free-solid-svg-icons';
-import { fetchUserData, saveBlynkApiKey, addNewApiKey, deleteApiKey } from '../../services/headerService';
+import { fetchBlynkKeysData, saveBlynkApiKey, addNewApiKey, deleteApiKey } from '../../services/headerService';
 import "../css/Header.css";
 
 const { Option } = Select;
@@ -24,35 +24,23 @@ function Header() {
   const isMounted = useRef(true); // Track if the component is mounted
 
   useEffect(() => {
-    // Set isMounted to true when the component mounts
-    isMounted.current = true;
-
-    // Fetch user data when the component mounts
-    const fetchData = async () => {
-      if (currentUser) {
-        try {
-          await fetchUserData(currentUser, setBlynkApiKeys, setSelectedApiKeyIndex, setEditableBlynkApiKey);
-        } catch (error) {
-          console.error('Error fetching user data:', error);
-          message.error('Failed to fetch user data');
-        }
-      }
-    };
-
-    fetchData();
-
-    // Cleanup function to set isMounted to false when the component unmounts
-    return () => {
-      isMounted.current = false;
-    };
-  }, [currentUser]);
-
-  useEffect(() => {
-    if (blynkApiKeys.length > 0 && isMounted.current) {
-      setSelectedApiKey(blynkApiKeys[selectedApiKeyIndex]);
-      localStorage.setItem('selectedApiKeyIndex', selectedApiKeyIndex);
+    if (currentUser) {
+      fetchBlynkKeysData(
+        currentUser,
+        setBlynkApiKeys,
+        setSelectedApiKeyIndex,
+        setEditableBlynkApiKey,
+      );
     }
-  }, [blynkApiKeys, selectedApiKeyIndex, setSelectedApiKey]);
+  }, [currentUser]);
+  
+  useEffect(() => {
+    if (blynkApiKeys.length > 0) {
+      const currentKey = blynkApiKeys[selectedApiKeyIndex];
+      setSelectedApiKey(currentKey);
+      setEditableBlynkApiKey(currentKey || '');
+    }
+  }, [blynkApiKeys, selectedApiKeyIndex]);
 
   const openModal = () => setModalIsOpen(true);
   const closeModal = () => setModalIsOpen(false);
