@@ -2,6 +2,8 @@ import axios from "axios";
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { Typography } from "antd";
+import { db, auth } from "../firebase";
+import { doc, getDoc } from "firebase/firestore";
 
 dayjs.extend(customParseFormat);
 
@@ -33,6 +35,28 @@ export const fetchSensorData = async ({ selectedApiKey, setIsDeviceOnline, setTe
     setTemperature(null);
     setHumidity(null);
     setIsLoading(false);
+  }
+};
+
+// Fetch user data for plant info
+export const fetchUserData = async (setUser, setPlantingDate, setPlantName) => {
+  const currentUser = auth.currentUser;
+  if (currentUser) {
+    setUser(currentUser);
+
+    // Fetch data directly from Firestore
+    const docRef = doc(db, "users", currentUser.uid);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      if (data.plantingDate) {
+        setPlantingDate(dayjs(data.plantingDate, 'MM/DD/YYYY'));
+      }
+      if (data.plantName) {
+        setPlantName(data.plantName);
+      }
+    }
   }
 };
 
