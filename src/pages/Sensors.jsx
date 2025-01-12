@@ -12,6 +12,7 @@ import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { useApiKey } from "../context/ApiKeyContext";
 import { 
   fetchSensorData,
+  fetchUserData,
   calculateDaysSincePlanting,
   getDatePickerConfig,
   getStatusConfig
@@ -69,53 +70,7 @@ function Sensors() {
 
   // Fetch user data effect
   useEffect(() => {
-    const fetchUserData = async () => {
-      const currentUser = auth.currentUser;
-      if (currentUser) {
-        setUser(currentUser);
-
-        // Check cache first
-        const cachedData = localStorage.getItem(`plantData_${currentUser.uid}`);
-        if (cachedData) {
-          const parsedData = JSON.parse(cachedData);
-          const cacheTimestamp = parsedData.timestamp;
-          const currentTime = new Date().getTime(); // This is in UTC format
-
-          // Check if cache is less than 5 minutes old
-          if ( currentTime - cacheTimestamp < 5 * 60 * 1000) {
-            if (parsedData.plantingDate) {
-              setPlantingDate(dayjs(parsedData.plantingDate, 'MM/DD/YYYY'))
-            }
-            if (parsedData.plantName) {
-              setPlantName(parsedData.plantName);
-            }
-            return;
-          }
-        }
-
-        // If cache is not available or expired, fetch from Firestore
-        const docRef = doc(db, "users", currentUser.uid);
-        const docSnap = await getDoc(docRef);
-
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          if (data.plantingDate) {
-            setPlantingDate(dayjs(data.plantingDate, 'MM/DD/YYYY'));
-          }
-          if (data.plantName) {
-            setPlantName(data.plantName);
-          }
-
-          // Update cache after fetching
-          localStorage.setItem(`plantData_${currentUser.uid}`, JSON.stringify({
-            ...data,
-            timestamp: new Date().getTime()
-          }));
-        }
-      }
-    };
-
-    fetchUserData();
+    fetchUserData(setUser, setPlantingDate, setPlantName);
   }, []);
 
   // Automatically sync daysSincePlanting
