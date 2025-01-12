@@ -24,14 +24,26 @@
 
 .forum-content, .comment-text, .reply-text {
   word-wrap: break-word;
-  margin-top: 20px;
+  margin-top: 10px;
 }
 
 .forum-content p, .comment-text p, .reply-text p {
   font-size: 20px;
-  margin: 0px;
+margin: 0px;
   font-weight: normal;
   line-height: 1.4em;
+}
+
+.comment-text ol {
+  margin-top: 16px;
+}
+
+.comment-text ul{
+  margin-top: 16px;
+}
+
+.comment-text li[data-list="bullet"] {
+  list-style-type: disc;
 }
 
 .forum-content li, .comment-text li, .reply-text li {
@@ -40,10 +52,6 @@
   line-height: 0.5em;
   font-weight: normal;
   font-size: 18px;
-}
-
-.comment-text li {
-  list-style-type: disc;
 }
 
 .comment-input {
