@@ -197,12 +197,11 @@ ${warningMessage}`
 
   // AI conversation after greeting
   async function aiRun() {
-    
     // If system is offline, do not proceed
     if (!systemStatus) {
       return;
     }
-
+  
     setLoading(true);
     try {
       // Add user's message immediately
@@ -210,31 +209,36 @@ ${warningMessage}`
         ...prevMessages,
         { user: true, text: textPrompt, image: imagePreview, imageInlineData: imageInlineData, isStreaming: false }
       ]);
-
+  
       // Add an empty AI message that will be updated with streaming content
       setMessages((prevMessages) => [
         ...prevMessages,
         { user: false, text: '', isStreaming: true }
       ]);
-
+  
       const previousMessages = messages;
       const responseStream = generateAIResponse(textPrompt, imageInlineData, plantName, daysSincePlanting, temperature, humidity, previousMessages);
       let accumulatedText = '';
-
-      // Seperate the response into chunks
+  
+      // Separate the response into chunks and stream letter by letter
       for await (const chunk of responseStream) {
-        accumulatedText += chunk;
-        setMessages((prevMessages) => {
-          const newMessages = [...prevMessages];
-          newMessages[newMessages.length - 1] = {
-            user: false,
-            text: accumulatedText,
-            isStreaming: true
-          };
-          return newMessages;
-        });
+        for (let i = 0; i < chunk.length; i++) {
+          accumulatedText += chunk[i]; // Add one character at a time
+          setMessages((prevMessages) => {
+            const newMessages = [...prevMessages];
+            newMessages[newMessages.length - 1] = {
+              user: false,
+              text: accumulatedText,
+              isStreaming: true
+            };
+            return newMessages;
+          });
+  
+          // Add a small delay between characters for a smooth typing effect
+          await new Promise((resolve) => setTimeout(resolve, 20)); // Adjust delay as needed
+        }
       }
-
+  
       // Mark streaming as complete
       setMessages((prevMessages) => {
         const newMessages = [...prevMessages];
