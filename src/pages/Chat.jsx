@@ -235,7 +235,7 @@ ${warningMessage}`
           });
   
           // Add a small delay between characters for a smooth typing effect
-          await new Promise((resolve) => setTimeout(resolve, 20)); // Adjust delay as needed
+          await new Promise((resolve) => setTimeout(resolve, 10)); // Delay
         }
       }
   
