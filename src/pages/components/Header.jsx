@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, Button, Select, Input, Avatar, Typography, message, Popconfirm } from 'antd';
 import { EyeInvisibleOutlined, EyeTwoTone, PlusOutlined, SaveOutlined, DeleteOutlined, LogoutOutlined } from '@ant-design/icons';
 import { UserAuth } from '../../context/AuthContext';
@@ -21,7 +21,6 @@ function Header() {
   const location = useLocation();
   const { setSelectedApiKey } = useApiKey();
   const [loading, setLoading] = useState(false);
-  const isMounted = useRef(true); // Track if the component is mounted
 
   useEffect(() => {
     if (currentUser) {
@@ -50,26 +49,20 @@ function Header() {
   };
 
   const handleSaveBlynkApiKey = async () => {
-    if (isMounted.current) {
-      await saveBlynkApiKey(currentUser, blynkApiKeys, selectedApiKeyIndex, editableBlynkApiKey, setBlynkApiKeys, setSelectedApiKey, setLoading);
-    }
+    await saveBlynkApiKey(currentUser, blynkApiKeys, selectedApiKeyIndex, editableBlynkApiKey, setBlynkApiKeys, setSelectedApiKey, setLoading);
   };
 
   const handleAddNewApiKey = () => {
-    if (isMounted.current) {
-      const hasBlankKey = blynkApiKeys.some(key => key.trim() === '');
-      if (!hasBlankKey) {
-        addNewApiKey(blynkApiKeys, setBlynkApiKeys, setSelectedApiKeyIndex, setEditableBlynkApiKey);
-      } else {
-        message.warning('Please fill in the existing blank API key.');
-      }
+    const hasBlankKey = blynkApiKeys.some(key => key.trim() === '');
+    if (!hasBlankKey) {
+      addNewApiKey(blynkApiKeys, setBlynkApiKeys, setSelectedApiKeyIndex, setEditableBlynkApiKey);
+    } else {
+      message.warning('Please fill in the existing blank API key.');
     }
   };
 
   const handleDeleteApiKey = async () => {
-    if (isMounted.current) {
-      await deleteApiKey(currentUser, blynkApiKeys, selectedApiKeyIndex, setBlynkApiKeys, setSelectedApiKeyIndex, setEditableBlynkApiKey, setLoading);
-    }
+    await deleteApiKey(currentUser, blynkApiKeys, selectedApiKeyIndex, setBlynkApiKeys, setSelectedApiKeyIndex, setEditableBlynkApiKey, setLoading);
   };
 
   return (
@@ -156,10 +149,8 @@ function Header() {
           <Select
             value={selectedApiKeyIndex}
             onChange={(value) => {
-              if (isMounted.current) {
-                setSelectedApiKeyIndex(value);
-                setEditableBlynkApiKey(blynkApiKeys[value] || '');
-              }
+              setSelectedApiKeyIndex(value);
+              setEditableBlynkApiKey(blynkApiKeys[value] || '');
             }}
             style={{ width: '100%', marginTop: '0.5rem' }}
           >
