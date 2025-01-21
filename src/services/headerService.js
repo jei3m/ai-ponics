@@ -13,11 +13,12 @@ export const fetchBlynkKeysData = async (currentUser, setBlynkApiKeys, setSelect
     if (docSnap.exists()) {
       const data = docSnap.data();
       const apiKeys = data.blynkApiKeys || [];
+      const selectedIndex = data.selectedApiKeyIndex || 0; // Fetch the selectedApiKeyIndex from Firestore
       
       // console.log('Fetched API Keys:', apiKeys);
       setBlynkApiKeys(apiKeys);
-      setSelectedApiKeyIndex(0);
-      setEditableBlynkApiKey(apiKeys[0] || '');
+      setSelectedApiKeyIndex(selectedIndex); // Use the fetched selectedApiKeyIndex
+      setEditableBlynkApiKey(apiKeys[selectedIndex] || '');
     } else {
       // console.log('No document exists, initializing with empty array');
       setBlynkApiKeys([]);
@@ -40,7 +41,8 @@ export const saveBlynkApiKey = async (currentUser, blynkApiKeys, selectedApiKeyI
     
     await setDoc(doc(db, 'users', currentUser.uid), {
       blynkApiKeys: updatedApiKeys,
-      selectedApiKey: editableBlynkApiKey
+      selectedApiKey: editableBlynkApiKey,
+      selectedApiKeyIndex: selectedApiKeyIndex // Save the selectedApiKeyIndex to Firestore
     }, { merge: true });
     
     setBlynkApiKeys(updatedApiKeys);
@@ -70,15 +72,17 @@ export const deleteApiKey = async (currentUser, blynkApiKeys, selectedApiKeyInde
   setLoading(true);
   try {
     const updatedApiKeys = blynkApiKeys.filter((_, index) => index !== selectedApiKeyIndex);
+    const newSelectedIndex = selectedApiKeyIndex === 0 ? 0 : selectedApiKeyIndex - 1; // Adjust the selected index after deletion
     
     await setDoc(doc(db, 'users', currentUser.uid), {
       blynkApiKeys: updatedApiKeys,
-      selectedApiKey: updatedApiKeys[0] || ''
+      selectedApiKey: updatedApiKeys[newSelectedIndex] || '',
+      selectedApiKeyIndex: newSelectedIndex // Update the selectedApiKeyIndex in Firestore
     }, { merge: true });
     
     setBlynkApiKeys(updatedApiKeys);
-    setSelectedApiKeyIndex(0);
-    setEditableBlynkApiKey(updatedApiKeys[0] || '');
+    setSelectedApiKeyIndex(newSelectedIndex);
+    setEditableBlynkApiKey(updatedApiKeys[newSelectedIndex] || '');
     message.success('Blynk API Key deleted successfully!');
   } catch (error) {
     console.error('Error deleting Blynk API Key:', error);
