@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { db, auth } from '../firebase';
-import { collection, getDocs, addDoc, deleteDoc, doc } from 'firebase/firestore';
+import { collection, onSnapshot, addDoc, deleteDoc, doc } from 'firebase/firestore';
 import ReactQuill from 'react-quill-new'; // fork of react-quill since it is no longer maintained
 import 'react-quill-new/dist/quill.snow.css';
 import { Button, Modal, Input, List, Avatar, Typography, Space, Popconfirm } from 'antd';
@@ -19,71 +19,29 @@ function Forum() {
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    const fetchForums = async () => {
-      try {
-        // Try to get cached forums data
-        const cachedForums = localStorage.getItem('forumsData');
-        const cachedTimestamp = localStorage.getItem('forumsTimestamp');
-        const currentTime = new Date().getTime();
-        
-        // Check if cache exists, is valid JSON, and is less than 5 minutes old
-        if (cachedForums && cachedTimestamp) {
-          try {
-            const parsedForums = JSON.parse(cachedForums);
-            if ((currentTime - parseInt(cachedTimestamp)) < 300000 && Array.isArray(parsedForums)) {
-              setForums(parsedForums);
-              return;
-            }
-          } catch (parseError) {
-            // Invalid JSON in cache, clear it
-            localStorage.removeItem('forumsData');
-            localStorage.removeItem('forumsTimestamp');
-          }
-        }
-        
-        // Fetch fresh data if cache is invalid, old, or doesn't exist
-        const querySnapshot = await getDocs(collection(db, 'forums'));
-        const forumsData = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setForums(forumsData);
-        
-        // Update cache with fresh data
-        try {
-          localStorage.setItem('forumsData', JSON.stringify(forumsData));
-          localStorage.setItem('forumsTimestamp', currentTime.toString());
-        } catch (storageError) {
-          // Handle localStorage quota exceeded or other storage errors
-          console.warn('Failed to cache forums data:', storageError);
-        }
-      } catch (error) {
-        console.error('Error fetching forums:', error);
-        // If there's an error fetching fresh data, try to use cached data regardless of age
-        try {
-          const cachedForums = localStorage.getItem('forumsData');
-          if (cachedForums) {
-            const parsedForums = JSON.parse(cachedForums);
-            if (Array.isArray(parsedForums)) {
-              setForums(parsedForums);
-            }
-          }
-        } catch (fallbackError) {
-          console.error('Failed to load cached forums as fallback:', fallbackError);
-        }
-      }
-    };
-    
-    fetchForums();
+    // Listen for real-time updates from Firestore
+    const subscribeForums = onSnapshot(collection(db, 'forums'), (querySnapshot) => {
+      const forumsData = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setForums(forumsData);
+    });
 
-    const unsubscribe = auth.onAuthStateChanged((user) => {
+    // Listen for authentication state changes
+    const subscribeAuth = auth.onAuthStateChanged((user) => {
       if (user) {
         setCurrentUser(user.uid);
       } else {
         setCurrentUser(null);
       }
     });
-    return unsubscribe;
+
+    // Cleanup subscriptions on unmount
+    return () => {
+      subscribeForums();
+      subscribeAuth();
+    };
   }, []);
 
   const handlePostForum = async () => {
@@ -98,19 +56,7 @@ function Forum() {
           authorAvatar: auth.currentUser.photoURL || 'https://via.placeholder.com/50',
           createdAt: new Date().toISOString(),
         };
-        const docRef = await addDoc(collection(db, 'forums'), newForum);
-        const updatedForum = { ...newForum, id: docRef.id };
-        const updatedForums = [...forums, updatedForum];
-        setForums(updatedForums);
-        
-        // Update cache with new forum
-        try {
-          localStorage.setItem('forumsData', JSON.stringify(updatedForums));
-          localStorage.setItem('forumsTimestamp', new Date().getTime().toString());
-        } catch (storageError) {
-          console.warn('Failed to update cache after posting:', storageError);
-        }
-        
+        await addDoc(collection(db, 'forums'), newForum);
         setNewForumTitle('');
         setNewForumContent('');
         setShowModal(false);
@@ -128,16 +74,6 @@ function Forum() {
         const forumData = forums.find((forum) => forum.id === id);
         if (forumData.postedBy === currentUser) {
           await deleteDoc(forumRef);
-          const updatedForums = forums.filter((forum) => forum.id !== id);
-          setForums(updatedForums);
-          
-          // Update cache after deletion
-          try {
-            localStorage.setItem('forumsData', JSON.stringify(updatedForums));
-            localStorage.setItem('forumsTimestamp', new Date().getTime().toString());
-          } catch (storageError) {
-            console.warn('Failed to update cache after deletion:', storageError);
-          }
         } else {
           alert('You do not have permission to delete this forum.');
         }
@@ -162,9 +98,9 @@ function Forum() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', overflow: 'auto', backgroundColor:'white' }}>
-      <Header />  
-      <div style={{ maxWidth: '700px', margin: '0 auto', marginTop:'-30px', }}>
+    <div style={{ minHeight: '100vh', overflow: 'auto', backgroundColor: 'white' }}>
+      <Header />
+      <div style={{ maxWidth: '700px', margin: '0 auto', marginTop: '-30px' }}>
         <div style={{ padding: '0px 8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '-10px', marginTop: '10px' }}>
           <Title level={2} style={{ textAlign: 'center', fontWeight: 'bold' }}>Forums</Title>
           <Button style={{ marginTop: '10px' }} type="primary" icon={<PlusOutlined />} onClick={() => setShowModal(true)}>
@@ -189,10 +125,10 @@ function Forum() {
             scrollbarWidth: 'thin',
             scrollbarColor: '#ccc #f5f5f5',
             borderRadius: '8px',
-            margin:'0 auto',
+            margin: '0 auto',
           }}
         >
-          <div style={{ height: 'calc(100vh - 300px)', overflowY: 'auto'}}>
+          <div style={{ height: 'calc(100vh - 300px)', overflowY: 'auto' }}>
             <Input
               placeholder="Title of your forum"
               value={newForumTitle}
@@ -227,7 +163,7 @@ function Forum() {
               actions={
                 currentUser && forum.postedBy === currentUser
                   ? [
-                    <div style={{ display: 'flex', justifyContent: 'flex-end'}}>
+                    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                       <Popconfirm
                         title="Delete Forum"
                         description="Are you sure to delete this forum?"
@@ -235,7 +171,7 @@ function Forum() {
                         okText="Yes"
                         cancelText="No"
                       >
-                        <DeleteOutlined style={{color: 'red'}} />
+                        <DeleteOutlined style={{ color: 'red' }} />
                       </Popconfirm>
                     </div>
                   ]
@@ -247,17 +183,17 @@ function Forum() {
                 title={
                   <Link to={`/forum/${forum.id}`} style={{ textDecoration: 'none' }}>
                     <div style={{ marginBottom: '-14px', marginTop: '-6px' }}>
-                      <Text strong style={{ fontSize: '20px'}}>{forum.title}</Text>
+                      <Text strong style={{ fontSize: '20px' }}>{forum.title}</Text>
                     </div>
                   </Link>
                 }
                 description={
                   <Space direction="vertical">
                     <div>
-                      <Text type="secondary" style={{ fontSize: '14px'}}>Posted by: {forum.authorName}</Text>
+                      <Text type="secondary" style={{ fontSize: '14px' }}>Posted by: {forum.authorName}</Text>
                     </div>
                     <div style={{ marginTop: '-10px', marginBottom: '-30px' }}>
-                      <Text type="secondary" style={{ fontSize: '12px' }}>{new Date(forum.createdAt).toLocaleString()} | <CommentOutlined/> {forum.comments.length} </Text>
+                      <Text type="secondary" style={{ fontSize: '12px' }}>{new Date(forum.createdAt).toLocaleString()} | <CommentOutlined /> {forum.comments.length} </Text>
                     </div>
                   </Space>
                 }
