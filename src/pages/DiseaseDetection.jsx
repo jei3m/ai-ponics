@@ -1,36 +1,47 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   MeetingProvider,
+  MeetingConsumer,
   useMeeting,
   useParticipant,
+  Constants,
 } from "@videosdk.live/react-sdk";
-import { authToken, createMeeting } from "../API";
+import { authToken, createStream } from "../API";
 import ReactPlayer from "react-player";
 import Header from './components/Header'; 
 import Chat from '../pages/Chat';
 import './css/DiseaseDetection.css'; 
-function JoinScreen({ getMeetingAndToken }) {
-  const [meetingId, setMeetingId] = useState("");
+import { UserAuth } from '../context/AuthContext'; 
 
-  const handleJoin = async () => {
-    await getMeetingAndToken(meetingId);
+function JoinView({ initializeStream, setMode }) {
+  const [streamId, setStreamId] = useState("");
+
+  const handleAction = async (mode) => {
+    setMode(mode);
+    await initializeStream(streamId);
   };
 
   return (
     <div className="join-container">
+    
       <input
         type="text"
-        placeholder="Enter Meeting Id"
-        value={meetingId}
-        onChange={(e) => setMeetingId(e.target.value)}
+        placeholder="Enter Stream Id"
+        value={streamId}
+        onChange={(e) => setStreamId(e.target.value)}
         className="input-box"
       />
+      
+  
       <div className="button-container">
-        <button className="btn" onClick={handleJoin}>
-          Join
+        <button className="btn" onClick={() => handleAction(Constants.modes.SEND_AND_RECV)}>
+          Create Live Stream as Host
         </button>
-        <button className="btn" onClick={handleJoin}>
-          Create Meeting
+        <button className="btn" onClick={() => handleAction(Constants.modes.SEND_AND_RECV)}>
+          Join as Host
+        </button>
+        <button className="btn" onClick={() => handleAction(Constants.modes.RECV_ONLY)}>
+          Join as Audience
         </button>
       </div>
     </div>
@@ -38,127 +49,157 @@ function JoinScreen({ getMeetingAndToken }) {
 }
 
 
-function ParticipantView({ participantId }) {
-  const webcamRef = useRef(null);
-  const micRef = useRef(null);
+function LSContainer({ streamId, onLeave }) {
+  const [joined, setJoined] = useState(false); 
 
-  const { webcamStream, micStream, webcamOn, micOn, isLocal, displayName } =
-    useParticipant(participantId);
-
-  useEffect(() => {
-    if (webcamRef.current && webcamOn && webcamStream) {
-      const mediaStream = new MediaStream([webcamStream.track]);
-      webcamRef.current.srcObject = mediaStream;
-      webcamRef.current.play().catch(console.error);
-    }
-  }, [webcamStream, webcamOn]);
-
-  useEffect(() => {
-    if (micRef.current) {
-      if (micOn && micStream) {
-        const mediaStream = new MediaStream([micStream.track]);
-        micRef.current.srcObject = mediaStream;
-        micRef.current.play().catch(console.error);
-      } else {
-        micRef.current.srcObject = null;
-      }
-    }
-  }, [micStream, micOn]);
-
-  return (
-    <div className="participant-view">
-      <p>Participant: {displayName}</p>
-      <p>Webcam: {webcamOn ? "ON" : "OFF"} | Mic: {micOn ? "ON" : "OFF"}</p>
-      <audio ref={micRef} autoPlay muted={isLocal} />
-      {webcamOn && (
-        <ReactPlayer
-          playsinline
-          url={webcamRef.current?.srcObject}
-          playing
-          height="200px"
-          width="200px"
-          style={{ borderRadius: "10px" }}
-        />
-      )}
-    </div>
-  );
-}
-
-function Controls() {
-  const { leave, toggleMic, toggleWebcam } = useMeeting();
-
-  return (
-    <div className="controls">
-      <button onClick={leave}>Leave</button>
-      <button onClick={toggleMic}>Toggle Mic</button>
-      <button onClick={toggleWebcam}>Toggle Webcam</button>
-    </div>
-  );
-}
-
-function MeetingView({ meetingId, onMeetingLeave }) {
-  const [joined, setJoined] = useState(false);
-  const { join, participants } = useMeeting({
-    onMeetingJoined: () => setJoined(true),
-    onMeetingLeft: onMeetingLeave,
+  const { join } = useMeeting({
+    onMeetingJoined: () => setJoined(true), 
+    onMeetingLeft: onLeave, 
+    onError: (error) => alert(error.message), 
   });
 
   return (
     <div className="container">
-      <h3>Meeting Id: {meetingId}</h3>
-      {joined ? (
-        <>
-          <Controls />
-          {[...participants.keys()].map((id) => (
-            <ParticipantView key={id} participantId={id} />
-          ))}
-        </>
-      ) : (
-        <button onClick={join}>Join Meeting</button>
-      )}
+      <h3>Stream Id: {streamId}</h3>
+      {joined ? <StreamView /> : <button onClick={join}>Join Stream</button>}
     </div>
   );
 }
 
-function DiseaseDetection() {
-  const [meetingId, setMeetingId] = useState(null);
-
-  const getMeetingAndToken = async (id) => {
-    const newMeetingId = id || (await createMeeting({ token: authToken }));
-    setMeetingId(newMeetingId);
-  };
-
-  const handleMeetingLeave = () => setMeetingId(null);
+function StreamView() {
+  const { participants } = useMeeting();
 
   return (
     <div>
-  
-      <Header />
+      <LSControls />
+      {[...participants.values()]
+        .filter((p) => p.mode === Constants.modes.SEND_AND_RECV) 
+        .map((p) => (
+          <Participant participantId={p.id} key={p.id} /> 
+        ))}
+    </div>
+  );
+}
+
+function Participant({ participantId }) {
+  const { webcamStream, micStream, webcamOn, micOn, isLocal, displayName } =
+    useParticipant(participantId);
+
+  const audioRef = useRef(null); 
+  const videoRef = useRef(null); 
+
+  const setupStream = (stream, ref, condition) => {
+    if (ref.current && stream) {
+      ref.current.srcObject = condition
+        ? new MediaStream([stream.track])
+        : null;
+      condition && ref.current.play().catch(console.error);
+    }
+  };
+
+  useEffect(() => setupStream(micStream, audioRef, micOn), [micStream, micOn]); 
+  useEffect(
+    () => setupStream(webcamStream, videoRef, webcamOn),
+    [webcamStream, webcamOn]
+  ); 
+
+  return (
+    <div>
+      <p>
+        {displayName} | Webcam: {webcamOn ? "ON" : "OFF"} | Mic:{" "}
+        {micOn ? "ON" : "OFF"}
+      </p>
+      <audio ref={audioRef} autoPlay muted={isLocal} />
+      {webcamOn && (
+        <video
+          ref={videoRef}
+          autoPlay
+          muted={isLocal}
+          height="200"
+          width="300"
+        /> 
+      )}
+    </div>
+  );
+}
+function LSControls() {
+  const { leave, toggleMic, toggleWebcam, changeMode, meeting } = useMeeting(); 
+  const currentMode = meeting.localParticipant.mode; 
+
+  return (
+    <div className="controls">
+   
+      <button onClick={leave}>Leave</button>
+
+      {currentMode === Constants.modes.SEND_AND_RECV && (
+        <>
+          <button onClick={toggleMic}>Toggle Mic</button>{" "}
+
+          <button onClick={toggleWebcam}>Toggle Camera</button> 
+        </>
+      )}
+
+
+      <button
+        onClick={() =>
+          changeMode(
+            currentMode === Constants.modes.SEND_AND_RECV
+              ? Constants.modes.RECV_ONLY
+              : Constants.modes.SEND_AND_RECV
+          )
+        }
+      >
+        {currentMode === Constants.modes.SEND_AND_RECV
+          ? "Switch to Audience Mode"
+          : "Switch to Host Mode"}
+      </button>
+    </div>
+  );
+}
+function DiseaseDetection() {
+  const [streamId, setStreamId] = useState(null); 
+  const [mode, setMode] = useState(Constants.modes.SEND_AND_RECV); 
+  const { currentUser } = UserAuth();
+
+  // Stream initialization logic
+  const initializeStream = async (id) => {
+    const newStreamId = id || (await createStream({ token: authToken }));
+    setStreamId(newStreamId);
+  };
+
+  const onStreamLeave = () => setStreamId(null);
+
+  return (
+    <div>
+      {/* Only show Header if streamId is not set */}
+      {!streamId && <Header />}
 
       <div className="main-content">
+        {/* Show Chat only when streamId is set (when the user is in the meeting) */}
+        {streamId && <Chat />}
 
-        <Chat />
-
-        {meetingId ? (
+        {authToken && streamId ? (
           <MeetingProvider
             config={{
-              meetingId,
-              micEnabled: true,
-              webcamEnabled: true,
-              name: "C.V. Raman",
+              meetingId: streamId,
+              micEnabled: true, 
+              webcamEnabled: true, 
+              name: currentUser?.displayName || "Guest", 
+              mode,
             }}
             token={authToken}
           >
-            <MeetingView
-              meetingId={meetingId}
-              onMeetingLeave={handleMeetingLeave}
-            />
+            {/* Stream related content */}
+            <LSContainer streamId={streamId} onLeave={onStreamLeave} />
           </MeetingProvider>
         ) : (
-          <JoinScreen getMeetingAndToken={getMeetingAndToken} />
+          // If no streamId, show the Join View
+          <JoinView initializeStream={initializeStream} setMode={setMode} />
         )}
       </div>
     </div>
   );
 }
+
+
 export default DiseaseDetection;
