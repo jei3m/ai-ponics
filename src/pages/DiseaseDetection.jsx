@@ -1,13 +1,11 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   MeetingProvider,
-  MeetingConsumer,
   useMeeting,
   useParticipant,
   Constants,
 } from "@videosdk.live/react-sdk";
 import { authToken, createStream } from "../API";
-import ReactPlayer from "react-player";
 import Header from './components/Header'; 
 import Chat from '../pages/Chat';
 import './css/DiseaseDetection.css'; 
@@ -161,7 +159,6 @@ function DiseaseDetection() {
   const [mode, setMode] = useState(Constants.modes.SEND_AND_RECV); 
   const { currentUser } = UserAuth();
 
-  // Stream initialization logic
   const initializeStream = async (id) => {
     const newStreamId = id || (await createStream({ token: authToken }));
     setStreamId(newStreamId);
@@ -171,11 +168,11 @@ function DiseaseDetection() {
 
   return (
     <div>
-      {/* Only show Header if streamId is not set */}
+    
       {!streamId && <Header />}
 
       <div className="main-content">
-        {/* Show Chat only when streamId is set (when the user is in the meeting) */}
+
         {streamId && <Chat />}
 
         {authToken && streamId ? (
@@ -188,12 +185,10 @@ function DiseaseDetection() {
               mode,
             }}
             token={authToken}
-          >
-            {/* Stream related content */}
+          >``
             <LSContainer streamId={streamId} onLeave={onStreamLeave} />
           </MeetingProvider>
         ) : (
-          // If no streamId, show the Join View
           <JoinView initializeStream={initializeStream} setMode={setMode} />
         )}
       </div>
