@@ -210,6 +210,7 @@ function DiseaseDetection() {
       clearInterval(interval);
     };
   }, [selectedApiKey]);
+  
   // Initialize Stream
   const initializeStream = async (id) => {
     setIsLoading(true);
