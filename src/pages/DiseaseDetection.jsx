@@ -6,10 +6,17 @@ import {
   Constants,
 } from "@videosdk.live/react-sdk";
 import { authToken, createStream } from "../API";
-import Header from './components/Header'; 
-import Chat from '../pages/Chat';
-import './css/DiseaseDetection.css'; 
-import { UserAuth } from '../context/AuthContext'; 
+import Header from "./components/Header";
+import Chat from "../pages/Chat";
+import "./css/DiseaseDetection.css";
+import { UserAuth } from "../context/AuthContext";
+import { Spin } from "antd";
+import {
+  fetchSensorData,
+  getStatusConfig,
+  StatusMessage,
+} from "../services/sensorService";
+import { useApiKey } from "../context/ApiKeyContext";
 
 function JoinView({ initializeStream, setMode }) {
   const [streamId, setStreamId] = useState("");
@@ -21,7 +28,6 @@ function JoinView({ initializeStream, setMode }) {
 
   return (
     <div className="join-container">
-    
       <input
         type="text"
         placeholder="Enter Stream Id"
@@ -29,16 +35,24 @@ function JoinView({ initializeStream, setMode }) {
         onChange={(e) => setStreamId(e.target.value)}
         className="input-box"
       />
-      
-  
+
       <div className="button-container">
-        <button className="btn" onClick={() => handleAction(Constants.modes.SEND_AND_RECV)}>
+        <button
+          className="btn"
+          onClick={() => handleAction(Constants.modes.SEND_AND_RECV)}
+        >
           Create Live Stream as Host
         </button>
-        <button className="btn" onClick={() => handleAction(Constants.modes.SEND_AND_RECV)}>
+        <button
+          className="btn"
+          onClick={() => handleAction(Constants.modes.SEND_AND_RECV)}
+        >
           Join as Host
         </button>
-        <button className="btn" onClick={() => handleAction(Constants.modes.RECV_ONLY)}>
+        <button
+          className="btn"
+          onClick={() => handleAction(Constants.modes.RECV_ONLY)}
+        >
           Join as Audience
         </button>
       </div>
@@ -46,14 +60,13 @@ function JoinView({ initializeStream, setMode }) {
   );
 }
 
-
 function LSContainer({ streamId, onLeave }) {
-  const [joined, setJoined] = useState(false); 
+  const [joined, setJoined] = useState(false);
 
   const { join } = useMeeting({
-    onMeetingJoined: () => setJoined(true), 
-    onMeetingLeft: onLeave, 
-    onError: (error) => alert(error.message), 
+    onMeetingJoined: () => setJoined(true),
+    onMeetingLeft: onLeave,
+    onError: (error) => alert(error.message),
   });
 
   return (
@@ -71,9 +84,9 @@ function StreamView() {
     <div>
       <LSControls />
       {[...participants.values()]
-        .filter((p) => p.mode === Constants.modes.SEND_AND_RECV) 
+        .filter((p) => p.mode === Constants.modes.SEND_AND_RECV)
         .map((p) => (
-          <Participant participantId={p.id} key={p.id} /> 
+          <Participant participantId={p.id} key={p.id} />
         ))}
     </div>
   );
@@ -83,8 +96,8 @@ function Participant({ participantId }) {
   const { webcamStream, micStream, webcamOn, micOn, isLocal, displayName } =
     useParticipant(participantId);
 
-  const audioRef = useRef(null); 
-  const videoRef = useRef(null); 
+  const audioRef = useRef(null);
+  const videoRef = useRef(null);
 
   const setupStream = (stream, ref, condition) => {
     if (ref.current && stream) {
@@ -95,11 +108,11 @@ function Participant({ participantId }) {
     }
   };
 
-  useEffect(() => setupStream(micStream, audioRef, micOn), [micStream, micOn]); 
+  useEffect(() => setupStream(micStream, audioRef, micOn), [micStream, micOn]);
   useEffect(
     () => setupStream(webcamStream, videoRef, webcamOn),
     [webcamStream, webcamOn]
-  ); 
+  );
 
   return (
     <div>
@@ -115,28 +128,26 @@ function Participant({ participantId }) {
           muted={isLocal}
           height="200"
           width="300"
-        /> 
+        />
       )}
     </div>
   );
 }
+
 function LSControls() {
-  const { leave, toggleMic, toggleWebcam, changeMode, meeting } = useMeeting(); 
-  const currentMode = meeting.localParticipant.mode; 
+  const { leave, toggleMic, toggleWebcam, changeMode, meeting } = useMeeting();
+  const currentMode = meeting.localParticipant.mode;
 
   return (
     <div className="controls">
-   
       <button onClick={leave}>Leave</button>
 
       {currentMode === Constants.modes.SEND_AND_RECV && (
         <>
           <button onClick={toggleMic}>Toggle Mic</button>{" "}
-
-          <button onClick={toggleWebcam}>Toggle Camera</button> 
+          <button onClick={toggleWebcam}>Toggle Camera</button>
         </>
       )}
-
 
       <button
         onClick={() =>
@@ -154,47 +165,135 @@ function LSControls() {
     </div>
   );
 }
-function DiseaseDetection() {
-  const [streamId, setStreamId] = useState(null); 
-  const [mode, setMode] = useState(Constants.modes.SEND_AND_RECV); 
-  const { currentUser } = UserAuth();
 
+function DiseaseDetection() {
+  const [streamId, setStreamId] = useState(null);
+  const [mode, setMode] = useState(Constants.modes.SEND_AND_RECV);
+  const { currentUser } = UserAuth();
+  const [isApiKeyValid, setIsApiKeyValid] = useState(true);
+  const [isDeviceOnline, setIsDeviceOnline] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [temperature, setTemperature] = useState(null);
+  const [humidity, setHumidity] = useState(null);
+  const { selectedApiKey } = useApiKey();
+
+  useEffect(() => {
+    console.log("Selected API Key:", selectedApiKey);
+
+    if (!selectedApiKey) {
+      console.error("API key is missing!");
+      setIsLoading(false);
+      return;
+    }
+
+    setIsLoading(true);
+    const fetchData = async () => {
+      try {
+        await fetchSensorData({
+          selectedApiKey,
+          setIsDeviceOnline,
+          setTemperature,
+          setHumidity,
+          setIsLoading,
+          setIsApiKeyValid,
+        });
+      } catch (error) {
+        console.error("Error fetching sensor data:", error);
+      }
+    };
+
+    fetchData();
+
+    const interval = setInterval(fetchData, 2000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [selectedApiKey]);
+  // Initialize Stream
   const initializeStream = async (id) => {
-    const newStreamId = id || (await createStream({ token: authToken }));
-    setStreamId(newStreamId);
+    setIsLoading(true);
+    try {
+      const newStreamId = id || (await createStream({ token: authToken }));
+      setStreamId(newStreamId);
+    } catch (error) {
+      console.error("Stream initialization failed:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const onStreamLeave = () => setStreamId(null);
 
+  // Status configuration for stream
+  const statusConfig = getStatusConfig(
+    selectedApiKey,
+    isApiKeyValid,
+    isDeviceOnline,
+    isLoading
+  );
+  const activeStatus = statusConfig.find((status) => status.when);
+
   return (
-    <div>
-    
-      {!streamId && <Header />}
+    <div style={{ width: "100%", overflowX: "hidden" }}>
+      <Header />
 
-      <div className="main-content">
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          textAlign: "center",
+          padding: "0.4rem",
+          margin: "0 auto",
+        }}
+      >
+        <div
+          style={{
+            maxWidth: "100vw",
+            borderRadius: "14px",
+            height: "fit-content",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            flexDirection: "column",
+            padding: "1.8rem",
+          }}
+        >
+          {activeStatus ? (
+            <div style={{ textAlign: "center", paddingTop: "20px" }}>
+              <StatusMessage {...activeStatus} />
+              {isLoading && <Spin />}
+            </div>
+          ) : (
+            <>
+              {!streamId ? (
+                <JoinView
+                  initializeStream={initializeStream}
+                  setMode={setMode}
+                />
+              ) : (
+                <MeetingProvider
+                  config={{
+                    meetingId: streamId,
+                    micEnabled: true,
+                    webcamEnabled: true,
+                    name: currentUser?.displayName || "Guest",
+                    mode,
+                  }}
+                  token={authToken}
+                >
+                  <LSContainer streamId={streamId} onLeave={onStreamLeave} />
+                </MeetingProvider>
+              )}
 
-        {streamId && <Chat />}
-
-        {authToken && streamId ? (
-          <MeetingProvider
-            config={{
-              meetingId: streamId,
-              micEnabled: true, 
-              webcamEnabled: true, 
-              name: currentUser?.displayName || "Guest", 
-              mode,
-            }}
-            token={authToken}
-          >``
-            <LSContainer streamId={streamId} onLeave={onStreamLeave} />
-          </MeetingProvider>
-        ) : (
-          <JoinView initializeStream={initializeStream} setMode={setMode} />
-        )}
+              {streamId && <Chat />}
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
 }
-
 
 export default DiseaseDetection;
