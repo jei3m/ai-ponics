@@ -336,108 +336,110 @@ ${warningMessage}`
   },[messages])
 
   return (
-    <div className="App-Chat">
-      <div className="chat-container">
+    <>
+      <div className="App-Chat">
+        <div className="chat-container">
 
-        <div className="header" style={{display: "flex", justifyContent: "space-between"}}>
-          <h2>Ask AI-Ponics!</h2>
-          <button className="back-button" onClick={() => navigate(-1)}>
-            <FontAwesomeIcon icon={faArrowLeft} />
-            Back
-          </button>
-        </div>
-
-        <div className="messages-container">
-          {messages.map((msg, index) => (
-            <div key={index} className={`message-container ${msg.user ? "user" : "ai"}`}>
-              <div className={`message ${msg.user ? "user" : "ai"} ${msg.isStreaming ? "streaming" : ""}`}>
-                {msg.user ? (
-                  <p>{msg.text}</p>
-                ) : (
-                  <ReactMarkdown components={components}>{msg.text}</ReactMarkdown>
-                )}
-              </div>
-              {msg.image && (
-                <img src={msg.image} alt="user-uploaded" className="uploaded-image" />
-              )}
-            </div>
-          ))}
-          <div ref={messageEnd} />
-        </div>
-
-        <div className="input-container">
-          <input
-            className="message-input"
-            placeholder={!systemStatus ? "Aeroponic System is Offline" : "Type a message"}
-            onChange={handleChange}
-            value={textPrompt}
-            onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-            disabled={!systemStatus}
-          />
-        </div>
-
-        <div className="input-button-container">
-          <input
-            type="file"
-            id="file-upload"
-            style={{ display: 'none' }}
-            accept="image/*"
-            onChange={handleFileChange}
-          />
-          <button
-            className="upload-button"
-            onClick={() => document.getElementById('file-upload').click()}
-            disabled={loading || !systemStatus}
-          >
-            <FontAwesomeIcon icon={faImage} />
-          </button>
-          <button
-            className={`camera-button ${imagePreview ? 'disabled' : ''}`}
-            onClick={openCamera}
-            disabled={imagePreview || loading || !systemStatus}
-          >
-            <FontAwesomeIcon icon={faCamera} />
-          </button>
-          <button className="send-button" onClick={sendMessage} disabled={loading || !systemStatus}>
-            {loading ? <div className="loading-spinner"></div> : <FontAwesomeIcon icon={faSearch} />}
-          </button>
-        </div>
-
-        {isCameraOpen && (
-          <div className="camera-container">
-            <Webcam
-              audio={false}
-              ref={(node) => setWebcamRef(node)}
-              screenshotFormat="image/png"
-              width="100%"
-              videoConstraints={{ facingMode: currentFacingMode }}
-              className="video-feed"
-            />
-            <div className="camera-controls">
-              <button className="exit-button" onClick={() => setIsCameraOpen(false)}>
-                <FontAwesomeIcon icon={faTimes} />
-              </button>
-              <button className="camera-toggle-button" onClick={switchCamera}>
-                <FontAwesomeIcon icon={faSyncAlt} />
-              </button>
-              <button className="capture-button" onClick={capturePhoto}>
-                <FontAwesomeIcon icon={faCamera} />
-              </button>
-            </div>
-          </div>
-        )}
-
-        {imagePreview && (
-          <div className="image-preview-container">
-            <img src={imagePreview} alt="preview" className="image-preview" />
-            <button className="remove-image-button" onClick={handleRemoveImage}>
-              Remove
+          <div className="header" style={{display: "flex", justifyContent: "space-between"}}>
+            <h2>Ask AI-Ponics!</h2>
+            <button className="back-button" onClick={() => navigate(-1)}>
+              <FontAwesomeIcon icon={faArrowLeft} />
+              Back
             </button>
           </div>
-        )}
-        
+
+          <div className="messages-container">
+            {messages.map((msg, index) => (
+              <div key={index} className={`message-container ${msg.user ? "user" : "ai"}`}>
+                <div className={`message ${msg.user ? "user" : "ai"} ${msg.isStreaming ? "streaming" : ""}`}>
+                  {msg.user ? (
+                    <p>{msg.text}</p>
+                  ) : (
+                    <ReactMarkdown components={components}>{msg.text}</ReactMarkdown>
+                  )}
+                </div>
+                {msg.image && (
+                  <img src={msg.image} alt="user-uploaded" className="uploaded-image" />
+                )}
+              </div>
+            ))}
+            <div ref={messageEnd} />
+          </div>
+
+          <div className="input-container">
+            <input
+              className="message-input"
+              placeholder={!systemStatus ? "Aeroponic System is Offline" : "Type a message"}
+              onChange={handleChange}
+              value={textPrompt}
+              onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+              disabled={!systemStatus}
+            />
+          </div>
+
+          <div className="input-button-container">
+            <input
+              type="file"
+              id="file-upload"
+              style={{ display: 'none' }}
+              accept="image/*"
+              onChange={handleFileChange}
+            />
+            <button
+              className="upload-button"
+              onClick={() => document.getElementById('file-upload').click()}
+              disabled={loading || !systemStatus}
+            >
+              <FontAwesomeIcon icon={faImage} />
+            </button>
+            <button
+              className={`camera-button ${imagePreview ? 'disabled' : ''}`}
+              onClick={openCamera}
+              disabled={imagePreview || loading || !systemStatus}
+            >
+              <FontAwesomeIcon icon={faCamera} />
+            </button>
+            <button className="send-button" onClick={sendMessage} disabled={loading || !systemStatus}>
+              {loading ? <div className="loading-spinner"></div> : <FontAwesomeIcon icon={faSearch} />}
+            </button>
+          </div>
+
+          {isCameraOpen && (
+            <div className="camera-container">
+              <Webcam
+                audio={false}
+                ref={(node) => setWebcamRef(node)}
+                screenshotFormat="image/png"
+                width="100%"
+                videoConstraints={{ facingMode: currentFacingMode }}
+                className="video-feed"
+              />
+              <div className="camera-controls">
+                <button className="exit-button" onClick={() => setIsCameraOpen(false)}>
+                  <FontAwesomeIcon icon={faTimes} />
+                </button>
+                <button className="camera-toggle-button" onClick={switchCamera}>
+                  <FontAwesomeIcon icon={faSyncAlt} />
+                </button>
+                <button className="capture-button" onClick={capturePhoto}>
+                  <FontAwesomeIcon icon={faCamera} />
+                </button>
+              </div>
+            </div>
+          )}
+
+          {imagePreview && (
+            <div className="image-preview-container">
+              <img src={imagePreview} alt="preview" className="image-preview" />
+              <button className="remove-image-button" onClick={handleRemoveImage}>
+                Remove
+              </button>
+            </div>
+          )}
+          
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
