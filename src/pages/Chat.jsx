@@ -8,7 +8,7 @@ import Webcam from 'react-webcam';
 import './css/Chat.css';
 import { useApiKey } from "../context/ApiKeyContext";
 import ReactMarkdown from 'react-markdown';
-import { message } from 'antd';
+import { message, Button } from 'antd';
 
 import { 
   faArrowLeft, 
@@ -340,12 +340,12 @@ ${warningMessage}`
       <div className="App-Chat">
         <div className="chat-container">
 
-          <div className="header" style={{display: "flex", justifyContent: "space-between"}}>
+          <div className="header">
             <h2>Ask AI-Ponics!</h2>
-            <button className="back-button" onClick={() => navigate(-1)}>
-              <FontAwesomeIcon icon={faArrowLeft} />
+            <Button className="chat-back-button" type="text" onClick={() => navigate(-1)}>
+              <FontAwesomeIcon className="chat-back-button-icon" icon={faArrowLeft} />
               Back
-            </button>
+            </Button>
           </div>
 
           <div className="messages-container">
@@ -381,7 +381,7 @@ ${warningMessage}`
             <input
               type="file"
               id="file-upload"
-              style={{ display: 'none' }}
+              className='file-input'
               accept="image/*"
               onChange={handleFileChange}
             />
