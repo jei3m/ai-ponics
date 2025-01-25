@@ -15,7 +15,6 @@ export const fetchBlynkKeysData = async (currentUser, setBlynkApiKeys, setSelect
       const apiKeys = data.blynkApiKeys || [];
       const selectedIndex = data.selectedApiKeyIndex || 0; // Fetch the selectedApiKeyIndex from Firestore
       
-      // console.log('Fetched API Keys:', apiKeys);
       setBlynkApiKeys(apiKeys);
       setSelectedApiKeyIndex(selectedIndex); // Use the fetched selectedApiKeyIndex
       setEditableBlynkApiKey(apiKeys[selectedIndex] || '');
