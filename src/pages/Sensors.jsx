@@ -149,28 +149,11 @@ function Sensors() {
 
   return (
     <>
-      <div style={{ width: '100%', overflowX: 'hidden', marginTop:'10px' }}>
+      <div className="sensor-page-container">
 
-        <div style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          textAlign: 'center',
-          padding: '0.4rem',
-          margin: '0 auto',
-        }}>
+        <div className="sensor-content-container">
 
-          <div
-            style={{
-              maxWidth: '100vw',
-              borderRadius: '14px',
-              height: 'fit-content',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              flexDirection: 'column',
-              padding: '1.8rem'
-            }}>
+          <div className="sensor-cards-container">
 
             <TempHumidCard
               temperature={temperature}
