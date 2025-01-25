@@ -14,12 +14,11 @@ import Sensors from './pages/Sensors';
 import DiseaseDetection from './pages/DiseaseDetection';
 import NotFound from './pages/NotFound';
 
-
-
 // Import routes and context
 import PrivateRoutes from './routes/PrivateRoutes';
 import { ApiKeyProvider } from './context/ApiKeyContext';
 import Loading from './pages/components/Loading';
+import Layout from './layout/Layout';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -58,7 +57,9 @@ function App() {
           path="/home"
           element={
             <PrivateRoutes>
-              <Sensors />
+              <Layout>
+                <Sensors />
+              </Layout>
             </PrivateRoutes>
           }
         />
@@ -67,7 +68,9 @@ function App() {
           path="/forum"
           element={
             <PrivateRoutes>
-              <Forum />
+              <Layout>
+                <Forum />
+              </Layout>
             </PrivateRoutes>
           }
         />
