@@ -156,7 +156,7 @@ function DetailedView() {
   if (!forum) return <div><Loading/></div>;
 
   return (
-    <div>
+    <>
       <div className="forum-container">
         <div className="detailed-view">
           <h1 className="forum-title">{forum.title}</h1>
@@ -175,8 +175,8 @@ function DetailedView() {
               style={{minHeight:'10em'}}
             />
             <div className='button-group'> 
-              <button onClick={() => navigate('/forum')} className="button-back"><FontAwesomeIcon icon={faArrowLeft}/> Back</button>
-              <button onClick={handleComment} className="forum-button-detailed"><FontAwesomeIcon icon={faComment}/> Comment</button>
+              <Button onClick={() => navigate('/forum')} className="button-back" type="text" ><FontAwesomeIcon icon={faArrowLeft}/> Back</Button>
+              <Button onClick={handleComment} className="forum-button-detailed" type="text"><FontAwesomeIcon icon={faComment}/> Comment</Button>
             </div>
           </div>
           <ul className="comment-list">
@@ -194,7 +194,7 @@ function DetailedView() {
                   <div>  
                     <Button
                       className='forum-button'
-                      type="normal"
+                      type="text"
                       onClick={() => toggleReplyForm(index)}
                       icon={showReplyForm[index] ? <FontAwesomeIcon icon={faChevronUp} /> : <FontAwesomeIcon icon={faReply} />}
                     >
@@ -203,7 +203,7 @@ function DetailedView() {
                     {comment.replies && comment.replies.length > 0 && (
                       <Button
                         className="forum-button"
-                        type="normal"
+                        type="text"
                         onClick={() => toggleReplies(index)}
                         icon={showReplies[index] ? <FontAwesomeIcon icon={faChevronUp} /> : <FontAwesomeIcon icon={faChevronDown} />}
                       >
@@ -270,7 +270,7 @@ function DetailedView() {
           </ul>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 
