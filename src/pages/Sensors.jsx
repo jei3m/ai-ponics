@@ -148,66 +148,67 @@ function Sensors() {
     .find(status => status.when);
 
   return (
-    <div style={{ width: '100%', overflowX: 'hidden' }}>
-      <Header />
+    <>
+      <div style={{ width: '100%', overflowX: 'hidden', marginTop:'10px' }}>
 
-      <div style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        textAlign: 'center',
-        padding: '0.4rem',
-        margin: '0 auto',
-      }}>
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          textAlign: 'center',
+          padding: '0.4rem',
+          margin: '0 auto',
+        }}>
 
-        <div
-          style={{
-            maxWidth: '100vw',
-            borderRadius: '14px',
-            height: 'fit-content',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            flexDirection: 'column',
-            padding: '1.8rem'
-          }}>
+          <div
+            style={{
+              maxWidth: '100vw',
+              borderRadius: '14px',
+              height: 'fit-content',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              flexDirection: 'column',
+              padding: '1.8rem'
+            }}>
 
-          <TempHumidCard
-            temperature={temperature}
-            humidity={humidity}
-            status={status}
-          />
-
-          <TempStatus
-            temperature={temperature}
-            status={status}
-          />
-
-          <PlantInfo
-            status={status}
-            plantName={plantName}
-            handlePlantNameChange={handlePlantNameChange}
-            datePickerConfig={datePickerConfig}
-            plantingDate={plantingDate}
-            daysSincePlanting={daysSincePlanting}
-            isPlantInfoChanged={isPlantInfoChanged}
-            handleSaveChanges={handleSaveChanges}
-          />
-
-        </div>
-
-        <div className="ask-aiponics-container">
-          <a href="/chat" className="ask-aiponics-button">
-            <img
-              src="/img/aiponicsbot.png"
-              alt="AI-Ponics Bot"
-              className="profile-pic"
+            <TempHumidCard
+              temperature={temperature}
+              humidity={humidity}
+              status={status}
             />
-          </a>
-        </div>
 
+            <TempStatus
+              temperature={temperature}
+              status={status}
+            />
+
+            <PlantInfo
+              status={status}
+              plantName={plantName}
+              handlePlantNameChange={handlePlantNameChange}
+              datePickerConfig={datePickerConfig}
+              plantingDate={plantingDate}
+              daysSincePlanting={daysSincePlanting}
+              isPlantInfoChanged={isPlantInfoChanged}
+              handleSaveChanges={handleSaveChanges}
+            />
+
+          </div>
+
+          <div className="ask-aiponics-container">
+            <a href="/chat" className="ask-aiponics-button">
+              <img
+                src="/img/aiponicsbot.png"
+                alt="AI-Ponics Bot"
+                className="profile-pic"
+              />
+            </a>
+          </div>
+
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
