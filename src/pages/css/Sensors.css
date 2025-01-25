@@ -1,57 +1,29 @@
-/* Sensors.css */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap');
 
-.Appsensor {
-  min-height: 100vh;
+.sensor-page-container {
+  width: 100%;
+  overflow-x: hidden;
+  margin-top: 10px;
+}
+
+.sensor-content-container {
   display: flex;
-  flex-direction: column;
-  padding: 20px;
-  box-sizing: border-box;
-  background-color:  #f0f2f5;
-}
-
-.App-header {
-  text-align: center;
-  margin-bottom: 30px;
-}
-
-.App-header h2 {
-  color: var(--dark-green);
-  font-size: 2.5rem;
-  margin-bottom: 20px;
-}
-
-.sensor-container {
-  display: flex;
-  flex-wrap: wrap;
   justify-content: center;
-  gap: 24px;
-  margin-bottom: 80px;
+  align-items: center;
+  text-align: center;
+  padding: 0.4rem;
+  margin: 0 auto
 }
 
-.sensor-card {
-  width: calc(50% - 12px);
-  max-width: 300px;
-  min-width: 280px;
-  border-radius: 14px !important;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1) !important;
-  background-color: var(--card-background) !important;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.sensor-card .MuiCardHeader-root {
-  background-color: var(--primary-green);
-  color: white;
-  padding: 16px;
-}
-
-.sensor-card .MuiCardHeader-title {
-  font-size: 1.2rem !important;
-  font-weight: 600 !important;
-}
-
-.sensor-card .MuiCardContent-root {
-  padding: 24px 16px;
+.sensor-cards-container {
+  max-width: 100vw;
+  border-radius: 14px;
+  height: fit-content;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 1.8rem;
 }
 
 .ask-aiponics-container {
@@ -98,28 +70,10 @@
   }
 }
 
-.gauge-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.gauge-label {
-  margin-top: 10px;
-  font-size: 1.2rem;
-  font-weight: 500;
-  color: var(--primary-green);
-}
-
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .App-header h2 {
     font-size: 2rem;
-  }
-
-  .sensor-container {
-    flex-direction: column;
-    align-items: center;
   }
 
   .sensor-card {
@@ -130,17 +84,6 @@
 }
 
 @media (max-width: 480px) {
-  .App-header h2 {
-    font-size: 1.8rem;
-  }
-
-  .sensor-card .MuiCardHeader-title {
-    font-size: 1rem !important;
-  }
-
-  .gauge-label {
-    font-size: 1rem;
-  }
 
   .ask-aiponics-button {
     width: 60px;
@@ -150,51 +93,4 @@
   .text-bubble {
     font-size: 11px
   }
-}
-
-/* New styles */
-.temperature-alert-icon {
-  font-size: 50px !important;
-}
-
-.temperature-alert-text {
-  font-weight: bold !important;
-  font-size: 1.2rem !important;
-}
-
-.gauge-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 2px;
-}
-
-.plant-info-input {
-  margin-bottom: 16px;
-}
-
-.plant-info-input .MuiOutlinedInput-root {
-  border-radius: 12px;
-}
-
-.plant-info-input .MuiOutlinedInput-root fieldset {
-  border-color: rgba(0, 0, 0, 0.23);
-}
-
-.plant-info-input .MuiOutlinedInput-root:hover fieldset {
-  border-color: rgba(0, 0, 0, 0.87);
-}
-
-.plant-info-input .MuiOutlinedInput-root.Mui-focused fieldset {
-  border-color: #1976d2;
-}
-
-.days-planted-text {
-  font-weight: bold;
-  margin-top: 0px;
-}
-
-.sensor-content {
-  padding-top: 80px; 
-  flex-grow: 1;
 }
