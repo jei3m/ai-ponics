@@ -4,7 +4,7 @@ import { db, auth } from '../firebase';
 import { doc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
-import "./css/Forum.css";
+import "./css/ForumDetailed.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faComment, faReply, faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 import Loading from '../pages/components/Loading';
