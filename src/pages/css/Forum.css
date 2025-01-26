@@ -51,6 +51,12 @@
   border-bottom: 1px solid #dee2e6 !important;
 }
 
+.loading-message, .no-more-forums-message {
+  text-align: center;
+  margin-top: 20px;
+  color: gray;
+}
+
 /* Quill Editor Styles */
 .ql-container {
   border-bottom-left-radius: 0.5em;
