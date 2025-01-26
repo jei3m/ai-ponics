@@ -1,4 +1,8 @@
 
+.forum-page-bg {
+  background-color: #fff;
+}
+
 .detailed-view {
   background-color: #fff;
   padding: 20px;
@@ -8,7 +12,6 @@
 .forum-container{
   max-width: 700px;
   margin: auto;
-  border: 0.5px solid #cccbcb;
 }
 
 .forum-title {
@@ -16,10 +19,26 @@
   margin-bottom: 10px;
 }
 
-.forum-author, .forum-date, .comment-author, .comment-date, .reply-author, .reply-date {
-  color: #666;
-  font-size: 0.9em;
+.forum-author {
+  color: #252525;
+  font-size: 1em;
   margin: 5px 0;
+  font-weight: 500;
+}
+
+.forum-date, .comment-author, .comment-date {
+  color: #666;
+  font-size: 0.8em;
+  font-weight: 500;
+  margin: 3px 0;
+}
+
+.reply-author, .reply-date {
+  color: #666;
+  font-size: 0.8em;
+  font-weight: 500;
+  margin: 3px 0;
+  margin-top: 5px;
 }
 
 .forum-content, .comment-text, .reply-text {
@@ -63,7 +82,7 @@ margin: 0px;
   padding: 0;
 }
 
-.comment-item, .reply-item {
+.comment-item {
   background-color: #f9f9f9;
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -72,8 +91,6 @@ margin: 0px;
 }
 
 .reply-item {
-  background-color: #f5f5f5;
-  border-color: #ccc;
   padding: 10px;
   margin-top: 8px;
 }
@@ -179,7 +196,18 @@ li[data-list="bullet"]::before {
     font-size: 13px;
   }
 
-  .comment-author, .comment-date, .reply-author, .reply-date {
+  .comment-author, .comment-date{
+    font-size: 10px;
+    margin: 3px 0;
+  }
+
+  .reply-author {
+    font-size: 10px;
+    margin: 3px 0;
+    margin-top: 6px;
+  }
+
+  .reply-date {
     font-size: 10px;
     margin: 3px 0;
   }
