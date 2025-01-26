@@ -192,25 +192,7 @@ function Forum() {
             itemLayout="vertical"
             dataSource={forums}
             renderItem={(forum) => (
-              <List.Item
-                className='forum-list-item'
-                actions={
-                  currentUser && forum.postedBy === currentUser
-                    ? [
-                      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                        <Popconfirm
-                          title="Delete Forum"
-                          description="Are you sure to delete this forum?"
-                          onConfirm={() => handleDeleteForum(forum.id)}
-                          okText="Yes"
-                          cancelText="No"
-                        >
-                          <DeleteOutlined style={{ color: 'red' }} />
-                        </Popconfirm>
-                      </div>
-                    ]
-                    : []
-                }>
+              <List.Item className='forum-list-item'>
 
                 <List.Item.Meta
                   avatar={<Avatar style={{ width: '50px', height: '50px' }} src={forum.authorAvatar} />}
@@ -226,19 +208,32 @@ function Forum() {
                       <div>
                         <Text type="secondary"> Posted by: {forum.authorName}</Text>
                       </div>
-                      <div style={{ marginTop: '-10px', marginBottom: '-30px' }}>
+                      <div style={{ marginTop: '-10px', marginBottom: '-30px'}}>
                         <Text type="secondary" style={{ fontSize: '12px' }}>{new Date(forum.createdAt).toLocaleString()} | <CommentOutlined /> {forum.comments.length} </Text>
+                        {currentUser && forum.postedBy === currentUser && (
+                          <Popconfirm
+                            title="Delete Forum"
+                            description="Are you sure to delete this forum?"
+                            onConfirm={() => handleDeleteForum(forum.id)}
+                            okText="Yes"
+                            cancelText="No"
+                          >
+                            <DeleteOutlined style={{ color: 'red', marginLeft:'4px' }} />
+                          </Popconfirm>
+                        )}
                       </div>
                     </Space>
                   }
                 />
+
               </List.Item>
             )}
           />
+
           {forums.length > 0 && (
             <>
-              {loading && <div style={{ textAlign: 'center', marginTop: '20px', color:'gray' }}>Loading...</div>}
-              {!hasMore && <div style={{ textAlign: 'center', marginTop: '20px', color:'gray' }}>No more forums to load...</div>}
+              {loading && <div className='loading-message'>Loading...</div>}
+              {!hasMore && <div className='no-more-forums-message'>No more forums to load...</div>}
             </>
           )}
         </div>
