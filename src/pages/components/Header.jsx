@@ -23,14 +23,12 @@ function Header() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (currentUser) {
-      fetchBlynkKeysData(
-        currentUser,
-        setBlynkApiKeys,
-        setSelectedApiKeyIndex,
-        setEditableBlynkApiKey,
-      );
-    }
+    fetchBlynkKeysData(
+      currentUser,
+      setBlynkApiKeys,
+      setSelectedApiKeyIndex,
+      setEditableBlynkApiKey,
+    );
   }, [currentUser]);
   
   useEffect(() => {
@@ -120,7 +118,7 @@ function Header() {
         >
           <Avatar
             size={80}
-            src={currentUser.photoURL || 'https://via.placeholder.com/50'}
+            src={currentUser ? currentUser.photoURL : 'https://via.placeholder.com/50'}
             style={{
               border: '3px solid #006400',
               marginBottom: '10px',
