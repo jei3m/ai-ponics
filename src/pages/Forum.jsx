@@ -6,7 +6,6 @@ import ReactQuill from 'react-quill-new'; // fork of react-quill since it is no 
 import 'react-quill-new/dist/quill.snow.css';
 import { Button, Modal, Input, List, Avatar, Typography, Space, Popconfirm } from 'antd';
 import { PlusOutlined, CommentOutlined, DeleteOutlined } from '@ant-design/icons';
-import Header from '../pages/components/Header';
 import "./css/Forum.css";
 
 const { Title, Text } = Typography;
@@ -99,10 +98,9 @@ function Forum() {
 
   return (
     <>
-      <div style={{ minHeight: '100vh', overflow: 'auto', backgroundColor: 'white'}}>
-        
-        <div style={{ maxWidth: '700px', margin: '0 auto', marginTop: '-20px' }}>
-          <div style={{ padding: '0px 8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '-10px', marginTop: '10px' }}>
+      <div className='forum-page-container'>
+        <div className='forum-content-container'>
+          <div className='forum-title-container'>
             <Title level={2} style={{ textAlign: 'center', fontWeight: 'bold' }}>Forums</Title>
             <Button style={{ marginTop: '10px' }} type="primary" icon={<PlusOutlined />} onClick={() => setShowModal(true)}>
               Create Forum
@@ -121,20 +119,13 @@ function Forum() {
                 Post
               </Button>,
             ]}
-            style={{
-              overflowY: 'hidden',
-              scrollbarWidth: 'thin',
-              scrollbarColor: '#ccc #f5f5f5',
-              borderRadius: '8px',
-              margin: '0 auto',
-            }}
           >
-            <div style={{ height: 'calc(100vh - 300px)', overflowY: 'auto' }}>
+            <div className='forum-create-input-container'>
               <Input
                 placeholder="Title of your forum"
                 value={newForumTitle}
                 onChange={(e) => setNewForumTitle(e.target.value)}
-                style={{ marginBottom: '1rem', fontWeight: 'bold' }}
+                className='forum-create-input'
               />
               <ReactQuill
                 modules={modules}
@@ -143,7 +134,6 @@ function Forum() {
                   setNewForumContent(content);
                 }}
                 placeholder="Content of your forum"
-                style={{ height: 'calc(86vh - 300px)', marginBottom: '2rem' }}
                 className='ql-modal'
               />
             </div>
@@ -153,14 +143,7 @@ function Forum() {
             dataSource={forums}
             renderItem={(forum) => (
               <List.Item
-                style={{
-                  backgroundColor: 'white',
-                  borderRadius: '0px',
-                  marginTop: '0px',
-                  padding: '1rem',
-                  display: 'flex',
-                  borderBottom: '1px solid #dee2e6',
-                }}
+                className='forum-list-item'
                 actions={
                   currentUser && forum.postedBy === currentUser
                     ? [
@@ -191,7 +174,7 @@ function Forum() {
                   description={
                     <Space direction="vertical">
                       <div>
-                        <Text type="secondary" style={{ fontSize: '14px' }}>Posted by: {forum.authorName}</Text>
+                        <Text type="secondary"> Posted by: {forum.authorName}</Text>
                       </div>
                       <div style={{ marginTop: '-10px', marginBottom: '-30px' }}>
                         <Text type="secondary" style={{ fontSize: '12px' }}>{new Date(forum.createdAt).toLocaleString()} | <CommentOutlined /> {forum.comments.length} </Text>
