@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { db, auth } from '../firebase';
-import { collection, onSnapshot, addDoc, deleteDoc, doc } from 'firebase/firestore';
+import { collection, onSnapshot, addDoc, deleteDoc, doc, query, limit, orderBy, startAfter } from 'firebase/firestore';
 import ReactQuill from 'react-quill-new'; // fork of react-quill since it is no longer maintained
 import 'react-quill-new/dist/quill.snow.css';
 import { Button, Modal, Input, List, Avatar, Typography, Space, Popconfirm } from 'antd';
@@ -16,16 +16,30 @@ function Forum() {
   const [newForumContent, setNewForumContent] = useState('');
   const [currentUser, setCurrentUser] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [lastVisible, setLastVisible] = useState(null);
 
   useEffect(() => {
-    // Listen for real-time updates from Firestore
-    const subscribeForums = onSnapshot(collection(db, 'forums'), (querySnapshot) => {
-      const forumsData = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setForums(forumsData);
-    });
+    let unsubscribeForums;
+
+    const loadForums = async () => {
+      setLoading(true);
+      let q = query(collection(db, 'forums'), orderBy('createdAt', 'desc'), limit(10));
+
+      unsubscribeForums = onSnapshot(q, (querySnapshot) => {
+        const forumsData = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setForums(forumsData);
+        setLastVisible(querySnapshot.docs[querySnapshot.docs.length - 1]);
+        setHasMore(querySnapshot.docs.length === 10);
+        setLoading(false);
+      });
+    };
+
+    loadForums();
 
     // Listen for authentication state changes
     const subscribeAuth = auth.onAuthStateChanged((user) => {
@@ -38,10 +52,46 @@ function Forum() {
 
     // Cleanup subscriptions on unmount
     return () => {
-      subscribeForums();
-      subscribeAuth();
+      if (unsubscribeForums) {
+        unsubscribeForums(); // Unsubscribe from Firestore listener
+      }
+      subscribeAuth(); // Unsubscribe from auth listener
     };
   }, []);
+
+  const loadMoreForums = async () => {
+    if (!hasMore || loading) return;
+
+    setLoading(true);
+    let q = query(collection(db, 'forums'), orderBy('createdAt', 'desc'), startAfter(lastVisible), limit(10));
+
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const forumsData = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setForums((prevForums) => [...prevForums, ...forumsData]);
+      setLastVisible(querySnapshot.docs[querySnapshot.docs.length - 1]);
+      setHasMore(querySnapshot.docs.length === 10);
+      setLoading(false);
+    });
+
+    return unsubscribe;
+  };
+
+  const handleScroll = () => {
+    if (
+      window.innerHeight + document.documentElement.scrollTop >=
+      document.documentElement.offsetHeight - 100 && !loading && hasMore
+    ) {
+      loadMoreForums();
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [loading, hasMore]);
 
   const handlePostForum = async () => {
     if (newForumTitle.trim() !== '' && newForumContent.trim() !== '') {
@@ -185,6 +235,12 @@ function Forum() {
               </List.Item>
             )}
           />
+          {forums.length > 0 && (
+            <>
+              {loading && <div style={{ textAlign: 'center', marginTop: '20px', color:'gray' }}>Loading...</div>}
+              {!hasMore && <div style={{ textAlign: 'center', marginTop: '20px', color:'gray' }}>No more forums to load...</div>}
+            </>
+          )}
         </div>
       </div>
     </>
