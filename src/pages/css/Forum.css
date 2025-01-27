@@ -16,8 +16,12 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: -10px;
   margin-top: 10px;
+  border-bottom: 1px solid #dee2e6 !important;
+}
+
+.create-button-text {
+  display: inline;
 }
 
 .forum-create-modal {
@@ -29,7 +33,7 @@
 }
 
 .forum-create-input-container {
-  height: calc(100vh - 330px);
+  height: calc(100vh - 300px);
   overflow-y: auto;
 }
 
@@ -90,4 +94,16 @@
 /* Remove numbers from list items with data-list="bullet" */
 li[data-list="bullet"]::before {
   content: none !important;
+}
+
+/* Styles for mobile screens */
+@media (max-width: 480px) {
+  .create-button-text {
+    display: none !important;
+  }
+
+  .create-button {
+    padding: 0 10px;
+  }
+
 }
