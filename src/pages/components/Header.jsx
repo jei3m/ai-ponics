@@ -65,7 +65,7 @@ function Header() {
 
   return (
     <>
-      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.5rem 1.5rem', backgroundColor: '#FAF9F6', borderBottom: '1px solid #dee2e6', position: 'sticky' }}>
+      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.5rem 1.5rem', backgroundColor: '#FAF9F6', borderBottom: '1px solid #dee2e6'}}>
         <div className="header-logo">
           <a href='/'>
             <FontAwesomeIcon icon={faLeaf} className="header-logo-icon" />
