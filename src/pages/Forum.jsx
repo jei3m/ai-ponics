@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { db, auth } from '../firebase';
 import { collection, onSnapshot, addDoc, deleteDoc, doc, query, limit, orderBy, startAfter } from 'firebase/firestore';
 import ReactQuill from 'react-quill-new'; // fork of react-quill since it is no longer maintained
@@ -20,7 +20,10 @@ function Forum() {
   const [hasMore, setHasMore] = useState(true);
   const [lastVisible, setLastVisible] = useState(null);
   const [searchForum, setSearchForum] = useState('');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
 
+  // Real-time fetching of forums
   useEffect(() => {
     let unsubscribeForums;
 
@@ -60,10 +63,42 @@ function Forum() {
     };
   }, []);
 
+  // Display filtered forums based on title
   const filteredForums = forums.filter(forum =>
     forum.title.toLowerCase().includes(searchForum.toLowerCase())
   );
 
+  // Update searchForum state from URL params
+  useEffect(() => {
+    const searchQuery = searchParams.get("search") || "";
+    setSearchForum(searchQuery);
+  }, [searchParams]);
+
+  // Handle search input changes to URL
+  const handleSearchChange = (value) => {
+    setSearchForum(value);
+    const newSearchParams = new URLSearchParams(searchParams);
+    if (value) {
+      newSearchParams.set("search", value);
+    } else {
+      newSearchParams.delete("search");
+    }
+    navigate(`?${newSearchParams.toString()}`, { replace: true });
+  };
+
+  // Validate query parameters
+  useEffect(() => {
+    const validParams = ["search"];
+    const hasInvalidParams = Array.from(searchParams.keys()).some(
+      (key) => !validParams.includes(key)
+    );
+
+    if (hasInvalidParams) {
+      navigate("/forum", { replace: true });
+    }
+  }, [navigate, searchParams]);
+
+  // Loads more forums from Firestore when called
   const loadMoreForums = async () => {
     if (!hasMore || loading) return;
 
@@ -84,6 +119,7 @@ function Forum() {
     return unsubscribe;
   };
 
+  // Load more forums as user scrolls down
   const handleScroll = () => {
     if (
       window.innerHeight + document.documentElement.scrollTop >=
@@ -93,11 +129,13 @@ function Forum() {
     }
   };
 
+  // Scroll listener if there are more forums to load
   useEffect(() => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, [loading, hasMore]);
 
+  // Post forum function
   const handlePostForum = async () => {
     if (newForumTitle.trim() !== '' && newForumContent.trim() !== '') {
       try {
@@ -121,6 +159,7 @@ function Forum() {
     }
   };
 
+  // Delete forum function
   const handleDeleteForum = async (id) => {
     if (currentUser) {
       try {
@@ -140,6 +179,7 @@ function Forum() {
     }
   };
 
+  // Toolbar for comment section
   const TOOL_BAR_OPTIONS = [
     ['bold', 'italic', 'underline'],
     [{ list: 'ordered' }, { list: 'bullet' }],
@@ -161,7 +201,7 @@ function Forum() {
               <Input.Search
                 placeholder="Search forums..."
                 value={searchForum}
-                onChange={(e) => setSearchForum(e.target.value)}
+                onChange={(e) => handleSearchChange(e.target.value)}
                 style={{maxWidth:'180px', marginTop: '10px', marginRight:'8px'}}
               />
               <Button style={{ marginTop: '10px' }} type="primary" icon={<PlusOutlined />} onClick={() => setShowModal(true)} className='create-button'>
