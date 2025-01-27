@@ -46,7 +46,7 @@ function Forum() {
     loadForums();
 
     // Listen for authentication state changes
-    const subscribeAuth = auth.onAuthStateChanged((user) => {
+    const unsubscribeAuth = auth.onAuthStateChanged((user) => {
       if (user) {
         setCurrentUser(user.uid);
       } else {
@@ -59,7 +59,7 @@ function Forum() {
       if (unsubscribeForums) {
         unsubscribeForums(); // Unsubscribe from Firestore listener
       }
-      subscribeAuth(); // Unsubscribe from auth listener
+      unsubscribeAuth(); // Unsubscribe from auth listener
     };
   }, []);
 
