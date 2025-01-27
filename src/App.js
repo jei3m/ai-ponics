@@ -79,7 +79,9 @@ function App() {
           path="/forum/:id"
           element={
             <PrivateRoutes>
-              <DetailedView />
+              <Layout>
+                <DetailedView />
+              </Layout>
             </PrivateRoutes>
           }
         />
