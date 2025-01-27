@@ -4,7 +4,7 @@ import { db, auth } from '../firebase';
 import { collection, onSnapshot, addDoc, deleteDoc, doc, query, limit, orderBy, startAfter } from 'firebase/firestore';
 import ReactQuill from 'react-quill-new'; // fork of react-quill since it is no longer maintained
 import 'react-quill-new/dist/quill.snow.css';
-import { Button, Modal, Input, List, Avatar, Typography, Space, Popconfirm } from 'antd';
+import { Button, Modal, Input, List, Avatar, Typography, Space, Popconfirm, Spin } from 'antd';
 import { PlusOutlined, CommentOutlined, DeleteOutlined } from '@ant-design/icons';
 import "./css/Forum.css";
 
@@ -285,7 +285,7 @@ function Forum() {
 
           {forums.length > 0 && (
             <>
-              {loading && <div className='loading-message'>Loading...</div>}
+              {loading && <div className='loading-message'><Spin/></div>}
               {!hasMore && <div className='no-more-forums-message'>No more forums to load...</div>}
             </>
           )}
