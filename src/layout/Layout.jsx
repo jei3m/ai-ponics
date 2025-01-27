@@ -4,10 +4,8 @@ import Header from '../pages/components/Header';
 const Layout = ({ children }) => {
   return (
     <>
-        <div>
-            <Header />
-            <main>{children}</main>
-        </div>
+      <Header />
+      <main>{children}</main>
     </>
   );
 };
