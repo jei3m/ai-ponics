@@ -1,7 +1,9 @@
 .forum-page-container {
   min-height: 100vh;
+  min-width: 100vw;
   overflow: auto;
   background-color: white;
+  position: fixed;
 }
 
 .forum-content-container {
