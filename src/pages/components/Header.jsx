@@ -74,28 +74,23 @@ function Header() {
         </div>
 
         <div>
-          {location.pathname === '/home' && (
+          {location.pathname === '/home' || location.pathname.startsWith('/forum/') || location.pathname === ('/forum') ? (
             <a href='/detect'>
               <FontAwesomeIcon icon={faImage} className='forum-icon' />
             </a>
-          )}
+          ):null }
 
-          {location.pathname === '/detect' && (
+          {location.pathname === '/detect' || location.pathname === '/forum' || location.pathname.startsWith('/forum/') ? (
             <a href='/home'>
               <FontAwesomeIcon icon={faHome} className='forum-icon' />
             </a>
-          )}
+          ):null }
 
-          {location.pathname === '/home' && (
+          {location.pathname === '/home' || location.pathname === ('/detect') ? (
             <a href='/forum'>
               <FontAwesomeIcon icon={faNewspaper} className='forum-icon' />
             </a>
-          )}
-          {location.pathname === '/forum' && (
-            <a href='/'>
-              <FontAwesomeIcon icon={faHome} className='forum-icon' />
-            </a>
-          )}
+          ):null }
 
           {currentUser && (
             <FontAwesomeIcon
