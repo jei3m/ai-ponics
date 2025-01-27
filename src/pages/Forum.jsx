@@ -19,6 +19,7 @@ function Forum() {
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [lastVisible, setLastVisible] = useState(null);
+  const [searchForum, setSearchForum] = useState('');
 
   useEffect(() => {
     let unsubscribeForums;
@@ -58,6 +59,10 @@ function Forum() {
       subscribeAuth(); // Unsubscribe from auth listener
     };
   }, []);
+
+  const filteredForums = forums.filter(forum =>
+    forum.title.toLowerCase().includes(searchForum.toLowerCase())
+  );
 
   const loadMoreForums = async () => {
     if (!hasMore || loading) return;
@@ -152,9 +157,17 @@ function Forum() {
         <div className='forum-content-container'>
           <div className='forum-title-container'>
             <Title level={2} style={{ textAlign: 'center', fontWeight: 'bold' }}>Forums</Title>
-            <Button style={{ marginTop: '10px' }} type="primary" icon={<PlusOutlined />} onClick={() => setShowModal(true)}>
-              Create Forum
-            </Button>
+            <div>
+              <Input.Search
+                placeholder="Search forums..."
+                value={searchForum}
+                onChange={(e) => setSearchForum(e.target.value)}
+                style={{maxWidth:'180px', marginTop: '10px', marginRight:'8px'}}
+              />
+              <Button style={{ marginTop: '10px' }} type="primary" icon={<PlusOutlined />} onClick={() => setShowModal(true)} className='create-button'>
+                <span className='create-button-text'>Create Forum</span>
+              </Button>
+            </div>
           </div>
           <Modal
             title="Create New Forum"
@@ -190,7 +203,7 @@ function Forum() {
           </Modal>
           <List
             itemLayout="vertical"
-            dataSource={forums}
+            dataSource={filteredForums}
             renderItem={(forum) => (
               <List.Item className='forum-list-item'>
 
