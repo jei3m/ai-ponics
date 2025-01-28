@@ -1,0 +1,42 @@
+.flex-container {
+    width: 100%;
+    height: fit-content;
+    margin-top: -14px;
+}
+
+.temphumid-cards-container {
+    width: 94vw;
+    max-width: 600px;
+    display: flex;
+    flex-direction: row;
+    margin-top: -20px;
+    border-radius: 10px;
+    justify-content: center;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 10px;
+}
+
+.temp-card {
+    min-width: 50%;
+    height: 230px;
+    background: white;
+    border-bottom-right-radius: 0 ;
+    border-top-right-radius: 0 ;
+}
+
+.humid-card {
+    min-width: 50%;
+    height: 230px;
+    background: white;
+    border-bottom-left-radius: 0 ;
+    border-top-left-radius: 0 ;
+}
+
+.gauge-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2px;
+}
+

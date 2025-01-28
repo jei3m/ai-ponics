@@ -5,21 +5,22 @@ import {
 } from 'react-router-dom';
 import { auth } from './firebase';
 
-
+// Pages
 import Chat from './pages/Chat';
 import Login from './pages/Login';
 import Forum from './pages/Forum';
 import DetailedView from './pages/ForumDetailed';
-import Sensors2 from './pages/Sensors2';
+import Sensors from './pages/Sensors';
 import DiseaseDetection from './pages/DiseaseDetection';
-
+import NotFound from './pages/NotFound';
 
 // Import routes and context
 import PrivateRoutes from './routes/PrivateRoutes';
 import { ApiKeyProvider } from './context/ApiKeyContext';
-import Loading from './components/Loading';
+import Loading from './pages/components/Loading';
+import Layout from './layout/Layout';
 
-function App() {
+function Router() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -41,6 +42,7 @@ function App() {
       <Routes>
 
         <Route path="/" element={<Login />} />
+        <Route path="*" element={<NotFound />} />
 
         <Route
           path="/chat"
@@ -55,7 +57,9 @@ function App() {
           path="/home"
           element={
             <PrivateRoutes>
-              <Sensors2 />
+              <Layout>
+                <Sensors />
+              </Layout>
             </PrivateRoutes>
           }
         />
@@ -64,7 +68,9 @@ function App() {
           path="/forum"
           element={
             <PrivateRoutes>
-              <Forum />
+              <Layout>
+                <Forum />
+              </Layout>
             </PrivateRoutes>
           }
         />
@@ -73,25 +79,9 @@ function App() {
           path="/forum/:id"
           element={
             <PrivateRoutes>
-              <DetailedView />
-            </PrivateRoutes>
-          }
-        />
-
-        <Route
-          path="/loading"
-          element={
-            <PrivateRoutes>
-              <Loading/>
-            </PrivateRoutes>
-          }
-        />
-
-        <Route
-          path="/detect"
-          element={
-            <PrivateRoutes>
-              <DiseaseDetection/>
+              <Layout>
+                <DetailedView />
+              </Layout>
             </PrivateRoutes>
           }
         />
@@ -101,4 +91,4 @@ function App() {
   );
 }
 
-export default App;
+export default Router;

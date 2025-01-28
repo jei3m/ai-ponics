@@ -2,6 +2,8 @@ import axios from "axios";
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { Typography } from "antd";
+import { db, auth } from "../firebase";
+import { doc, getDoc } from "firebase/firestore";
 
 dayjs.extend(customParseFormat);
 
@@ -10,7 +12,7 @@ export const MAX_TEMPERATURE = 73;
 export const MIN_TEMPERATURE = 15; 
 
 // Functions for pulling sensor data from Blynk API
-export const fetchSensorData = async ({ selectedApiKey, user, setIsDeviceOnline, setTemperature, setHumidity, setIsLoading, setIsApiKeyValid }) => {
+export const fetchSensorData = async ({ selectedApiKey, setIsDeviceOnline, setTemperature, setHumidity, setIsLoading, setIsApiKeyValid }) => {
   try {
     const [deviceStatusResponse, temperatureResponse, humidityResponse] = await Promise.all([
       axios.get(`https://blynk.cloud/external/api/isHardwareConnected?token=${selectedApiKey}`),
@@ -18,9 +20,13 @@ export const fetchSensorData = async ({ selectedApiKey, user, setIsDeviceOnline,
       axios.get(`https://blynk.cloud/external/api/get?token=${selectedApiKey}&V1`)
     ]);
 
-    setIsDeviceOnline(deviceStatusResponse.data); 
-    setTemperature(temperatureResponse.data);
-    setHumidity(humidityResponse.data);
+    // Round temperature and humidity values
+    const roundedTemperature = Math.round(temperatureResponse.data);
+    const roundedHumidity = Math.round(humidityResponse.data);
+
+    setIsDeviceOnline(deviceStatusResponse.data);
+    setTemperature(roundedTemperature);
+    setHumidity(roundedHumidity);
     setIsLoading(false);
     
   } catch (error) {
@@ -32,6 +38,28 @@ export const fetchSensorData = async ({ selectedApiKey, user, setIsDeviceOnline,
   }
 };
 
+// Fetch user data for plant info
+export const fetchUserData = async (setUser, setPlantingDate, setPlantName) => {
+  const currentUser = auth.currentUser;
+  if (currentUser) {
+    setUser(currentUser);
+
+    // Fetch data directly from Firestore
+    const docRef = doc(db, "users", currentUser.uid);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      if (data.plantingDate) {
+        setPlantingDate(dayjs(data.plantingDate, 'MM/DD/YYYY'));
+      }
+      if (data.plantName) {
+        setPlantName(data.plantName);
+      }
+    }
+  }
+};
+
 // Date-related utilities
 export const calculateDaysSincePlanting = (plantingDate) => {
   if (!plantingDate) return 0;
@@ -39,6 +67,7 @@ export const calculateDaysSincePlanting = (plantingDate) => {
   return dayjs().diff(plantingDay, 'day');
 };
 
+// Configuration for date picker
 export const getDatePickerConfig = (handlePlantingDateChange) => ({
   format: "MM/DD/YYYY",
   disabledDate: (current) => current && current.isAfter(dayjs(), 'day'),
@@ -74,6 +103,7 @@ export const getStatusConfig = (selectedApiKey, isApiKeyValid, isDeviceOnline, i
   }
 ];
 
+// Status message component
 export const StatusMessage = ({ message, className, style }) => (
   <Typography.Text strong className={className} style={style}>
     {message}

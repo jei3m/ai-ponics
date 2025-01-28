@@ -1,220 +1,300 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Card, Upload, Button, Typography, Space, Progress, Tag } from 'antd';
-import { UploadOutlined, CheckCircleOutlined } from '@ant-design/icons';
-import Header from '../components/Header';
+import React, { useEffect, useRef, useState } from "react";
+import {
+  MeetingProvider,
+  useMeeting,
+  useParticipant,
+  Constants,
+} from "@videosdk.live/react-sdk";
+import { authToken, createStream } from "../API";
+import Header from "./components/Header";
+import Chat from "../pages/Chat";
+import "./css/DiseaseDetection.css";
+import { UserAuth } from "../context/AuthContext";
+import { Spin } from "antd";
+import {
+  fetchSensorData,
+  getStatusConfig,
+  StatusMessage,
+} from "../services/sensorService";
+import { useApiKey } from "../context/ApiKeyContext";
 
-const { Title, Text } = Typography;
+function JoinView({ initializeStream, setMode }) {
+  const [streamId, setStreamId] = useState("");
 
-const DiseaseDetection = () => {
-    const [base64Image, setBase64Image] = useState('');
-    const [previewUrl, setPreviewUrl] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
-    const [results, setResults] = useState(null);
-    const [error, setError] = useState(null);
-    const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const handleAction = async (mode) => {
+    setMode(mode);
+    await initializeStream(streamId);
+  };
 
-    useEffect(() => {
-        const handleResize = () => {
-            setIsMobile(window.innerWidth <= 768);
-        };
+  return (
+    <div className="join-container">
+      <input
+        type="text"
+        placeholder="Enter Stream Id"
+        value={streamId}
+        onChange={(e) => setStreamId(e.target.value)}
+        className="input-box"
+      />
 
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
+      <div className="button-container">
+        <button
+          className="btn"
+          onClick={() => handleAction(Constants.modes.SEND_AND_RECV)}
+        >
+          Create Live Stream as Host
+        </button>
+        <button
+          className="btn"
+          onClick={() => handleAction(Constants.modes.SEND_AND_RECV)}
+        >
+          Join as Host
+        </button>
+        <button
+          className="btn"
+          onClick={() => handleAction(Constants.modes.RECV_ONLY)}
+        >
+          Join as Audience
+        </button>
+      </div>
+    </div>
+  );
+}
 
-    const handleImageChange = (info) => {
-        if (info.file) {
-            // Create preview URL
-            const objectUrl = URL.createObjectURL(info.file);
-            setPreviewUrl(objectUrl);
+function LSContainer({ streamId, onLeave }) {
+  const [joined, setJoined] = useState(false);
 
-            // Convert to base64
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const base64 = e.target.result.split(',')[1];
-                setBase64Image(base64);
-            };
-            reader.readAsDataURL(info.file);
+  const { join } = useMeeting({
+    onMeetingJoined: () => setJoined(true),
+    onMeetingLeft: onLeave,
+    onError: (error) => alert(error.message),
+  });
+
+  return (
+    <div className="container">
+      <h3>Stream Id: {streamId}</h3>
+      {joined ? <StreamView /> : <button onClick={join}>Join Stream</button>}
+    </div>
+  );
+}
+
+function StreamView() {
+  const { participants } = useMeeting();
+
+  return (
+    <div>
+      <LSControls />
+      {[...participants.values()]
+        .filter((p) => p.mode === Constants.modes.SEND_AND_RECV)
+        .map((p) => (
+          <Participant participantId={p.id} key={p.id} />
+        ))}
+    </div>
+  );
+}
+
+function Participant({ participantId }) {
+  const { webcamStream, micStream, webcamOn, micOn, isLocal, displayName } =
+    useParticipant(participantId);
+
+  const audioRef = useRef(null);
+  const videoRef = useRef(null);
+
+  const setupStream = (stream, ref, condition) => {
+    if (ref.current && stream) {
+      ref.current.srcObject = condition
+        ? new MediaStream([stream.track])
+        : null;
+      condition && ref.current.play().catch(console.error);
+    }
+  };
+
+  useEffect(() => setupStream(micStream, audioRef, micOn), [micStream, micOn]);
+  useEffect(
+    () => setupStream(webcamStream, videoRef, webcamOn),
+    [webcamStream, webcamOn]
+  );
+
+  return (
+    <div>
+      <p>
+        {displayName} | Webcam: {webcamOn ? "ON" : "OFF"} | Mic:{" "}
+        {micOn ? "ON" : "OFF"}
+      </p>
+      <audio ref={audioRef} autoPlay muted={isLocal} />
+      {webcamOn && (
+        <video
+          ref={videoRef}
+          autoPlay
+          muted={isLocal}
+          height="200"
+          width="300"
+        />
+      )}
+    </div>
+  );
+}
+
+function LSControls() {
+  const { leave, toggleMic, toggleWebcam, changeMode, meeting } = useMeeting();
+  const currentMode = meeting.localParticipant.mode;
+
+  return (
+    <div className="controls">
+      <button onClick={leave}>Leave</button>
+
+      {currentMode === Constants.modes.SEND_AND_RECV && (
+        <>
+          <button onClick={toggleMic}>Toggle Mic</button>{" "}
+          <button onClick={toggleWebcam}>Toggle Camera</button>
+        </>
+      )}
+
+      <button
+        onClick={() =>
+          changeMode(
+            currentMode === Constants.modes.SEND_AND_RECV
+              ? Constants.modes.RECV_ONLY
+              : Constants.modes.SEND_AND_RECV
+          )
         }
-    };
+      >
+        {currentMode === Constants.modes.SEND_AND_RECV
+          ? "Switch to Audience Mode"
+          : "Switch to Host Mode"}
+      </button>
+    </div>
+  );
+}
 
-    const detectDisease = async () => {
-        setIsLoading(true);
-        setError(null);
-        setResults(null);
+function DiseaseDetection() {
+  const [streamId, setStreamId] = useState(null);
+  const [mode, setMode] = useState(Constants.modes.SEND_AND_RECV);
+  const { currentUser } = UserAuth();
+  const [isApiKeyValid, setIsApiKeyValid] = useState(true);
+  const [isDeviceOnline, setIsDeviceOnline] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [temperature, setTemperature] = useState(null);
+  const [humidity, setHumidity] = useState(null);
+  const { selectedApiKey } = useApiKey();
 
-        try {
-            const response = await axios({
-                method: "POST",
-                url: "https://outline.roboflow.com/aquaponic_polygan_disease_test/5",
-                params: {
-                    api_key: process.env.REACT_APP_ROBOFLOW_API_KEY
-                },
-                data: base64Image,
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded"
-                }
-            });
+  useEffect(() => {
+    console.log("Selected API Key:", selectedApiKey);
 
-            setResults(response.data);
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setIsLoading(false);
-        }
-    };
+    if (!selectedApiKey) {
+      console.error("API key is missing!");
+      setIsLoading(false);
+      return;
+    }
 
-    const renderPredictions = () => {
-        if (!results || !results.predictions) return null;
-
-        return results.predictions.map((prediction, index) => {
-            const confidence = Math.round(prediction.confidence * 100);
-            const color = prediction.class === 'normal_lettuce' ? 'green' : confidence > 70 ? 'red' : confidence > 50 ? 'orange' : 'green';
-            const labelText = prediction.class === 'normal_lettuce' ? "Healthy" : `${confidence}% with Disease`
-            const icon = prediction.class === 'normal_lettuce' ? <CheckCircleOutlined /> : <CheckCircleOutlined />;
-
-
-            return (
-                <Card 
-                    key={index} 
-                    style={{ marginTop: '16px' }}
-                    bordered={true}
-                    className="prediction-card"
-                >
-                    <Space direction="vertical" style={{ width: '100%' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <Text strong style={{ fontSize: 16 }}>
-                                {prediction.class}
-                            </Text>
-                            <Tag color={color} icon={icon}>
-                                {labelText}
-                            </Tag>
-                        </div>
-                        {prediction.class !== 'normal_lettuce' && <Progress 
-                            percent={confidence} 
-                            status="active"
-                            strokeColor={color}
-                            size="small"
-                        />}
-                    </Space>
-                </Card>
-            );
+    setIsLoading(true);
+    const fetchData = async () => {
+      try {
+        await fetchSensorData({
+          selectedApiKey,
+          setIsDeviceOnline,
+          setTemperature,
+          setHumidity,
+          setIsLoading,
+          setIsApiKeyValid,
         });
+      } catch (error) {
+        console.error("Error fetching sensor data:", error);
+      }
     };
 
-    return (
-        <div className="disease-detection-container">
-            <Header/>
-            <div style={{ 
-                padding: isMobile ? '16px' : '24px', 
-                maxWidth: '1200px', 
-                margin: '0 auto',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                minHeight: 'calc(100vh - 64px)',
-            }}>
-                <Title level={2} style={{ 
-                    marginBottom: '24px',
-                    fontSize: isMobile ? '24px' : '32px',
-                    textAlign: 'center'
-                }}>
-                    Plant Disease Detection
-                </Title>
-                
-                <Card 
-                    hoverable
-                    className="upload-card"
-                    style={{
-                        background: '#ffffff',
-                        borderRadius: '12px',
-                        minHeight: '480px',
-                        width: '100%',
-                        maxWidth: isMobile ? '100%' : '600px',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                        transition: 'all 0.3s ease'
-                    }}>
-                        
-                    <Space direction="vertical" style={{ width: '100%', gap: '20px' }}>
-                        <div style={{ 
-                            textAlign: 'center',
-                            padding: isMobile ? '16px' : '24px'
-                        }}>
-                            <Upload
-                                beforeUpload={(file) => {
-                                    handleImageChange({ file });
-                                    return false;
-                                }}
-                                accept="image/*"
-                                maxCount={1}
-                                showUploadList={false}
-                            >
-                                <Button 
-                                    icon={<UploadOutlined />} 
-                                    size={isMobile ? 'middle' : 'large'}
-                                    style={{ 
-                                        width: isMobile ? '160px' : '200px',
-                                        height: isMobile ? '36px' : '40px',
-                                        borderRadius: '8px'
-                                    }}
-                                >
-                                    Select Image
-                                </Button>
-                            </Upload>
-                        </div>
+    fetchData();
 
-                        {previewUrl && (
-                            <div 
-                                style={{ 
-                                    textAlign: 'center',
-                                    padding: isMobile ? '12px' : '16px',
-                                    background: '#f8f8f8',
-                                    borderRadius: '12px',
-                                    boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
-                                }}
-                            >
-                                <img 
-                                    src={previewUrl} 
-                                    alt="Preview" 
-                                    style={{ 
-                                        maxWidth: '100%', 
-                                        maxHeight: isMobile ? '200px' : '300px',
-                                        objectFit: 'contain',
-                                        borderRadius: '8px',
-                                        transition: 'all 0.3s ease'
-                                    }} 
-                                />
-                            </div>
-                        )}
+    const interval = setInterval(fetchData, 2000);
 
-                        <div style={{ width: '100%' }}>
-                            {renderPredictions()}
-                        </div>
+    return () => {
+      clearInterval(interval);
+    };
+  }, [selectedApiKey]);
+  
+  // Initialize Stream
+  const initializeStream = async (id) => {
+    setIsLoading(true);
+    try {
+      const newStreamId = id || (await createStream({ token: authToken }));
+      setStreamId(newStreamId);
+    } catch (error) {
+      console.error("Stream initialization failed:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-                        <Button 
-                            type="primary" 
-                            onClick={detectDisease}
-                            disabled={!base64Image || isLoading}
-                            loading={isLoading}
-                            size={isMobile ? 'middle' : 'large'}
-                            style={{ 
-                                width: '100%',
-                                height: isMobile ? '40px' : '48px',
-                                borderRadius: '8px',
-                                marginTop: '12px',
-                                background: '#1890ff',
-                                fontWeight: 500
-                            }}
-                        >
-                            {isLoading ? 'Detecting...' : 'Detect Disease'}
-                        </Button>
-                    </Space>
-                </Card>
-            
+  const onStreamLeave = () => setStreamId(null);
+
+  // Status configuration for stream
+  const statusConfig = getStatusConfig(
+    selectedApiKey,
+    isApiKeyValid,
+    isDeviceOnline,
+    isLoading
+  );
+  const activeStatus = statusConfig.find((status) => status.when);
+
+  return (
+    <div style={{ width: "100%", overflowX: "hidden" }}>
+      <Header />
+
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          textAlign: "center",
+          padding: "0.4rem",
+          margin: "0 auto",
+        }}
+      >
+        <div
+          style={{
+            maxWidth: "100vw",
+            borderRadius: "14px",
+            height: "fit-content",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            flexDirection: "column",
+            padding: "1.8rem",
+          }}
+        >
+          {activeStatus ? (
+            <div style={{ textAlign: "center", paddingTop: "20px" }}>
+              <StatusMessage {...activeStatus} />
+              {isLoading && <Spin />}
             </div>
+          ) : (
+            <>
+              {!streamId ? (
+                <JoinView
+                  initializeStream={initializeStream}
+                  setMode={setMode}
+                />
+              ) : (
+                <MeetingProvider
+                  config={{
+                    meetingId: streamId,
+                    micEnabled: true,
+                    webcamEnabled: true,
+                    name: currentUser?.displayName || "Guest",
+                    mode,
+                  }}
+                  token={authToken}
+                >
+                  <LSContainer streamId={streamId} onLeave={onStreamLeave} />
+                </MeetingProvider>
+              )}
+
+              {streamId && <Chat />}
+            </>
+          )}
         </div>
-    );
-};
+      </div>
+    </div>
+  );
+}
 
 export default DiseaseDetection;

@@ -1,4 +1,5 @@
 import React from 'react';
+import Layout from '../../layout/Layout';
 
 function Loading() {
     const containerStyle = {
@@ -23,17 +24,19 @@ function Loading() {
     };
 
     return (
-        <div style={containerStyle}>
-            <div style={spinnerStyle}></div>
-            <style>
-                {`
-                    @keyframes spin {
-                        0% { transform: rotate(0deg); }
-                        100% { transform: rotate(360deg); }
-                    }
-                `}
-            </style>
-        </div>
+        <>
+            <div style={containerStyle}>
+                <div style={spinnerStyle}></div>
+                <style>
+                    {`
+                        @keyframes spin {
+                            0% { transform: rotate(0deg); }
+                            100% { transform: rotate(360deg); }
+                        }
+                    `}
+                </style>
+            </div>
+        </>
     );
 }
 

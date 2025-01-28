@@ -1,0 +1,233 @@
+
+.forum-page-bg {
+  min-height: 100vh;
+  min-width: 100vw;
+  overflow: auto;
+  background-color: white;
+  position: fixed;
+}
+
+.detailed-view {
+  background-color: #fff;
+  padding: 20px;
+  min-height: 100vh;
+}
+
+.forum-container{
+  max-width: 700px;
+  margin: auto;
+}
+
+.forum-title {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.forum-author {
+  color: #252525;
+  font-size: 1em;
+  margin: 5px 0;
+  font-weight: 500;
+}
+
+.forum-date, .comment-author, .comment-date {
+  color: #666;
+  font-size: 0.8em;
+  font-weight: 500;
+  margin: 3px 0;
+}
+
+.reply-author, .reply-date {
+  color: #666;
+  font-size: 0.8em;
+  font-weight: 500;
+  margin: 3px 0;
+  margin-top: 5px;
+}
+
+.forum-content, .comment-text, .reply-text {
+  word-wrap: break-word;
+  margin-top: 10px;
+}
+
+.forum-content p, .comment-text p, .reply-text p {
+  font-size: 20px;
+margin: 0px;
+  font-weight: normal;
+  line-height: 1.4em;
+}
+
+.comment-text ol {
+  margin-top: 16px;
+}
+
+.comment-text ul{
+  margin-top: 16px;
+}
+
+.comment-text li[data-list="bullet"] {
+  list-style-type: disc;
+}
+
+.forum-content li, .comment-text li, .reply-text li {
+  margin-top: 10px;
+  margin: 20px 0;
+  line-height: 0.5em;
+  font-weight: normal;
+  font-size: 18px;
+}
+
+.comment-input {
+  margin: 20px 0;
+}
+
+.comment-list, .reply-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.comment-item {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+}
+
+.reply-item {
+  padding: 10px;
+  margin-top: 8px;
+}
+
+.button-group {
+  display: flex;
+  justify-content: space-between;
+}
+
+.button-back, .forum-button-detailed {
+  background-color: #ffffff;
+  color: grey;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 10px;
+  font-weight: 500;
+}
+
+.forum-button-detailed {
+  padding: 8px 12px;
+}
+
+/* Quill Editor Styles */
+.ql-container {
+  border-bottom-left-radius: 0.5em;
+  border-bottom-right-radius: 0.5em;
+  background: #fefcfc;
+}
+
+.ql-snow.ql-toolbar {
+  display: block;
+  background: #eaecec;
+  border-top-left-radius: 0.5em;
+  border-top-right-radius: 0.5em;
+}
+
+.ql-editor {
+  min-height: 10em;
+  font-weight: normal;
+  white-space: normal;
+  word-wrap: break-word;
+}
+
+.ql-editor p, .ql-editor li {
+  font-weight: normal;
+  font-size: 16px;
+}
+
+.ql-editor li {
+  margin-left: -10px;
+}
+
+/* Remove numbers from list items with data-list="bullet" */
+li[data-list="bullet"]::before {
+  content: none !important;
+}
+
+/* Responsive Styles */
+@media screen and (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+
+  .forum-title {
+    font-size: 24px;
+  }
+
+  .forum-button, .forum-button-detailed, .button-back {
+    font-size: 14px;
+  }
+
+  .forum-content p, .comment-text p, .reply-text p {
+    font-size: 14px;
+  }
+
+  .forum-content li, .comment-text li, .reply-text li {
+    font-size: 14px;
+  }
+
+  .ql-editor {
+    font-size: 14px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  body {
+    font-size: 13px;
+  }
+
+  .forum-title {
+    font-size: 20px;
+  }
+
+  .forum-button, .forum-button-detailed, .button-back {
+    font-size: 11px;
+    padding: 6px 12px;
+  }
+
+  .forum-content p, .comment-text p, .reply-text p {
+    font-size: 13px;
+  }
+
+  .comment-author, .comment-date{
+    font-size: 10px;
+    margin: 3px 0;
+  }
+
+  .reply-author {
+    font-size: 10px;
+    margin: 3px 0;
+    margin-top: 6px;
+  }
+
+  .reply-date {
+    font-size: 10px;
+    margin: 3px 0;
+  }
+
+  .forum-content li, .comment-text li, .reply-text li {
+    font-size: 13px;
+    margin-top: -8px;
+    margin-left: -10px;
+  }
+
+  .ql-editor p, .ql-editor li {
+    font-size: 13px;
+  }
+
+  .ql-editor li {
+    margin-left: -14px;
+  }
+
+}

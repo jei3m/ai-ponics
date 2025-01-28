@@ -5,8 +5,6 @@
     height: 100dvh;
     align-items: center;
     justify-content: center;
-    /* background: linear-gradient(to bottom, #e6f7e6, #c8e6c8); */
-    /* background-color: #FAF9F6; */
     overflow: hidden;
 }
 
@@ -14,11 +12,11 @@
 .chat-container {
     position: relative;
     padding: 16px;
-    background-color: white; /* Light green background */
+    background-color: white;
     height: 92vh;
-    width: 100%; /* Maintain responsive width */
-    max-width: 500px; /* Adjusted max-width for a better fit on larger screens */
-    min-width: 320px; /* Set a reasonable minimum width */
+    width: 100%;
+    max-width: 500px;
+    min-width: 320px;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
@@ -32,7 +30,7 @@
 /* Header styles */
 .header {
     display: flex;
-    justify-content: flex-start; /* Align children to the left */
+    justify-content: space-between;
     align-items: center;
     margin-bottom: -4px;
     position: relative;
@@ -51,19 +49,22 @@
     margin: 0;
 }
 
-.back-button {
+.chat-back-button {
     background: transparent;
     border: none;
     color: #006400; /* Darker green */
     cursor: pointer;
-    font-size: 16px;
+    font-size: 17px;
     padding: 8px;
     transition: color 0.3s;
     margin-top: 4px;
+    font-weight: 540;
 }
 
-.back-button:hover {
-    color: #004d00; /* Dark green */
+.chat-back-button-icon {
+    display: flex;
+    align-items: center;
+    margin-top: 2px;
 }
 
 .back-button svg {
@@ -157,13 +158,13 @@
 /* Input container */
 .input-container {
     display: flex;
-    flex-direction: row; /* Stack input and buttons horizontally */
-    align-items: center; /* Center items vertically */
-    gap: 4px; /* Reduced gap between items */
-    padding-top: 4px; /* Reduced padding */
-    width: 100%; /* Ensure it takes full width of the chat-container */
-    box-sizing: border-box; /* Ensure padding is included in width */
-    height: 50px; /* Adjust height to fit two lines of text */
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+    padding-top: 4px;
+    width: 100%;
+    box-sizing: border-box;
+    height: 50px;
 }
 
 /* Button container - Flex evenly */
@@ -171,9 +172,9 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 4px; /* Reduced gap */
-    padding-top: 4px; /* Reduced padding */
-    width: 100%; /* Ensure it takes full width of the input-container */
+    gap: 4px; 
+    padding-top: 4px; 
+    width: 100%;
     margin-bottom: 10px;
 }
 
@@ -189,6 +190,10 @@
     padding: 8px;
 }
 
+.file-input {
+    display: none;
+}
+
 .message-input:disabled {
     background-color: #e0e0e0;
     cursor: not-allowed;
@@ -200,11 +205,11 @@
     font-size: 14px;
 }
 
-/* Buttons */
+/* Button styles */
 .upload-button,
 .camera-button,
 .send-button {
-    background: #096609; /* Dark green background */
+    background: #096609;
     border: none;
     border-radius: 12px;
     color: #fff;
@@ -212,17 +217,16 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 32px; /* Reduced height */
+    height: 32px;
     flex: 1;
-    padding: 0 8px; /* Reduced padding */
-    margin: 0 2px; /* Reduced margin */
+    padding: 0 8px;
+    margin: 0 2px;
     font-size: 16px;
 }
 
 .camera-button.disabled {
-    background-color: #a5d6a7; /* Lighter green for disabled state */
+    background-color: #a5d6a7;
     cursor: not-allowed;
-    /* Optionally add more styling to indicate it's disabled */
 }
 
 button:disabled {
@@ -246,7 +250,7 @@ button:disabled:hover {
 /* Loading spinner */
 .loading-spinner {
     border: 4px solid rgba(0, 0, 0, 0.1);
-    border-left: 4px solid #ffffff; /* Dark green spinner */
+    border-left: 4px solid #ffffff;
     border-radius: 50%;
     width: 1em;
     height: 1em;
@@ -309,24 +313,24 @@ button:disabled:hover {
     justify-content: center;
     padding: 16px;
     object-fit: cover;
-    box-sizing: border-box; /* Include padding in width/height */
-    max-width: 100vw; /* Ensure it doesn't exceed viewport width */
-    max-height: 100vh; /* Ensure it doesn't exceed viewport height */
-    overflow: auto; /* Handle overflow if content is too large */
+    box-sizing: border-box;
+    max-width: 100vw;
+    max-height: 100vh;
+    overflow: auto;
 }
 
 .camera-controls {
     display: flex;
     justify-content: space-between;
     width: 96%;
-    max-width: 600px; /* Consistent with chat container width */
+    max-width: 600px;
     margin-top: 10px;
 }
 
 .capture-button,
 .exit-button,
 .camera-toggle-button {
-    background: #096609; /* Dark green background */
+    background: #096609;
     border: none;
     border-radius: 12px;
     color: #fff;
@@ -334,24 +338,24 @@ button:disabled:hover {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 36px; /* Consistent height */
-    padding: 0 12px; /* Consistent padding */
-    margin: 10px; /* Remove margin */
-    font-size: 14px; /* Consistent font size */
-    width: 100%; /* Make buttons span full width of their container */
-    box-sizing: border-box; /* Include padding and border in width */
+    height: 36px;
+    padding: 0 12px;
+    margin: 10px;
+    font-size: 14px;
+    width: 100%; 
+    box-sizing: border-box;
 }
 
 .exit-button {
-    background: #ff4d4d; /* Red color for exit button */
+    background: #ff4d4d; 
 }
 
 .exit-button:hover {
-    background: #e03a3a; /* Darker red for hover effect */
+    background: #e03a3a; 
 }
 
 .camera-toggle-button svg {
-    font-size: 14px; /* Smaller icon size */
+    font-size: 14px;
     transition: transform 0.3s ease;
 }
 
@@ -362,18 +366,18 @@ button:disabled:hover {
 /* Video feed styles */
 .video-feed {
     max-width: 600px;
-    width: 100%; /* Ensures the video takes up full width of the container */
+    width: 100%;
     max-height: none;
-    border-radius: 12px; /* Same rounded corners as other elements */
-    object-fit: cover; /* Ensures the video fits nicely within the rounded corners */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow for consistency */
+    border-radius: 12px; 
+    object-fit: cover;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
     .chat-container {
         padding: 16px;
-        max-width: 100%; /* Adjust for small screens */
+        max-width: 100%;
         height: 100dvh;
         margin-top: 0px;
         border-radius: 0px;
@@ -381,7 +385,7 @@ button:disabled:hover {
     }
 
     .input-container {
-        gap: 2px; /* Reduced gap for smaller screens */
+        gap: 2px; 
     }
 
     .message-input {
@@ -393,7 +397,7 @@ button:disabled:hover {
 
     .chat-container {
         padding: 16px;
-        max-width: 100%; /* Adjust for small screens */
+        max-width: 100%; 
         height: 100dvh;
         border-radius: 0px;
         overflow: hidden;
