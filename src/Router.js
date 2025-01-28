@@ -85,24 +85,6 @@ function Router() {
             </PrivateRoutes>
           }
         />
-
-        <Route
-          path="/loading"
-          element={
-            <PrivateRoutes>
-              <Loading/>
-            </PrivateRoutes>
-          }
-        />
-
-        <Route
-          path="/detect"
-          element={
-            <PrivateRoutes>
-              <DiseaseDetection/>
-            </PrivateRoutes>
-          }
-        />
          
       </Routes>
     </ApiKeyProvider>
