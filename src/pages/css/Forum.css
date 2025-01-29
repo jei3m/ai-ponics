@@ -3,7 +3,7 @@
   min-width: 100vw;
   overflow: auto;
   background-color: white;
-  position: fixed;
+  position: absolute;
 }
 
 .forum-content-container {
