@@ -52,6 +52,7 @@ export const saveBlynkApiKey = async (currentUser, blynkApiKeys, selectedApiKeyI
     message.error('Failed to save Blynk API Key');
   } finally {
     setLoading(false);
+    window.location.reload();
   }
 };
 
