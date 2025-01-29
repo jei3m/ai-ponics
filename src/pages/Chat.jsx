@@ -6,7 +6,6 @@ import { db } from '../firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import Webcam from 'react-webcam';
 import './css/Chat.css';
-import { useApiKey } from "../context/ApiKeyContext";
 import ReactMarkdown from 'react-markdown';
 import { message, Button } from 'antd';
 
@@ -47,9 +46,7 @@ const Chat = () => {
   const [daysSincePlanting, setDaysSincePlanting] = useState(0);
   const [plantName, setPlantName] = useState('');
 
-
   // API Key States
-  const { selectedApiKey } = useApiKey();
   const [blynkApiKey, setBlynkApiKey] = useState('');
 
   // Loading States
@@ -59,41 +56,29 @@ const Chat = () => {
   // Sensor Data States
   const [humidity, setHumidity] = useState(null);
   const [temperature, setTemperature] = useState(null);
-  const [systemStatus, setSystemStatus] = useState(null);
+  const [isApiKeyValid, setIsApiKeyValid] = useState(true);
+  const [isDeviceOnline, setIsDeviceOnline] = useState(false);
 
   // Fetch sensor data from Blynk API
   const fetchSensorDataFromBlynk = async (selectedApiKey) => {
     try {
       await fetchSensorData({ 
         selectedApiKey, 
-        setIsDeviceOnline: setSystemStatus, 
+        setIsDeviceOnline, 
         setTemperature, 
         setHumidity, 
         setIsLoading: setSensorDataLoaded, 
-        setIsApiKeyValid: setBlynkApiKey 
+        setIsApiKeyValid: true
       });
       setSensorDataLoaded(true);
     } catch (error) {
       console.error('Error fetching sensor data:', error);
       message.error('Error fetching sensor data. Please try again.');
       setSensorDataLoaded(true);
-      setBlynkApiKey(false);
+      setIsApiKeyValid(false);
       return;
     }
   };
-  
-  // Fetch sensor data from Blynk API on API key change
-  useEffect(() => {
-    let interval;
-    if (selectedApiKey) {
-      fetchSensorDataFromBlynk(selectedApiKey);
-      interval = setInterval(() => fetchSensorDataFromBlynk(selectedApiKey), 1000);
-    }
-
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [selectedApiKey]);
 
   // Fetch user data and sensor data
   const { currentUser } = UserAuth();
@@ -105,40 +90,40 @@ const Chat = () => {
   
     const fetchUserData = async () => {
       try {
-        const docRef = doc(db, 'users', currentUser.uid); // Adjust collection path if necessary
+        const docRef = doc(db, 'users', currentUser.uid);
         const docSnap = await getDoc(docRef);
-  
+    
         if (!docSnap.exists()) {
           console.log('No such document!');
-          setSensorDataLoaded(true); // Exit early if document does not exist
+          setSensorDataLoaded(true);
           return;
         }
-  
+    
         const {
-          plantName = '', 
+          plantName = '',
           daysSincePlanting = 0,
           selectedApiKey = '',
         } = docSnap.data();
-  
+    
         setPlantName(plantName);
         setDaysSincePlanting(daysSincePlanting);
-        setBlynkApiKey(selectedApiKey);
-  
+        setBlynkApiKey(selectedApiKey); // Update the state with the fetched API key
+    
         if (!selectedApiKey) {
-          setSensorDataLoaded(true); // Exit early if no API key is available
+          setSensorDataLoaded(true);
           return;
         }
-  
+    
         fetchSensorDataFromBlynk(selectedApiKey); // Fetch sensor data if API key is present
       } catch (error) {
         console.error('Error fetching user data:', error);
         message.error('Error fetching user data. Please try again.');
-        setSensorDataLoaded(true); // Ensure sensor data loading state is updated on error
+        setSensorDataLoaded(true);
       }
     };
-  
-    fetchUserData();
-  }, [currentUser]);
+
+  fetchUserData();
+}, [currentUser]);
 
   // Function for Greeting the User
   useEffect(() => {
@@ -149,18 +134,17 @@ const Chat = () => {
         return;
       }
 
-      if (blynkApiKey === false) {
+      if (!isApiKeyValid) {
         setMessages([{ user:false, text: "Your API key is invalid. Please check your API key and try again." }]);
         return;
       }
 
-      if (systemStatus === null) {
+      if (!blynkApiKey) {
         setMessages([{ user:false, text: "Your API key missing. Please provide a valid API key to proceed."}])
         return;
       }
 
-      if (systemStatus === false) {
-        console.log(`System status:${systemStatus}`)
+      if (!isDeviceOnline) {
         setMessages([{ user:false, text: "I apologize, but I cannot provide readings as your Aeroponic System appears to be offline."}])
         return;
       }
@@ -179,7 +163,7 @@ const Chat = () => {
 `Hey there, I'm AI-Ponics, your friendly Aeroponic System Assistant! 👋 \n
 * Here's a quick update on your system:\n
      *   **Plant:** ${plantName}
-     *   **Age:** ${daysSincePlanting}
+     *   **Age:** ${daysSincePlanting} days
      *   **Temperature:** ${temperature}
      *   **Humidity:** ${humidity}\n
 ${warningMessage}`
@@ -193,12 +177,12 @@ ${warningMessage}`
     }
 
     greetUser();
-  }, [sensorDataLoaded, systemStatus, plantName, daysSincePlanting, temperature, humidity]);
+  }, [sensorDataLoaded, isDeviceOnline, plantName, daysSincePlanting, temperature, humidity]);
 
   // AI conversation after greeting
   async function aiRun() {
     // If system is offline, do not proceed
-    if (!systemStatus) {
+    if (!isDeviceOnline) {
       return;
     }
   
@@ -369,11 +353,11 @@ ${warningMessage}`
           <div className="input-container">
             <input
               className="message-input"
-              placeholder={!systemStatus ? "Aeroponic System is Offline" : "Type a message"}
+              placeholder={!isDeviceOnline ? "Aeroponic System is Offline" : "Type a message"}
               onChange={handleChange}
               value={textPrompt}
               onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-              disabled={!systemStatus}
+              disabled={!isDeviceOnline}
             />
           </div>
 
@@ -388,18 +372,18 @@ ${warningMessage}`
             <button
               className="upload-button"
               onClick={() => document.getElementById('file-upload').click()}
-              disabled={loading || !systemStatus}
+              disabled={loading || !isDeviceOnline}
             >
               <FontAwesomeIcon icon={faImage} />
             </button>
             <button
               className={`camera-button ${imagePreview ? 'disabled' : ''}`}
               onClick={openCamera}
-              disabled={imagePreview || loading || !systemStatus}
+              disabled={imagePreview || loading || !isDeviceOnline}
             >
               <FontAwesomeIcon icon={faCamera} />
             </button>
-            <button className="send-button" onClick={sendMessage} disabled={loading || !systemStatus}>
+            <button className="send-button" onClick={sendMessage} disabled={loading || !isDeviceOnline}>
               {loading ? <div className="loading-spinner"></div> : <FontAwesomeIcon icon={faSearch} />}
             </button>
           </div>
