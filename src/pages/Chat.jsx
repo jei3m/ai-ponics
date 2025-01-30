@@ -56,6 +56,7 @@ const Chat = () => {
   // Sensor Data States
   const [humidity, setHumidity] = useState(null);
   const [temperature, setTemperature] = useState(null);
+  const [flowRate, setFlowRate] = useState(null);
   const [isApiKeyValid, setIsApiKeyValid] = useState(true);
   const [isDeviceOnline, setIsDeviceOnline] = useState(false);
 
@@ -67,8 +68,9 @@ const Chat = () => {
         setIsDeviceOnline, 
         setTemperature, 
         setHumidity, 
+        setFlowRate,
         setIsLoading: setSensorDataLoaded, 
-        setIsApiKeyValid: true
+        setIsApiKeyValid
       });
       setSensorDataLoaded(true);
     } catch (error) {
