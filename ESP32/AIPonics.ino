@@ -1,9 +1,3 @@
-// ESP32 Libries
-#include <WiFi.h>
-#include <BlynkSimpleEsp32.h>
-#include <DHT.h>
-#include <ESP_Mail_Client.h> 
-
 // Blynk API setup
 #define BLYNK_TEMPLATE_ID "template_id"
 #define BLYNK_TEMPLATE_NAME "template_name"
@@ -17,6 +11,12 @@
 #define EMAIL_SENDER_PASSWORD "email_sender_password"       
 #define EMAIL_RECIPIENT "email_recipient"       
 
+// ESP32 Libries
+#include <WiFi.h>
+#include <BlynkSimpleEsp32.h>
+#include <DHT.h>
+#include <ESP_Mail_Client.h> 
+
 // Blynk credentials
 char auth[] = BLYNK_AUTH_TOKEN;
 
@@ -26,16 +26,26 @@ char pass[] = "wifi_password";  // WiFi password
 
 BlynkTimer timer;
 
-// DHT sensor setup
-#define DHTPIN 27 
-#define DHTTYPE DHT11  
+// DHT22 sensor setup
+#define DHTPIN 27 // Pin of DHT22 sensor
+#define DHTTYPE DHT22  
 DHT dht(DHTPIN, DHTTYPE);
+
+// Water flow sensor setup
+#define FLOW_SENSOR_PIN 26
+volatile int flowPulseCount = 0;
+float flowRate = 0.0;
+unsigned long oldTime = 0;
 
 // Email setup
 SMTPSession smtp;
 
 unsigned long lastEmailSent = 0;
 const unsigned long emailInterval = 10 * 60 * 1000; // Interval is set to 10 minutes
+
+void IRAM_ATTR pulseCounter() {
+  flowPulseCount++;
+}
 
 // Function to send email alert
 void sendEmailAlert(float temperature) {
@@ -148,9 +158,28 @@ void sendSensor() {
   if (t > 36) {
     sendEmailAlert(t);
   }
+
+  // Calculate flow rate
+  unsigned long currentTime = millis();
+  unsigned long elapsedTime = currentTime - oldTime;
+
+  if (elapsedTime > 1000) { // Update every second
+    detachInterrupt(digitalPinToInterrupt(FLOW_SENSOR_PIN));
+    
+    flowRate = (flowPulseCount / 7.5); // 7.5 pulses per liter per minute
+
+    Serial.print("Flow Rate: ");
+    Serial.println(flowRate);
+
+    Blynk.virtualWrite(V2, flowRate); // Pin V2 is for Flow Rate
+
+    flowPulseCount = 0; // Reset after sending data
+    oldTime = currentTime;
+
+    attachInterrupt(digitalPinToInterrupt(FLOW_SENSOR_PIN), pulseCounter, FALLING);
+  }
 }
 
-// Setup function   
 void setup() {
   Serial.begin(115200);
 
@@ -169,6 +198,10 @@ void setup() {
 
   // Initialize DHT sensor
   dht.begin();
+
+  // Initialize water flow sensor
+  pinMode(FLOW_SENSOR_PIN, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(FLOW_SENSOR_PIN), pulseCounter, FALLING);
 
   // Set up timer to read sensor data every second
   timer.setInterval(1000L, sendSensor);
