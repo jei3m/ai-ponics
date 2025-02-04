@@ -3,7 +3,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 const apiKey = process.env.REACT_APP_API_KEY;
 const genAI = new GoogleGenerativeAI(apiKey);
 
-// Generate AI greeting message
+// AI Generated greeting message
 export const generateGreeting = async (plantName, daysSincePlanting, temperature, humidity) => {
   const model = genAI.getGenerativeModel({
     model: "gemini-2.0-flash-exp", //Recently release 2.0 Flash Model
@@ -15,6 +15,56 @@ export const generateGreeting = async (plantName, daysSincePlanting, temperature
   return response.text();
 };
 
+// Greet User Function
+export async function greetUser(sensorDataLoaded, isApiKeyValid, setMessages, blynkApiKey, isDeviceOnline, temperature, MAX_TEMPERATURE, MIN_TEMPERATURE, plantName, daysSincePlanting, humidity) {
+
+  if (!sensorDataLoaded) {
+    setMessages([{ user:false, text: "Sensor data is still loading... Please wait."}])
+    return;
+  }
+
+  if (!isApiKeyValid) {
+    setMessages([{ user:false, text: "Your API key is invalid. Please check your API key and try again." }]);
+    return;
+  }
+
+  if (!blynkApiKey) {
+    setMessages([{ user:false, text: "Your API key missing. Please provide a valid API key to proceed."}])
+    return;
+  }
+
+  if (!isDeviceOnline) {
+    setMessages([{ user:false, text: "I apologize, but I cannot provide readings as your Aeroponic System appears to be offline."}])
+    return;
+  }
+
+  try {
+    const warningMessage =
+      temperature > MAX_TEMPERATURE
+      ? "**Warning:** Temperature is too Hot"
+      : temperature < MIN_TEMPERATURE
+      ? "**Warning:** Temperature is too Cold"
+      : "Need help or have questions? Don&apos;t hesitate to ask!";
+
+
+    // Hard-coded message greeting, to reduce loading time from AI generated greeting
+    const greetingText = 
+`Hey there, I'm AI-Ponics, your friendly Aeroponic System Assistant! 👋 \n
+* Here's a quick update on your system:\n
+  *   **Plant:** ${plantName}
+  *   **Age:** ${daysSincePlanting} days
+  *   **Temperature:** ${temperature}
+  *   **Humidity:** ${humidity}\n
+${warningMessage}`
+
+    // const greetingText = await generateGreeting(plantName, daysSincePlanting, temperature, humidity);
+    setMessages([{ user: false, text: greetingText}]);
+  } catch (error) {
+    console.error('Error generating greeting:', error);
+    setMessages([{ user: false, text: "Sorry, I encountered an error while generating a greeting." }]);
+  }
+}
+
 // Generate AI response for user queries
 export const generateAIResponse = async function* ( textPrompt, imageInlineData, plantName, daysSincePlanting, temperature, humidity, previousMessages = [] ) {
   const model = genAI.getGenerativeModel({
@@ -22,7 +72,8 @@ export const generateAIResponse = async function* ( textPrompt, imageInlineData,
     systemInstruction: `
     You are AI-Ponics, an Aeroponics expert. 
     Provide concise and friendly answers to user queries. 
-    Never start your messages with "AI-Ponics:". 
+    Never start your messages with "AI-Ponics:".
+    About messageHistory, you are AI-Ponics, then User is the one chatting you.
     Always identify yourself when asked "Who are you?" or "What are you?" by responding, "I am AI-Ponics, an Aeroponics expert here to help you." 
     Keep your responses relevant to the user's input. 
     Take note that the plant name is ${plantName}, and it has been ${daysSincePlanting} days since planting. 
@@ -44,8 +95,8 @@ export const generateAIResponse = async function* ( textPrompt, imageInlineData,
   }
 
   // Logging message history for debugging
-  // console.log(`textPrompt: ${textPrompt}`);
-  // console.log(`messageHistory: ${JSON.stringify(messageHistory)}`);
+  console.log(`textPrompt: ${textPrompt}`);
+  console.log(`messageHistory: ${JSON.stringify(messageHistory)}`);
 
   // Generate content stream then yield generated chunks
   const result = await model.generateContentStream(messageHistory);
