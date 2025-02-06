@@ -1,28 +1,18 @@
-// Blynk API setup
-#define BLYNK_TEMPLATE_ID "template_id"
-#define BLYNK_TEMPLATE_NAME "template_name"
-#define BLYNK_AUTH_TOKEN "blynk_auth_token"
-#define BLYNK_PRINT Serial
+#include "config.h"
 
-// Email setup
-#define SMTP_HOST "smtp.gmail.com" // Gmail SMTP server
-#define SMTP_PORT 465
-#define EMAIL_SENDER_ACCOUNT "email_sender_account"  
-#define EMAIL_SENDER_PASSWORD "email_sender_password"       
-#define EMAIL_RECIPIENT "email_recipient"       
-
-// ESP32 Libries
+// ESP32 Libraries
 #include <WiFi.h>
 #include <BlynkSimpleEsp32.h>
 #include <DHT.h>
 #include <ESP_Mail_Client.h> 
 
+// OLED Libraries
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+
 // Blynk credentials
 char auth[] = BLYNK_AUTH_TOKEN;
-
-// WiFi credentials
-char ssid[] = "wifi_name";  // WiFi name
-char pass[] = "wifi_password";  // WiFi password
 
 BlynkTimer timer;
 
@@ -32,7 +22,7 @@ BlynkTimer timer;
 DHT dht(DHTPIN, DHTTYPE);
 
 // Water flow sensor setup
-#define FLOW_SENSOR_PIN 26
+#define FLOW_SENSOR_PIN 26 // Pin of Water Flow sensor
 volatile int flowPulseCount = 0;
 float flowRate = 0.0;
 unsigned long oldTime = 0;
@@ -43,14 +33,26 @@ SMTPSession smtp;
 unsigned long lastEmailSent = 0;
 const unsigned long emailInterval = 10 * 60 * 1000; // Interval is set to 10 minutes
 
+// OLED setup
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 64
+#define OLED_RESET    -1 // Reset pin # (or -1 if sharing Arduino reset pin)
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+
 void IRAM_ATTR pulseCounter() {
   flowPulseCount++;
 }
 
 // Function to send email alert
-void sendEmailAlert(float temperature) {
+void sendTempAlert(float temperature) {
   if (millis() - lastEmailSent >= emailInterval) {
     Serial.println("Preparing email...");
+    display.clearDisplay();
+    display.setCursor(0, 0);
+    display.setTextSize(1);
+    display.setTextColor(SSD1306_WHITE);
+    display.println("Preparing email...");
+    display.display();
 
     // Set up SMTP session configuration
     ESP_Mail_Session session;
@@ -116,23 +118,48 @@ void sendEmailAlert(float temperature) {
     // Connect to the SMTP server
     if (!smtp.connect(&session)) {
       Serial.println("Failed to connect to SMTP server: " + smtp.errorReason());
+      display.setCursor(0, 10);
+      display.setTextSize(1);
+      display.setTextColor(SSD1306_WHITE);
+      display.println("Failed to connect to SMTP server: " + smtp.errorReason());
+      display.display();
+      delay(2000);
       return;
     } else {
-      Serial.println("Connected to SMTP server.");
+      Serial.println("SMTP Connected.");
+      display.setCursor(0, 10);
+      display.setTextSize(1);
+      display.setTextColor(SSD1306_WHITE);
+      display.println("SMTP Connected.");
+      display.display();
+      delay(2000);
     }
 
     // Send the email
     if (!MailClient.sendMail(&smtp, &message)) {
       Serial.println("Failed to send email: " + smtp.errorReason());
     } else {
-      Serial.println("Email sent successfully.");
+      Serial.println("Email Alert sent!");
+      display.clearDisplay();
+      display.setCursor(0, 0);
+      display.setTextSize(1);
+      display.setTextColor(SSD1306_WHITE);
+      display.println("Email Alert sent!");
+      display.display();
+      delay(2000);
       lastEmailSent = millis();
     }
 
     // Close the SMTP session
     smtp.closeSession();
   } else {
-    Serial.println("Email not sent: Interval not reached.");
+    Serial.println("Email interval not reached.");
+    display.setCursor(0, 40);
+    display.setTextSize(1);
+    display.setTextColor(SSD1306_WHITE);
+    display.println("Email interval not reached.");
+    display.display();
+    delay(2000);
   }
 }
 
@@ -147,54 +174,89 @@ void sendSensor() {
     return;
   }
 
+  // Send temperature and humidity to Blynk API
   Blynk.virtualWrite(V0, t); // Pin V0 is for Temperature
   Blynk.virtualWrite(V1, h); // Pin V1 is for Humidity
+
   Serial.print("Temperature : ");
   Serial.print(t);
-  Serial.print(" Humidity : ");
+  Serial.print("\nHumidity : ");
   Serial.println(h);
 
   // Check temperature and send email if above threshold
   if (t > 36) {
-    sendEmailAlert(t);
+    sendTempAlert(t);
   }
 
   // Calculate flow rate
   unsigned long currentTime = millis();
   unsigned long elapsedTime = currentTime - oldTime;
 
-  if (elapsedTime > 1000) { // Update every second
-    detachInterrupt(digitalPinToInterrupt(FLOW_SENSOR_PIN));
-    
-    flowRate = (flowPulseCount / 7.5); // 7.5 pulses per liter per minute
+  // Send calculated flow rate to Blynk API
+  detachInterrupt(digitalPinToInterrupt(FLOW_SENSOR_PIN));
+  flowRate = (flowPulseCount / 7.5); // 7.5 pulses per liter per minute
+  Serial.print("Flow Rate: ");
+  Serial.println(flowRate);
+  Blynk.virtualWrite(V2, flowRate); // Pin V2 is for Flow Rate
+  flowPulseCount = 0; // Reset after sending data
+  oldTime = currentTime;
+  attachInterrupt(digitalPinToInterrupt(FLOW_SENSOR_PIN), pulseCounter, FALLING);
 
-    Serial.print("Flow Rate: ");
-    Serial.println(flowRate);
+  // Display sensor data at OLED Screen
+  display.clearDisplay();
+  display.setCursor(0, 0);
+  display.setTextSize(1);
+  display.setTextColor(SSD1306_WHITE);
+  display.println("Temp: " + String(t) + " C");
+  display.println("Humidity: " + String(h) + " %");
+  display.println("Flow Rate: " + String(flowRate) + " L/min");
+  display.display();
 
-    Blynk.virtualWrite(V2, flowRate); // Pin V2 is for Flow Rate
-
-    flowPulseCount = 0; // Reset after sending data
-    oldTime = currentTime;
-
-    attachInterrupt(digitalPinToInterrupt(FLOW_SENSOR_PIN), pulseCounter, FALLING);
-  }
 }
 
 void setup() {
   Serial.begin(115200);
 
+  // Initialize OLED display
+  if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { // Address 0x3C for 128x64
+    Serial.println(F("SSD1306 allocation failed"));
+    for(;;); // Don't proceed, loop forever
+  }
+
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(0, 0);
+  display.println("Initializing...");
+  display.display();
+
   // Connect to WiFi
   Serial.print("Connecting to WiFi...");
-  WiFi.begin(ssid, pass);
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(0, 0);
+  display.println("Connecting to WiFi...");
+  display.display();
+  delay(200);
+
+  WiFi.begin(WIFI_SSID, WIFI_PASS);
   while (WiFi.status() != WL_CONNECTED) {
     Serial.print(".");
     delay(200);
   }
-  Serial.println("\nWiFi connected.");
-  Serial.println("IP address: " + WiFi.localIP().toString());
+
+  Serial.println("WiFi connected.");
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(0, 0);
+  display.println("WiFi Connected.");
+  display.display();
+  delay(1000);
 
   // Initialize Blynk
-  Blynk.begin(auth, ssid, pass);
+  Blynk.begin(auth, WIFI_SSID, WIFI_PASS);
 
   // Initialize DHT sensor
   dht.begin();
