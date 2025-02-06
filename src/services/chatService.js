@@ -3,6 +3,41 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 const apiKey = process.env.REACT_APP_API_KEY;
 const genAI = new GoogleGenerativeAI(apiKey);
 
+// Fetch user data from firebase
+export const fetchUserData = async (doc, currentUser, db, getDoc, setSensorDataLoaded, setPlantName, setDaysSincePlanting, setBlynkApiKey, fetchSensorDataFromBlynk, message) => {
+  try {
+    const docRef = doc(db, 'users', currentUser.uid);
+    const docSnap = await getDoc(docRef);
+
+    if (!docSnap.exists()) {
+      console.log('No such document!');
+      setSensorDataLoaded(true);
+      return;
+    }
+
+    const {
+      plantName = '',
+      daysSincePlanting = 0,
+      selectedApiKey = '',
+    } = docSnap.data();
+
+    setPlantName(plantName);
+    setDaysSincePlanting(daysSincePlanting);
+    setBlynkApiKey(selectedApiKey); // Update the state with the fetched API key
+
+    if (!selectedApiKey) {
+      setSensorDataLoaded(true);
+      return;
+    }
+
+    fetchSensorDataFromBlynk(selectedApiKey); // Fetch sensor data if API key is present
+  } catch (error) {
+    console.error('Error fetching user data:', error);
+    message.error('Error fetching user data. Please try again.');
+    setSensorDataLoaded(true);
+  }
+};
+
 // AI Generated greeting message
 export const generateGreeting = async (plantName, daysSincePlanting, temperature, humidity) => {
   const model = genAI.getGenerativeModel({

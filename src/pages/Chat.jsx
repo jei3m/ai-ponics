@@ -19,6 +19,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 import { 
+  fetchUserData,
   generateGreeting, 
   greetUser,
   generateAIResponse, 
@@ -85,47 +86,13 @@ const Chat = () => {
 
   // Fetch user data and sensor data
   const { currentUser } = UserAuth();
+
   useEffect(() => {
     if (!currentUser) {
       setSensorDataLoaded(true); // Exit early if no user is logged in
       return;
     }
-  
-    const fetchUserData = async () => {
-      try {
-        const docRef = doc(db, 'users', currentUser.uid);
-        const docSnap = await getDoc(docRef);
-    
-        if (!docSnap.exists()) {
-          console.log('No such document!');
-          setSensorDataLoaded(true);
-          return;
-        }
-    
-        const {
-          plantName = '',
-          daysSincePlanting = 0,
-          selectedApiKey = '',
-        } = docSnap.data();
-    
-        setPlantName(plantName);
-        setDaysSincePlanting(daysSincePlanting);
-        setBlynkApiKey(selectedApiKey); // Update the state with the fetched API key
-    
-        if (!selectedApiKey) {
-          setSensorDataLoaded(true);
-          return;
-        }
-    
-        fetchSensorDataFromBlynk(selectedApiKey); // Fetch sensor data if API key is present
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-        message.error('Error fetching user data. Please try again.');
-        setSensorDataLoaded(true);
-      }
-    };
-
-  fetchUserData();
+    fetchUserData(doc, currentUser, db, getDoc, setSensorDataLoaded, setPlantName, setDaysSincePlanting, setBlynkApiKey, fetchSensorDataFromBlynk, message);
 }, [currentUser]);
 
   // Function for Greeting the User
