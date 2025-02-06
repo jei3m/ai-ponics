@@ -19,7 +19,9 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 import { 
+  fetchUserData,
   generateGreeting, 
+  greetUser,
   generateAIResponse, 
   fileToGenerativePart, 
   getBase64, 
@@ -56,6 +58,7 @@ const Chat = () => {
   // Sensor Data States
   const [humidity, setHumidity] = useState(null);
   const [temperature, setTemperature] = useState(null);
+  const [flowRate, setFlowRate] = useState(null);
   const [isApiKeyValid, setIsApiKeyValid] = useState(true);
   const [isDeviceOnline, setIsDeviceOnline] = useState(false);
 
@@ -67,8 +70,9 @@ const Chat = () => {
         setIsDeviceOnline, 
         setTemperature, 
         setHumidity, 
+        setFlowRate,
         setIsLoading: setSensorDataLoaded, 
-        setIsApiKeyValid: true
+        setIsApiKeyValid
       });
       setSensorDataLoaded(true);
     } catch (error) {
@@ -82,101 +86,18 @@ const Chat = () => {
 
   // Fetch user data and sensor data
   const { currentUser } = UserAuth();
+
   useEffect(() => {
     if (!currentUser) {
       setSensorDataLoaded(true); // Exit early if no user is logged in
       return;
     }
-  
-    const fetchUserData = async () => {
-      try {
-        const docRef = doc(db, 'users', currentUser.uid);
-        const docSnap = await getDoc(docRef);
-    
-        if (!docSnap.exists()) {
-          console.log('No such document!');
-          setSensorDataLoaded(true);
-          return;
-        }
-    
-        const {
-          plantName = '',
-          daysSincePlanting = 0,
-          selectedApiKey = '',
-        } = docSnap.data();
-    
-        setPlantName(plantName);
-        setDaysSincePlanting(daysSincePlanting);
-        setBlynkApiKey(selectedApiKey); // Update the state with the fetched API key
-    
-        if (!selectedApiKey) {
-          setSensorDataLoaded(true);
-          return;
-        }
-    
-        fetchSensorDataFromBlynk(selectedApiKey); // Fetch sensor data if API key is present
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-        message.error('Error fetching user data. Please try again.');
-        setSensorDataLoaded(true);
-      }
-    };
-
-  fetchUserData();
+    fetchUserData(doc, currentUser, db, getDoc, setSensorDataLoaded, setPlantName, setDaysSincePlanting, setBlynkApiKey, fetchSensorDataFromBlynk, message);
 }, [currentUser]);
 
   // Function for Greeting the User
   useEffect(() => {
-    async function greetUser() {
-
-      if (!sensorDataLoaded) {
-        setMessages([{ user:false, text: "Sensor data is still loading... Please wait."}])
-        return;
-      }
-
-      if (!isApiKeyValid) {
-        setMessages([{ user:false, text: "Your API key is invalid. Please check your API key and try again." }]);
-        return;
-      }
-
-      if (!blynkApiKey) {
-        setMessages([{ user:false, text: "Your API key missing. Please provide a valid API key to proceed."}])
-        return;
-      }
-
-      if (!isDeviceOnline) {
-        setMessages([{ user:false, text: "I apologize, but I cannot provide readings as your Aeroponic System appears to be offline."}])
-        return;
-      }
-
-      try {
-        const warningMessage =
-          temperature > MAX_TEMPERATURE
-          ? "**Warning:** Temperature is too Hot"
-          : temperature < MIN_TEMPERATURE
-          ? "**Warning:** Temperature is too Cold"
-          : "Need help or have questions? Don&apos;t hesitate to ask!";
-
-
-        // Hard-coded message greeting, to reduce loading time from AI generated greeting
-        const greetingText = 
-`Hey there, I'm AI-Ponics, your friendly Aeroponic System Assistant! 👋 \n
-* Here's a quick update on your system:\n
-     *   **Plant:** ${plantName}
-     *   **Age:** ${daysSincePlanting} days
-     *   **Temperature:** ${temperature}
-     *   **Humidity:** ${humidity}\n
-${warningMessage}`
-
-        // const greetingText = await generateGreeting(plantName, daysSincePlanting, temperature, humidity);
-        setMessages([{ user: false, text: greetingText}]);
-      } catch (error) {
-        console.error('Error generating greeting:', error);
-        setMessages([{ user: false, text: "Sorry, I encountered an error while generating a greeting." }]);
-      }
-    }
-
-    greetUser();
+    greetUser(sensorDataLoaded, isApiKeyValid, setMessages, blynkApiKey, isDeviceOnline, temperature, MAX_TEMPERATURE, MIN_TEMPERATURE, plantName, daysSincePlanting, humidity);
   }, [sensorDataLoaded, isDeviceOnline, plantName, daysSincePlanting, temperature, humidity]);
 
   // AI conversation after greeting
