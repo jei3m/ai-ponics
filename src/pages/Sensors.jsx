@@ -4,6 +4,7 @@ import Header from "./components/Header";
 import "./css/Sensors.css";
 import TempHumidCard from "./components/Sensors/TempHumid";
 import TempStatus from "./components/Sensors/TempStatus";
+import FlowRate from "./components/Sensors/FlowRate";
 import PlantInfo from "./components/Sensors/PlantInfo";
 import { db, auth } from "../firebase";
 import { doc, setDoc, getDoc } from "firebase/firestore";
@@ -23,6 +24,7 @@ dayjs.extend(customParseFormat);
 function Sensors() {
   const [temperature, setTemperature] = useState(null);
   const [humidity, setHumidity] = useState(null);
+  const [flowRate, setFlowRate] = useState(null);
   const [plantingDate, setPlantingDate] = useState(null);
   const [plantName, setPlantName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -51,6 +53,7 @@ function Sensors() {
           setIsDeviceOnline,
           setTemperature,
           setHumidity,
+          setFlowRate,
           setIsLoading,
           setIsApiKeyValid,
           signal: controller.signal
@@ -161,9 +164,9 @@ function Sensors() {
               status={status}
             />
 
-            <TempStatus
-              temperature={temperature}
-              status={status}
+            <FlowRate
+             flowRate={flowRate}
+             status={status}
             />
 
             <PlantInfo
