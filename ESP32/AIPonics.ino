@@ -166,31 +166,25 @@ void sendTempAlert(float temperature) {
 // Function to send sensor data to Blynk API
 void sendSensor() {
   // Units for temperature is Celsius
-  float h = dht.readHumidity();
-  float t = dht.readTemperature(); 
-
-  if (isnan(h) || isnan(t)) {
-    Serial.println("Failed to read from DHT sensor!");
-    return;
-  }
+  float humidity = dht.readHumidity();
+  float temperature = dht.readTemperature(); 
 
   // Send temperature and humidity to Blynk API
-  Blynk.virtualWrite(V0, t); // Pin V0 is for Temperature
-  Blynk.virtualWrite(V1, h); // Pin V1 is for Humidity
+  Blynk.virtualWrite(V0, temperature); // Pin V0 is for Temperature
+  Blynk.virtualWrite(V1, humidity); // Pin V1 is for Humidity
 
   Serial.print("Temperature : ");
-  Serial.print(t);
+  Serial.print(temperature);
   Serial.print("\nHumidity : ");
-  Serial.println(h);
+  Serial.println(humidity);
 
   // Check temperature and send email if above threshold
-  if (t > 36) {
-    sendTempAlert(t);
+  if (temperature > 36) {
+    sendTempAlert(temperature);
   }
 
   // Calculate flow rate
   unsigned long currentTime = millis();
-  unsigned long elapsedTime = currentTime - oldTime;
 
   // Send calculated flow rate to Blynk API
   detachInterrupt(digitalPinToInterrupt(FLOW_SENSOR_PIN));
@@ -207,9 +201,9 @@ void sendSensor() {
   display.setCursor(0, 0);
   display.setTextSize(1);
   display.setTextColor(SSD1306_WHITE);
-  display.println("Temp: " + String(t) + " C");
-  display.println("Humidity: " + String(h) + " %");
-  display.println("Flow Rate: " + String(flowRate) + " L/min");
+  display.println("Temp: " + String(temperature) + " C");
+  display.println("Humidity: " + String(humidity) + " %");
+  display.println("Flow: " + String(flowRate) + " L/min");
   display.display();
 
 }
@@ -238,7 +232,6 @@ void setup() {
   display.setCursor(0, 0);
   display.println("Connecting to WiFi...");
   display.display();
-  delay(200);
 
   WiFi.begin(WIFI_SSID, WIFI_PASS);
   while (WiFi.status() != WL_CONNECTED) {
