@@ -70,46 +70,51 @@ void sendTempAlert(float temperature) {
     message.addRecipient("Recipient", EMAIL_RECIPIENT);
 
     // HTML content for email
-    String htmlContent = "<html>"
-    "<head>"
-      "<meta charset=\"utf-8\" />"
-      "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />"
-      "<title>Temperature Alert</title>"
-    "</head>"
-    "<body style=\"margin: 0; padding: 0; background-color: #f3f4f6;\">"
-      "<div style=\"max-width: 580px; margin: 0 auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 32px 24px; background-color: #ffffff;\">"
-        "<div style=\"border-bottom: 2px solid #38a169; padding-bottom: 16px; margin-bottom: 24px;\">"
-          "<h1 style=\"color: #38a169; font-size: 30px; font-weight: 600; letter-spacing: -0.025em; margin: 0;\">Temperature Monitor</h1>"
-          "<div style=\"display: inline-block; background-color: #ffe6e6; color: #e74c3c; padding: 4px 12px; border-radius: 6px; font-size: 18px; font-weight: 500; margin-top: 8px;\">Critical Alert</div>"
-        "</div>"
+    String htmlContent = R"(
+    <html>
+      <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Temperature Alert</title>
+      </head>
+      <body style="margin: 0; padding: 0; background-color: #f3f4f6;">
+        <div style="max-width: 580px; margin: 0 auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 32px 24px; background-color: #ffffff;">
+          <div style="border-bottom: 2px solid #38a169; padding-bottom: 16px; margin-bottom: 24px;">
+            <h1 style="color: #38a169; font-size: 30px; font-weight: 600; letter-spacing: -0.025em; margin: 0;">AI-Ponics</h1>
+            <div style="display: inline-block; background-color: #ffe6e6; color: #e74c3c; padding: 4px 12px; border-radius: 6px; font-size: 18px; font-weight: 500; margin-top: 8px;">Temperature Alert</div>
+          </div>
 
-        "<div style=\"font-size: 48px; font-weight: 700; color: #e74c3c; margin: 24px 0; font-feature-settings: 'tnum'; font-variant-numeric: tabular-nums;\">" + String(temperature) + "°C</div>"
+          <div style="font-size: 48px; font-weight: 700; color: #e74c3c; margin: 24px 0; font-feature-settings: 'tnum'; font-variant-numeric: tabular-nums;">)" + String(temperature) + R"(°C</div>
 
-        "<div style=\"color: #374151; line-height: 1.6; margin-bottom: 24px;\">"
-          "<p style=\"font-size: 16px;\">AI-Ponics has detected high temperature within your system!</p>"
-        "</div>"
+          <div style="color: #374151; line-height: 1.6; margin-bottom: 24px;">
+            <p style="font-size: 16px;">AI-Ponics has detected high temperature within your system!</p>
+          </div>
 
-        "<div style=\"background-color: #f0fff4; border-radius: 8px; padding: 16px; margin-bottom: 24px;\">"
-          "<div style=\"margin-bottom: 12px;\">"
-            "<div style=\"font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280; margin-bottom: 4px;\">Status</div>"
-            "<div style=\"font-size: 15px; color: #111827; font-weight: 500;\">Above Critical Threshold</div>"
-          "</div>"
-          "<div style=\"margin-bottom: 12px;\">"
-            "<div style=\"font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280; margin-bottom: 4px;\">Time Detected</div>"
-            "<div style=\"font-size: 15px; color: #111827; font-weight: 500;\">" + String(millis()) + "</div>"
-          "</div>"
-          "<div style=\"margin-bottom: 12px;\">"
-            "<div style=\"font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280; margin-bottom: 4px;\">Required Action</div>"
-            "<div style=\"font-size: 15px; color: #111827; font-weight: 500;\">Immediate Inspection Required</div>"
-          "</div>"
-        "</div>"
+          <div style="background-color: #f0fff4; border-radius: 8px; padding: 16px; margin-bottom: 24px;">
+            <div style="margin-bottom: 12px;">
+              <div style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280; margin-bottom: 4px;">Status</div>
+              <div style="font-size: 15px; color: #111827; font-weight: 500;">Above Critical Threshold</div>
+            </div>
+            <div style="margin-bottom: 12px;">
+              <div style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280; margin-bottom: 4px;">Required Action</div>
+              <div style="font-size: 15px; color: #111827; font-weight: 500;">
+                Immediate action is required. Please follow the steps below:
+                <ul style="font-size: 14px; color: #111827; font-weight: 400; margin-top: 8px; padding-left: 20px;">
+                  <li>Ensure proper airflow within the system and remove any obstructions.</li>
+                  <li>If applicable, reduce the environmental temperature by adjusting the AC or moving the system to a cooler location.</li>
+                  <li>Monitor the temperature and ensure that it returns to a safe range (below 36°C).</li>
+                </ul>
+              </div>
+            </div>
+          </div>
 
-        "<div style=\"color: #6b7280; font-size: 14px; border-top: 1px solid #e5e7eb; padding-top: 16px; margin-top: 32px;\">"
-          "<p>This is an automated alert from your monitoring system. Do not reply to this email.</p>"
-        "</div>"
-      "</div>"
-    "</body>"
-  "</html>";
+          <div style="color: #6b7280; font-size: 14px; border-top: 1px solid #e5e7eb; padding-top: 16px; margin-top: 32px;">
+            <p>This is an automated alert from your monitoring system. Do not reply to this email.</p>
+          </div>
+        </div>
+      </body>
+    </html>
+    )";
 
     message.html.content = htmlContent.c_str();
     message.html.charSet = "utf-8";
