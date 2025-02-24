@@ -4,7 +4,7 @@ const apiKey = process.env.REACT_APP_API_KEY;
 const genAI = new GoogleGenerativeAI(apiKey);
 
 // Fetch user data from firebase
-export const fetchUserData = async (doc, currentUser, db, getDoc, setSensorDataLoaded, setPlantName, setDaysSincePlanting, fetchSensorDataFromBlynk, message) => {
+export const fetchUserData = async (doc, currentUser, db, getDoc, setSensorDataLoaded, setPlantName, setDaysSincePlanting, setBlynkApiKey, fetchSensorDataFromBlynk, message) => {
   try {
     const docRef = doc(db, 'users', currentUser.uid);
     const docSnap = await getDoc(docRef);
@@ -21,6 +21,7 @@ export const fetchUserData = async (doc, currentUser, db, getDoc, setSensorDataL
       selectedApiKey = '',
     } = docSnap.data();
 
+    setBlynkApiKey(selectedApiKey);
     setPlantName(plantName);
     setDaysSincePlanting(daysSincePlanting);
 
@@ -50,16 +51,16 @@ export const generateGreeting = async (plantName, daysSincePlanting, temperature
 };
 
 // Greet User Function
-export async function greetUser(sensorDataLoaded, isApiKeyValid, setMessages, selectedApiKey, isDeviceOnline, temperature, MAX_TEMPERATURE, MIN_TEMPERATURE, plantName, daysSincePlanting, humidity) {
+export async function greetUser(sensorDataLoaded, isApiKeyValid, setMessages, blynkApiKey, isDeviceOnline, temperature, MAX_TEMPERATURE, MIN_TEMPERATURE, plantName, daysSincePlanting, humidity) {
 
   const getErrorState = () => {
     if (!sensorDataLoaded) return 'LOADING';
     if (!isApiKeyValid) return 'INVALID_KEY';
-    if (!selectedApiKey) return 'MISSING_KEY';
+    if (!blynkApiKey) return 'MISSING_KEY';
     if (!isDeviceOnline) return 'OFFLINE';
     return 'READY';
   };
-
+  
   switch (getErrorState()) {
     case 'LOADING':
       setMessages([{ user: false, text: "Sensor data is still loading... Please wait." }]);
