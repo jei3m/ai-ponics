@@ -48,9 +48,6 @@ const Chat = () => {
   const [daysSincePlanting, setDaysSincePlanting] = useState(0);
   const [plantName, setPlantName] = useState('');
 
-  // API Key States
-  const [blynkApiKey, setBlynkApiKey] = useState('');
-
   // Loading States
   const [loading, setLoading] = useState(false);
   const [sensorDataLoaded, setSensorDataLoaded] = useState(false);
@@ -92,12 +89,12 @@ const Chat = () => {
       setSensorDataLoaded(true); // Exit early if no user is logged in
       return;
     }
-    fetchUserData(doc, currentUser, db, getDoc, setSensorDataLoaded, setPlantName, setDaysSincePlanting, setBlynkApiKey, fetchSensorDataFromBlynk, message);
+    fetchUserData(doc, currentUser, db, getDoc, setSensorDataLoaded, setPlantName, setDaysSincePlanting, fetchSensorDataFromBlynk, message);
 }, [currentUser]);
 
   // Function for Greeting the User
   useEffect(() => {
-    greetUser(sensorDataLoaded, isApiKeyValid, setMessages, blynkApiKey, isDeviceOnline, temperature, MAX_TEMPERATURE, MIN_TEMPERATURE, plantName, daysSincePlanting, humidity);
+    greetUser(sensorDataLoaded, isApiKeyValid, setMessages, isDeviceOnline, temperature, MAX_TEMPERATURE, MIN_TEMPERATURE, plantName, daysSincePlanting, humidity);
   }, [sensorDataLoaded, isDeviceOnline, plantName, daysSincePlanting, temperature, humidity]);
 
   // AI conversation after greeting
