@@ -4,7 +4,7 @@ const apiKey = process.env.REACT_APP_API_KEY;
 const genAI = new GoogleGenerativeAI(apiKey);
 
 // Fetch user data from firebase
-export const fetchUserData = async (doc, currentUser, db, getDoc, setSensorDataLoaded, setPlantName, setDaysSincePlanting, setBlynkApiKey, fetchSensorDataFromBlynk, message) => {
+export const fetchUserData = async (doc, currentUser, db, getDoc, setSensorDataLoaded, setPlantName, setDaysSincePlanting, fetchSensorDataFromBlynk, message) => {
   try {
     const docRef = doc(db, 'users', currentUser.uid);
     const docSnap = await getDoc(docRef);
@@ -23,7 +23,6 @@ export const fetchUserData = async (doc, currentUser, db, getDoc, setSensorDataL
 
     setPlantName(plantName);
     setDaysSincePlanting(daysSincePlanting);
-    setBlynkApiKey(selectedApiKey); // Update the state with the fetched API key
 
     if (!selectedApiKey) {
       setSensorDataLoaded(true);
@@ -51,26 +50,35 @@ export const generateGreeting = async (plantName, daysSincePlanting, temperature
 };
 
 // Greet User Function
-export async function greetUser(sensorDataLoaded, isApiKeyValid, setMessages, blynkApiKey, isDeviceOnline, temperature, MAX_TEMPERATURE, MIN_TEMPERATURE, plantName, daysSincePlanting, humidity) {
+export async function greetUser(sensorDataLoaded, isApiKeyValid, setMessages, selectedApiKey, isDeviceOnline, temperature, MAX_TEMPERATURE, MIN_TEMPERATURE, plantName, daysSincePlanting, humidity) {
 
-  if (!sensorDataLoaded) {
-    setMessages([{ user:false, text: "Sensor data is still loading... Please wait."}])
-    return;
-  }
+  const getErrorState = () => {
+    if (!sensorDataLoaded) return 'LOADING';
+    if (!isApiKeyValid) return 'INVALID_KEY';
+    if (!selectedApiKey) return 'MISSING_KEY';
+    if (!isDeviceOnline) return 'OFFLINE';
+    return 'READY';
+  };
 
-  if (!isApiKeyValid) {
-    setMessages([{ user:false, text: "Your API key is invalid. Please check your API key and try again." }]);
-    return;
-  }
-
-  if (!blynkApiKey) {
-    setMessages([{ user:false, text: "Your API key missing. Please provide a valid API key to proceed."}])
-    return;
-  }
-
-  if (!isDeviceOnline) {
-    setMessages([{ user:false, text: "I apologize, but I cannot provide readings as your Aeroponic System appears to be offline."}])
-    return;
+  switch (getErrorState()) {
+    case 'LOADING':
+      setMessages([{ user: false, text: "Sensor data is still loading... Please wait." }]);
+      return;
+    
+    case 'INVALID_KEY':
+      setMessages([{ user: false, text: "Your API key is invalid. Please check your API key and try again." }]);
+      return;
+    
+    case 'MISSING_KEY':
+      setMessages([{ user: false, text: "Your API key missing. Please provide a valid API key to proceed." }]);
+      return;
+    
+    case 'OFFLINE':
+      setMessages([{ user: false, text: "I apologize, but I cannot provide readings as your Aeroponic System appears to be offline." }]);
+      return;
+    
+    case 'READY':
+      break;
   }
 
   try {
@@ -80,7 +88,6 @@ export async function greetUser(sensorDataLoaded, isApiKeyValid, setMessages, bl
       : temperature < MIN_TEMPERATURE
       ? "**Warning:** Temperature is too Cold"
       : "Need help or have questions? Don&apos;t hesitate to ask!";
-
 
     // Hard-coded message greeting, to reduce loading time from AI generated greeting
     const greetingText = 
