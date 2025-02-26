@@ -8,7 +8,6 @@ import { db, auth } from "../firebase";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
-import { useApiKey } from "../context/ApiKeyContext";
 import { 
   fetchSensorData,
   fetchUserData,
