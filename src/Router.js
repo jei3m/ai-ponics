@@ -16,7 +16,6 @@ import NotFound from './pages/NotFound';
 
 // Import routes and context
 import PrivateRoutes from './routes/PrivateRoutes';
-import { ApiKeyProvider } from './context/ApiKeyContext';
 import Loading from './pages/components/Loading';
 import Layout from './layout/Layout';
 
