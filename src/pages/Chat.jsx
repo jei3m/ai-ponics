@@ -20,7 +20,6 @@ import {
 
 import { 
   fetchUserData,
-  generateGreeting, 
   greetUser,
   generateAIResponse, 
   fileToGenerativePart, 
