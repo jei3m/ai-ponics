@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { message } from "antd";
-import Header from "./components/Header";
 import "./css/Sensors.css";
 import TempHumidCard from "./components/Sensors/TempHumid";
-import TempStatus from "./components/Sensors/TempStatus";
 import FlowRate from "./components/Sensors/FlowRate";
 import PlantInfo from "./components/Sensors/PlantInfo";
 import { db, auth } from "../firebase";
@@ -22,17 +20,28 @@ import {
 dayjs.extend(customParseFormat);
 
 function Sensors() {
+
+  // States for sensor data
   const [temperature, setTemperature] = useState(null);
   const [humidity, setHumidity] = useState(null);
   const [flowRate, setFlowRate] = useState(null);
+
+  // States for plant info
   const [plantingDate, setPlantingDate] = useState(null);
   const [plantName, setPlantName] = useState("");
+  const [isPlantInfoChanged, setIsPlantInfoChanged] = useState(false);
+
+
   const [isLoading, setIsLoading] = useState(false);
+
+  // States for conditional rendering
   const [isApiKeyValid, setIsApiKeyValid] = useState(true);
   const [isDeviceOnline, setIsDeviceOnline] = useState(true);
-  const [isPlantInfoChanged, setIsPlantInfoChanged] = useState(false);
-  const { selectedApiKey } = useApiKey();
+
+  // States for user info
+  // const { selectedApiKey } = useApiKey();
   const [user, setUser] = useState(null);
+  const [selectedApiKey, setSelectedApiKey] = useState(null);
 
   // Fetch sensor data effect
   useEffect(() => {
@@ -73,7 +82,7 @@ function Sensors() {
 
   // Fetch user data effect
   useEffect(() => {
-    fetchUserData(setUser, setPlantingDate, setPlantName);
+    fetchUserData(setUser, setPlantingDate, setPlantName, setSelectedApiKey);
   }, []);
 
   // Automatically sync daysSincePlanting
