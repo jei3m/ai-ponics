@@ -38,74 +38,72 @@ function Router() {
   }
 
   return (
-    <ApiKeyProvider>
-      <Routes>
+    <Routes>
 
-        <Route path="/" element={<Login />} />
-        <Route path="*" element={<NotFound />} />
+      <Route path="/" element={<Login />} />
+      <Route path="*" element={<NotFound />} />
 
-        <Route
-          path="/chat"
-          element={
-            <PrivateRoutes>
-              <Chat />
-            </PrivateRoutes>
-          }
-        />
+      <Route
+        path="/chat"
+        element={
+          <PrivateRoutes>
+            <Chat />
+          </PrivateRoutes>
+        }
+      />
 
-        <Route
-          path="/home"
-          element={
-            <PrivateRoutes>
-              <Layout>
-                <Sensors />
-              </Layout>
-            </PrivateRoutes>
-          }
-        />
+      <Route
+        path="/home"
+        element={
+          <PrivateRoutes>
+            <Layout>
+              <Sensors />
+            </Layout>
+          </PrivateRoutes>
+        }
+      />
 
-        <Route
-          path="/forum"
-          element={
-            <PrivateRoutes>
-              <Layout>
-                <Forum />
-              </Layout>
-            </PrivateRoutes>
-          }
-        />
+      <Route
+        path="/forum"
+        element={
+          <PrivateRoutes>
+            <Layout>
+              <Forum />
+            </Layout>
+          </PrivateRoutes>
+        }
+      />
+      
+      <Route
+        path="/forum/:id"
+        element={
+          <PrivateRoutes>
+            <Layout>
+              <DetailedView />
+            </Layout>
+          </PrivateRoutes>
+        }
+      />
+
+      <Route
+        path="/loading"
+        element={
+          <PrivateRoutes>
+            <Loading/>
+          </PrivateRoutes>
+        }
+      />
+
+      <Route
+        path="/detect"
+        element={
+          <PrivateRoutes>
+            <DiseaseDetection/>
+          </PrivateRoutes>
+        }
+      />
         
-        <Route
-          path="/forum/:id"
-          element={
-            <PrivateRoutes>
-              <Layout>
-                <DetailedView />
-              </Layout>
-            </PrivateRoutes>
-          }
-        />
-
-        <Route
-          path="/loading"
-          element={
-            <PrivateRoutes>
-              <Loading/>
-            </PrivateRoutes>
-          }
-        />
-
-        <Route
-          path="/detect"
-          element={
-            <PrivateRoutes>
-              <DiseaseDetection/>
-            </PrivateRoutes>
-          }
-        />
-         
-      </Routes>
-    </ApiKeyProvider>
+    </Routes>
   );
 }
 
