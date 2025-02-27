@@ -181,7 +181,7 @@ function DiseaseDetection() {
 
   useEffect(() => {
     fetchSelectedApiKey(currentUser, setSelectedApiKey, doc, getDoc);
-  }, [selectedApiKey]);
+  }, [selectedApiKey, currentUser]);
   
   useEffect(() => {
 
