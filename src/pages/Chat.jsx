@@ -23,7 +23,6 @@ import {
   greetUser,
   generateAIResponse, 
   fileToGenerativePart, 
-  getBase64, 
   components 
 } from '../services/chatService';
 
@@ -39,7 +38,6 @@ const Chat = () => {
   // States for chat messages
   const [textPrompt, setTextPrompt] = useState('');
   const [messages, setMessages] = useState([]);
-  const [image, setImage] = useState('');
   const [imagePreview, setImagePreview] = useState(null);
   const [imageInlineData, setImageInlineData] = useState('');
 
@@ -48,7 +46,7 @@ const Chat = () => {
   const [plantName, setPlantName] = useState('');
 
   // API Key States
-  const [blynkApiKey, setBlynkApiKey] = useState('');
+  const [selectedApiKey, setSelectedApiKey] = useState('');
 
   // Loading States
   const [loading, setLoading] = useState(false);
@@ -91,21 +89,18 @@ const Chat = () => {
       setSensorDataLoaded(true); // Exit early if no user is logged in
       return;
     }
-    fetchUserData(doc, currentUser, db, getDoc, setSensorDataLoaded, setPlantName, setDaysSincePlanting, setBlynkApiKey, fetchSensorDataFromBlynk, message);
+    fetchUserData(doc, currentUser, db, getDoc, setSensorDataLoaded, setPlantName, setDaysSincePlanting, setSelectedApiKey, fetchSensorDataFromBlynk, message);
 }, [currentUser]);
 
   // Function for Greeting the User
   useEffect(() => {
-    greetUser(sensorDataLoaded, isApiKeyValid, setMessages, blynkApiKey, isDeviceOnline, temperature, MAX_TEMPERATURE, MIN_TEMPERATURE, plantName, daysSincePlanting, humidity);
-  }, [sensorDataLoaded, isDeviceOnline, plantName, daysSincePlanting, temperature, humidity]);
+    greetUser(sensorDataLoaded, isApiKeyValid, setMessages, selectedApiKey,isDeviceOnline, temperature, MAX_TEMPERATURE, MIN_TEMPERATURE, plantName, daysSincePlanting, humidity, flowRate);
+  }, [sensorDataLoaded, isDeviceOnline, plantName, daysSincePlanting, temperature, humidity, flowRate, isApiKeyValid, selectedApiKey]);
 
   // AI conversation after greeting
   async function aiRun() {
-    // If system is offline, do not proceed
-    if (!isDeviceOnline) {
-      return;
-    }
-  
+    if (!isDeviceOnline) return;
+    
     setLoading(true);
     try {
       // Add user's message immediately
@@ -122,33 +117,35 @@ const Chat = () => {
   
       const previousMessages = messages;
       const responseStream = generateAIResponse(textPrompt, imageInlineData, plantName, daysSincePlanting, temperature, humidity, previousMessages);
-      let accumulatedText = '';
+      
+      // Create a local variable to store the accumulated text
+      let currentText = '';
   
-      // Separate the response into chunks and stream letter by letter
       for await (const chunk of responseStream) {
-        for (let i = 0; i < chunk.length; i++) {
-          accumulatedText += chunk[i]; // Add one character at a time
-          setMessages((prevMessages) => {
-            const newMessages = [...prevMessages];
-            newMessages[newMessages.length - 1] = {
-              user: false,
-              text: accumulatedText,
-              isStreaming: true
-            };
-            return newMessages;
-          });
-  
-          // Add a small delay between characters for a smooth typing effect
-          await new Promise((resolve) => setTimeout(resolve, 10)); // Delay
-        }
+        // Update the text in a closure-safe way
+        currentText += chunk;
+        const textToDisplay = currentText; // Create a stable reference
+        
+        setMessages((prevMessages) => {
+          const newMessages = [...prevMessages];
+          newMessages[newMessages.length - 1] = {
+            user: false,
+            text: textToDisplay,
+            isStreaming: true
+          };
+          return newMessages;
+        });
+        
+        await new Promise((resolve) => setTimeout(resolve, 10));
       }
-  
-      // Mark streaming as complete
+
+      // Final update with complete text
+      const finalText = currentText;
       setMessages((prevMessages) => {
         const newMessages = [...prevMessages];
         newMessages[newMessages.length - 1] = {
           user: false,
-          text: accumulatedText,
+          text: finalText,
           isStreaming: false
         };
         return newMessages;
@@ -168,7 +165,6 @@ const Chat = () => {
       aiRun();
       setTextPrompt('');
       setImagePreview(null);
-      setImage('');
       setImageInlineData('');
     } else if (imageInlineData && !textPrompt) {
       message.error('Please add additional information when sending an image.')
@@ -186,8 +182,11 @@ const Chat = () => {
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
-      const base64 = await getBase64(file);
-      setImage(base64);
+      if (!file.type.startsWith('image/')) {
+        message.error('Please select an image file');
+        e.target.value = '';
+        return;
+      }
 
       const imageData = await fileToGenerativePart(file);
       setImageInlineData(imageData);
@@ -230,7 +229,6 @@ const Chat = () => {
   const handleRemoveImage = () => {
     setImagePreview(null);
     setImageInlineData('');
-    setImage('');
   }
 
   // Scroll to latest generated message
@@ -239,13 +237,18 @@ const Chat = () => {
     messageEnd.current?.scrollIntoView({behavior: "smooth"})
   },[messages])
 
+  // Refresh page when user clicks on header
+  const handleHeaderClick = () => {
+    window.location.reload();
+  }
+
   return (
     <>
       <div className="App-Chat">
         <div className="chat-container">
 
           <div className="header">
-            <h2>Ask AI-Ponics!</h2>
+            <h2 onClick={handleHeaderClick}>Ask AI-Ponics!</h2>
             <Button className="chat-back-button" type="text" onClick={() => navigate(-1)}>
               <FontAwesomeIcon className="chat-back-button-icon" icon={faArrowLeft} />
               Back
