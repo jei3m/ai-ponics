@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
-import { db } from "../firebase";
 import {
   MeetingProvider,
   useMeeting,
@@ -12,6 +11,7 @@ import Header from "./components/Header";
 import Chat from "../pages/Chat";
 import "./css/DiseaseDetection.css";
 import { UserAuth } from "../context/AuthContext";
+import { fetchSelectedApiKey } from "../services/headerService";
 import { Spin } from "antd";
 import {
   fetchSensorData,
@@ -179,24 +179,8 @@ function DiseaseDetection() {
   const[flowRate, setFlowRate] = useState(null);
   const [selectedApiKey, setSelectedApiKey] = useState(null);
 
-  const fetchSelectedApiKey = async () => {
-    try {
-      const docRef = doc(db, 'users', currentUser.uid);
-      const docSnap = await getDoc(docRef);
-  
-      const {
-        selectedApiKey = '',
-      } = docSnap.data();
-  
-      setSelectedApiKey(selectedApiKey);
-  
-    } catch (error) {
-      console.error('Error fetching user data:', error);
-    }
-  };
-
   useEffect(() => {
-    fetchSelectedApiKey();
+    fetchSelectedApiKey(currentUser, setSelectedApiKey, doc, getDoc);
   }, [selectedApiKey]);
   
   useEffect(() => {
