@@ -375,28 +375,42 @@ void setup() {
   display.display();
 
   WiFi.begin(WIFI_SSID, WIFI_PASS);
- 
-  Serial.println("WiFi connected.");
-  display.clearDisplay();
-  display.setTextSize(1);
-  display.setTextColor(SSD1306_WHITE);
-  display.setCursor(0, 0);
-  display.println("WiFi Connected.");
-  display.display();
-  delay(1000);
+  delay(5000); // Delay for 5 seconds
 
-  // Initialize Blynk
-  Blynk.begin(auth, WIFI_SSID, WIFI_PASS);
+  if (WiFi.status() == WL_CONNECTED) {
+    Serial.println("WiFi connected.");
+    display.clearDisplay();
+    display.setTextSize(1);
+    display.setTextColor(SSD1306_WHITE);
+    display.setCursor(0, 0);
+    display.println("WiFi Connected.");
+    display.display();
+    delay(1000);
 
-  // Initialize DHT sensor
-  dht.begin();
+    // Initialize Blynk
+    Blynk.begin(auth, WIFI_SSID, WIFI_PASS);
 
-  // Initialize water flow sensor
-  pinMode(FLOW_SENSOR_PIN, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(FLOW_SENSOR_PIN), pulseCounter, FALLING);
+    // Initialize DHT sensor
+    dht.begin();
 
-  // Set up timer to read sensor data every second
-  timer.setInterval(1000L, sendSensor);
+    // Initialize water flow sensor
+    pinMode(FLOW_SENSOR_PIN, INPUT_PULLUP);
+    attachInterrupt(digitalPinToInterrupt(FLOW_SENSOR_PIN), pulseCounter, FALLING);
+
+    // Set up timer to read sensor data every second
+    timer.setInterval(1000L, sendSensor);
+  } else {
+    Serial.println("\nFailed to connect to WiFi!");
+    display.clearDisplay();
+    display.setTextSize(1);
+    display.setTextColor(SSD1306_WHITE);
+    display.setCursor(0, 0);
+    display.println("WiFi Connection Failed!");
+    display.println("\nRestarting...");
+    display.display();
+    delay(3000);
+    ESP.restart(); // Restart the ESP32 to try again
+  }
 }
 
 void loop() {
