@@ -82,7 +82,7 @@ const Chat = () => {
       return;
     }
     fetchUserData(doc, currentUser, db, getDoc, setSensorDataLoaded, setPlantName, setDaysSincePlanting, setSelectedApiKey, fetchSensorDataFromBlynk, message);
-}, [currentUser]);
+  }, [currentUser]);
 
   // Function for Greeting the User
   useEffect(() => {
