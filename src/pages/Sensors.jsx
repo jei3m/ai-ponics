@@ -5,7 +5,7 @@ import TempHumidCard from "./components/Sensors/TempHumid";
 import FlowRate from "./components/Sensors/FlowRate";
 import PlantInfo from "./components/Sensors/PlantInfo";
 import { db, auth } from "../firebase";
-import { doc, setDoc, getDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { 
@@ -57,7 +57,6 @@ function Sensors() {
       if (isMounted) {
         await fetchSensorData({
           selectedApiKey,
-          user,
           setIsDeviceOnline,
           setTemperature,
           setHumidity,
@@ -93,20 +92,9 @@ function Sensors() {
           const daysSincePlanting = calculateDaysSincePlanting(plantingDate);
 
           await setDoc(doc(db, "users", currentUser.uid), {
-            plantName,
-            plantingDate: plantingDate ? plantingDate.format('MM/DD/YYYY') : null,
             daysSincePlanting
           }, { merge: true });
 
-          // Update cache data upon syncing
-          localStorage.setItem(`plantData_${currentUser.uid}`, JSON.stringify({
-            plantName,
-            plantingDate: plantingDate ? plantingDate.format('MM/DD/YYYY') : null,
-            daysSincePlanting,
-            timestamp: new Date().getTime()
-          }));
-
-          // console.log('Days since planting synced successfully!');
         } catch (error) {
           console.error('Failed to sync days since planting:', error);
           message.error('Failed to sync days since planting:', error.message);
@@ -136,14 +124,6 @@ function Sensors() {
           plantingDate: plantingDate ? plantingDate.format('MM/DD/YYYY') : null,
           daysSincePlanting: calculateDaysSincePlanting(plantingDate)
         }, { merge: true });
-
-        // Update cache data upon saving
-        localStorage.setItem(`plantData_${currentUser.uid}`, JSON.stringify({
-          plantName,
-          plantingDate: plantingDate ? plantingDate.format('MM/DD/YYYY') : null,
-          daysSincePlanting: calculateDaysSincePlanting(plantingDate),
-          timestamp: new Date().getTime()
-        }));
         
         message.success('Plant data saved successfully!');
         setIsPlantInfoChanged(false);
