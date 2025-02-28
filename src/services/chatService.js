@@ -1,10 +1,12 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { getSystemInstructions } from "../chatbot-config/systemInstructions";
+import {getSystemKnowledge} from "../chatbot-config/systemKnowledge"
 
 const apiKey = process.env.REACT_APP_API_KEY;
 const genAI = new GoogleGenerativeAI(apiKey);
 
 // Fetch user data from firebase
-export const fetchUserData = async (doc, currentUser, db, getDoc, setSensorDataLoaded, setPlantName, setDaysSincePlanting, setBlynkApiKey, fetchSensorDataFromBlynk, message) => {
+export const fetchUserData = async (doc, currentUser, db, getDoc, setSensorDataLoaded, setPlantName, setDaysSincePlanting, setSelectedApiKey, fetchSensorDataFromBlynk, message) => {
   try {
     const docRef = doc(db, 'users', currentUser.uid);
     const docSnap = await getDoc(docRef);
@@ -21,7 +23,7 @@ export const fetchUserData = async (doc, currentUser, db, getDoc, setSensorDataL
       selectedApiKey = '',
     } = docSnap.data();
 
-    setBlynkApiKey(selectedApiKey);
+    setSelectedApiKey(selectedApiKey);
     setPlantName(plantName);
     setDaysSincePlanting(daysSincePlanting);
 
@@ -51,12 +53,12 @@ export const generateGreeting = async (plantName, daysSincePlanting, temperature
 };
 
 // Greet User Function
-export async function greetUser(sensorDataLoaded, isApiKeyValid, setMessages, blynkApiKey, isDeviceOnline, temperature, MAX_TEMPERATURE, MIN_TEMPERATURE, plantName, daysSincePlanting, humidity) {
+export async function greetUser(sensorDataLoaded, isApiKeyValid, setMessages, selectedApiKey, isDeviceOnline, temperature, MAX_TEMPERATURE, MIN_TEMPERATURE, plantName, daysSincePlanting, humidity) {
 
   const getErrorState = () => {
     if (!sensorDataLoaded) return 'LOADING';
     if (!isApiKeyValid) return 'INVALID_KEY';
-    if (!blynkApiKey) return 'MISSING_KEY';
+    if (!selectedApiKey) return 'MISSING_KEY';
     if (!isDeviceOnline) return 'OFFLINE';
     return 'READY';
   };
@@ -80,6 +82,10 @@ export async function greetUser(sensorDataLoaded, isApiKeyValid, setMessages, bl
     
     case 'READY':
       break;
+
+    default:
+      setMessages([{ user: false, text: "An unexpected error occurred. Please try again." }]);
+      return;
   }
 
   try {
@@ -96,8 +102,8 @@ export async function greetUser(sensorDataLoaded, isApiKeyValid, setMessages, bl
 * Here's a quick update on your system:\n
   *   **Plant:** ${plantName}
   *   **Age:** ${daysSincePlanting} days
-  *   **Temperature:** ${temperature}
-  *   **Humidity:** ${humidity}\n
+  *   **Temperature:** ${temperature} °C
+  *   **Humidity:** ${humidity}% \n
 ${warningMessage}`
 
     // const greetingText = await generateGreeting(plantName, daysSincePlanting, temperature, humidity);
@@ -112,38 +118,32 @@ ${warningMessage}`
 export const generateAIResponse = async function* ( textPrompt, imageInlineData, plantName, daysSincePlanting, temperature, humidity, previousMessages = [] ) {
   const model = genAI.getGenerativeModel({
     model: "gemini-2.0-flash-exp", // Recently released 2.0 Flash Model
-    systemInstruction: `
-    You are AI-Ponics, an Aeroponics expert. 
-    Provide concise and friendly answers to user queries. 
-    Never start your messages with "AI-Ponics:".
-    About messageHistory, you are AI-Ponics, then User is the one chatting you.
-    Always identify yourself when asked "Who are you?" or "What are you?" by responding, "I am AI-Ponics, an Aeroponics expert here to help you." 
-    Keep your responses relevant to the user's input. 
-    Take note that the plant name is ${plantName}, and it has been ${daysSincePlanting} days since planting. 
-    Sensor readings: temperature is ${temperature}°C and humidity is ${humidity}%.`,
+    systemInstruction: getSystemInstructions(plantName, daysSincePlanting, temperature, humidity),
   });
 
-  // Start with the previous messages (AI Greeting)
-  const messageHistory = previousMessages.map((msg) => ({
-    text: `${msg.user ? "User" : "AI-Ponics"} : ${msg.text}`,
+  // Declaration of messageHistory
+  const chatContext = previousMessages.filter((_, index) => index !== 0).map((msg) => ({
+    text: msg.user ? `User: ${msg.text}` : msg.text,
   }));
 
   // Append the current user prompts (Text and Images) as the latest entry
   if (textPrompt) {
-    messageHistory.push({ text: `User : ${textPrompt}` });
+    chatContext.push({ text: `User : ${textPrompt}` });
   }
 
   if (imageInlineData) {
-    messageHistory.push(imageInlineData);
+    chatContext.push(imageInlineData);
   }
 
+  // Append Custom Knowledge Base
+  chatContext.push({text: `System Knowledge: ${getSystemKnowledge()}`});
+
   // Logging message history for debugging
-  console.log(`textPrompt: ${textPrompt}`);
-  console.log(`messageHistory: ${JSON.stringify(messageHistory)}`);
+  // console.log(`textPrompt: ${textPrompt}`);
+  // console.log(`chatContext: ${JSON.stringify(chatContext)}`);
 
   // Generate content stream then yield generated chunks
-  const result = await model.generateContentStream(messageHistory);
-
+  const result = await model.generateContentStream(chatContext);
   for await (const chunk of result.stream) {
     const chunkText = chunk.text();
     if (chunkText) {
@@ -164,14 +164,6 @@ export const fileToGenerativePart = async (blob) => {
     inlineData: { data: await base64EncodedDataPromise, mimeType: blob.type },
   };
 };
-
-// Responsible for image files to Base64 conversion
-export const getBase64 = (file) => new Promise(function (resolve, reject) {
-  let reader = new FileReader();
-  reader.readAsDataURL(file);
-  reader.onload = () => resolve(reader.result)
-  reader.onerror = (error) => reject('Error: ', error);
-})
 
 // Custom components for ReactMarkdown
 export const components = {
