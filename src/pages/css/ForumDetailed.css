@@ -52,13 +52,13 @@
 
 .forum-content p, .comment-text p, .reply-text p {
   font-size: 20px;
-margin: 0px;
+  margin: 0px;
   font-weight: normal;
   line-height: 1.4em;
 }
 
 .comment-text ol {
-  margin-top: 16px;
+  margin-top: -14px;
 }
 
 .comment-text ul{
@@ -175,6 +175,7 @@ li[data-list="bullet"]::before {
 
   .forum-content li, .comment-text li, .reply-text li {
     font-size: 14px;
+    margin-left: -8px;
   }
 
   .ql-editor {
@@ -214,6 +215,10 @@ li[data-list="bullet"]::before {
   .reply-date {
     font-size: 10px;
     margin: 3px 0;
+  }
+
+  .comment-text ol {
+    margin-top: 14px;
   }
 
   .forum-content li, .comment-text li, .reply-text li {

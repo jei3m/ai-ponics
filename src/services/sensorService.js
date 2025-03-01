@@ -42,7 +42,7 @@ export const fetchSensorData = async ({ selectedApiKey, setIsDeviceOnline, setTe
 };
 
 // Fetch user data for plant info
-export const fetchUserData = async (setUser, setPlantingDate, setPlantName) => {
+export const fetchUserData = async (setUser, setPlantingDate, setPlantName, setSelectedApiKey) => {
   const currentUser = auth.currentUser;
   if (currentUser) {
     setUser(currentUser);
@@ -51,15 +51,20 @@ export const fetchUserData = async (setUser, setPlantingDate, setPlantName) => {
     const docRef = doc(db, "users", currentUser.uid);
     const docSnap = await getDoc(docRef);
 
-    if (docSnap.exists()) {
-      const data = docSnap.data();
-      if (data.plantingDate) {
-        setPlantingDate(dayjs(data.plantingDate, 'MM/DD/YYYY'));
-      }
-      if (data.plantName) {
-        setPlantName(data.plantName);
-      }
+    if (!docSnap.exists()) {
+      console.log("No such document!");
+      return;
     }
+
+    const {
+      plantingDate = null,
+      plantName = "",
+      selectedApiKey = "",
+    } = docSnap.data();
+
+    setPlantingDate(dayjs(plantingDate, 'MM/DD/YYYY'));
+    setPlantName(plantName);
+    setSelectedApiKey(selectedApiKey);
   }
 };
 

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { doc, getDoc } from "firebase/firestore";
 import {
   MeetingProvider,
   useMeeting,
@@ -10,13 +11,13 @@ import Header from "./components/Header";
 import Chat from "../pages/Chat";
 import "./css/DiseaseDetection.css";
 import { UserAuth } from "../context/AuthContext";
+import { fetchSelectedApiKey } from "../services/headerService";
 import { Spin } from "antd";
 import {
   fetchSensorData,
   getStatusConfig,
   StatusMessage,
 } from "../services/sensorService";
-import { useApiKey } from "../context/ApiKeyContext";
 
 function JoinView({ initializeStream, setMode }) {
   const [streamId, setStreamId] = useState("");
@@ -175,10 +176,14 @@ function DiseaseDetection() {
   const [isLoading, setIsLoading] = useState(false);
   const [temperature, setTemperature] = useState(null);
   const [humidity, setHumidity] = useState(null);
-  const { selectedApiKey } = useApiKey();
+  const[flowRate, setFlowRate] = useState(null);
+  const [selectedApiKey, setSelectedApiKey] = useState(null);
 
   useEffect(() => {
-    console.log("Selected API Key:", selectedApiKey);
+    fetchSelectedApiKey(currentUser, setSelectedApiKey, doc, getDoc);
+  }, [selectedApiKey, currentUser]);
+  
+  useEffect(() => {
 
     if (!selectedApiKey) {
       console.error("API key is missing!");
@@ -194,6 +199,7 @@ function DiseaseDetection() {
           setIsDeviceOnline,
           setTemperature,
           setHumidity,
+          setFlowRate,
           setIsLoading,
           setIsApiKeyValid,
         });

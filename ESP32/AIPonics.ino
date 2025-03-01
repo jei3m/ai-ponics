@@ -30,8 +30,13 @@ unsigned long oldTime = 0;
 // Email setup
 SMTPSession smtp;
 
-unsigned long lastEmailSent = 0;
-const unsigned long emailInterval = 10 * 60 * 1000; // Interval is set to 10 minutes
+// Interval for Temp Alert
+unsigned long lastEmailTempSent = 0;
+const unsigned long emailTempInterval = 10 * 60 * 1000; // Interval is set to 10 minutes
+
+// Interval for Pump Alert
+unsigned long lastEmailPumpSent = 0;
+const unsigned long emailPumpInterval = 10 * 60 * 1000; // Interval is set to 10 minutes
 
 // OLED setup
 #define SCREEN_WIDTH 128
@@ -43,9 +48,9 @@ void IRAM_ATTR pulseCounter() {
   flowPulseCount++;
 }
 
-// Function to send email alert
+// Function to send Temperature email alert
 void sendTempAlert(float temperature) {
-  if (millis() - lastEmailSent >= emailInterval) {
+  if (millis() - lastEmailTempSent >= emailTempInterval) {
     Serial.println("Preparing email...");
     display.clearDisplay();
     display.setCursor(0, 0);
@@ -70,46 +75,51 @@ void sendTempAlert(float temperature) {
     message.addRecipient("Recipient", EMAIL_RECIPIENT);
 
     // HTML content for email
-    String htmlContent = "<html>"
-    "<head>"
-      "<meta charset=\"utf-8\" />"
-      "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />"
-      "<title>Temperature Alert</title>"
-    "</head>"
-    "<body style=\"margin: 0; padding: 0; background-color: #f3f4f6;\">"
-      "<div style=\"max-width: 580px; margin: 0 auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 32px 24px; background-color: #ffffff;\">"
-        "<div style=\"border-bottom: 2px solid #38a169; padding-bottom: 16px; margin-bottom: 24px;\">"
-          "<h1 style=\"color: #38a169; font-size: 30px; font-weight: 600; letter-spacing: -0.025em; margin: 0;\">Temperature Monitor</h1>"
-          "<div style=\"display: inline-block; background-color: #ffe6e6; color: #e74c3c; padding: 4px 12px; border-radius: 6px; font-size: 18px; font-weight: 500; margin-top: 8px;\">Critical Alert</div>"
-        "</div>"
+    String htmlContent = R"(
+    <html>
+      <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Temperature Alert</title>
+      </head>
+      <body style="margin: 0; padding: 0; background-color: #f3f4f6;">
+        <div style="max-width: 580px; margin: 0 auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 32px 24px; background-color: #ffffff;">
+          <div style="border-bottom: 2px solid #38a169; padding-bottom: 16px; margin-bottom: 24px;">
+            <h1 style="color: #38a169; font-size: 30px; font-weight: 600; letter-spacing: -0.025em; margin: 0;">AI-Ponics</h1>
+            <div style="display: inline-block; background-color: #ffe6e6; color: #e74c3c; padding: 4px 12px; border-radius: 6px; font-size: 18px; font-weight: 500; margin-top: 8px;">Temperature Alert</div>
+          </div>
 
-        "<div style=\"font-size: 48px; font-weight: 700; color: #e74c3c; margin: 24px 0; font-feature-settings: 'tnum'; font-variant-numeric: tabular-nums;\">" + String(temperature) + "°C</div>"
+          <div style="font-size: 48px; font-weight: 700; color: #e74c3c; margin: 24px 0; font-feature-settings: 'tnum'; font-variant-numeric: tabular-nums;">)" + String(temperature) + R"(°C</div>
 
-        "<div style=\"color: #374151; line-height: 1.6; margin-bottom: 24px;\">"
-          "<p style=\"font-size: 16px;\">AI-Ponics has detected high temperature within your system!</p>"
-        "</div>"
+          <div style="color: #374151; line-height: 1.6; margin-bottom: 24px;">
+            <p style="font-size: 16px;">AI-Ponics has detected high temperature within your system!</p>
+          </div>
 
-        "<div style=\"background-color: #f0fff4; border-radius: 8px; padding: 16px; margin-bottom: 24px;\">"
-          "<div style=\"margin-bottom: 12px;\">"
-            "<div style=\"font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280; margin-bottom: 4px;\">Status</div>"
-            "<div style=\"font-size: 15px; color: #111827; font-weight: 500;\">Above Critical Threshold</div>"
-          "</div>"
-          "<div style=\"margin-bottom: 12px;\">"
-            "<div style=\"font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280; margin-bottom: 4px;\">Time Detected</div>"
-            "<div style=\"font-size: 15px; color: #111827; font-weight: 500;\">" + String(millis()) + "</div>"
-          "</div>"
-          "<div style=\"margin-bottom: 12px;\">"
-            "<div style=\"font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280; margin-bottom: 4px;\">Required Action</div>"
-            "<div style=\"font-size: 15px; color: #111827; font-weight: 500;\">Immediate Inspection Required</div>"
-          "</div>"
-        "</div>"
+          <div style="background-color: #f0fff4; border-radius: 8px; padding: 16px; margin-bottom: 24px;">
+            <div style="margin-bottom: 12px;">
+              <div style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280; margin-bottom: 4px;">Status</div>
+              <div style="font-size: 15px; color: #111827; font-weight: 500;">Above Critical Threshold</div>
+            </div>
+            <div style="margin-bottom: 12px;">
+              <div style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280; margin-bottom: 4px;">Required Action</div>
+              <div style="font-size: 15px; color: #111827; font-weight: 500;">
+                Immediate action is required. Please follow the steps below:
+                <ul style="font-size: 14px; color: #111827; font-weight: 400; margin-top: 8px; padding-left: 20px;">
+                  <li>Ensure proper airflow within the system and remove any obstructions.</li>
+                  <li>If applicable, reduce the environmental temperature by adjusting the AC or moving the system to a cooler location.</li>
+                  <li>Monitor the temperature and ensure that it returns to a safe range (below 36°C).</li>
+                </ul>
+              </div>
+            </div>
+          </div>
 
-        "<div style=\"color: #6b7280; font-size: 14px; border-top: 1px solid #e5e7eb; padding-top: 16px; margin-top: 32px;\">"
-          "<p>This is an automated alert from your monitoring system. Do not reply to this email.</p>"
-        "</div>"
-      "</div>"
-    "</body>"
-  "</html>";
+          <div style="color: #6b7280; font-size: 14px; border-top: 1px solid #e5e7eb; padding-top: 16px; margin-top: 32px;">
+            <p>This is an automated alert from your monitoring system. Do not reply to this email.</p>
+          </div>
+        </div>
+      </body>
+    </html>
+    )";
 
     message.html.content = htmlContent.c_str();
     message.html.charSet = "utf-8";
@@ -147,7 +157,133 @@ void sendTempAlert(float temperature) {
       display.println("Email Alert sent!");
       display.display();
       delay(2000);
-      lastEmailSent = millis();
+      lastEmailTempSent = millis();
+    }
+
+    // Close the SMTP session
+    smtp.closeSession();
+  } else {
+    Serial.println("Email interval not reached.");
+    display.setCursor(0, 40);
+    display.setTextSize(1);
+    display.setTextColor(SSD1306_WHITE);
+    display.println("Email interval not reached.");
+    display.display();
+    delay(2000);
+  }
+}
+
+// Function to send Temperature email alert
+void sendPumpAlert() {
+  if (millis() - lastEmailPumpSent >= emailPumpInterval) {
+    Serial.println("Preparing email...");
+    display.clearDisplay();
+    display.setCursor(0, 0);
+    display.setTextSize(1);
+    display.setTextColor(SSD1306_WHITE);
+    display.println("Preparing email...");
+    display.display();
+
+    // Set up SMTP session configuration
+    ESP_Mail_Session session;
+    session.server.host_name = SMTP_HOST;
+    session.server.port = SMTP_PORT;
+    session.login.email = EMAIL_SENDER_ACCOUNT;
+    session.login.password = EMAIL_SENDER_PASSWORD;
+    session.login.user_domain = ""; 
+
+    // Set up the message
+    SMTP_Message message;
+    message.sender.name = "ESP32 Pump Alert";
+    message.sender.email = EMAIL_SENDER_ACCOUNT;
+    message.subject = "Pump Alert!";
+    message.addRecipient("Recipient", EMAIL_RECIPIENT);
+
+    // HTML content for email
+    String htmlContent = R"(
+    <html>
+      <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Pump Alert</title>
+      </head>
+      <body style="margin: 0; padding: 0; background-color: #f3f4f6;">
+        <div style="max-width: 580px; margin: 0 auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 32px 24px; background-color: #ffffff;">
+          <div style="border-bottom: 2px solid #38a169; padding-bottom: 16px; margin-bottom: 24px;">
+            <h1 style="color: #38a169; font-size: 30px; font-weight: 600; letter-spacing: -0.025em; margin: 0;">AI-Ponics</h1>
+            <div style="display: inline-block; background-color: #ffe6e6; color: #e74c3c; padding: 4px 12px; border-radius: 6px; font-size: 18px; font-weight: 500; margin-top: 8px;">Pump Alert</div>
+          </div>
+
+          <div style="font-size: 48px; font-weight: 700; color: #e74c3c; margin: 24px 0; font-feature-settings: 'tnum'; font-variant-numeric: tabular-nums;">0 L/min</div>
+
+          <div style="color: #374151; line-height: 1.6; margin-bottom: 24px;">
+            <p style="font-size: 16px;">AI-Ponics has detected that the pump is not operational.</p>
+          </div>
+
+          <div style="background-color: #f0fff4; border-radius: 8px; padding: 16px; margin-bottom: 24px;">
+            <div style="margin-bottom: 12px;">
+              <div style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280; margin-bottom: 4px;">Status</div>
+              <div style="font-size: 15px; color: #111827; font-weight: 500;">Water Flow Rate: 0 L/min</div>
+            </div>
+            <div style="margin-bottom: 12px;">
+              <div style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280; margin-bottom: 4px;">Required Action</div>
+              <div style="font-size: 15px; color: #111827; font-weight: 500;">
+                Immediate action is required. Please follow the steps below:
+                <ul style="font-size: 14px; color: #111827; font-weight: 400; margin-top: 8px; padding-left: 20px;">
+                  <li>Verify that the pump is powered on and properly connected.</li>
+                  <li>Inspect the water flow sensor to ensure it is functioning correctly.</li>
+                  <li>Check for any blockages in the water flow path that may be obstructing the pump.</li>
+                  <li>If the issue persists, inspect the pump for potential mechanical faults.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div style="color: #6b7280; font-size: 14px; border-top: 1px solid #e5e7eb; padding-top: 16px; margin-top: 32px;">
+            <p>This is an automated alert from your monitoring system. Do not reply to this email.</p>
+          </div>
+        </div>
+      </body>
+    </html>
+    )";
+
+    message.html.content = htmlContent.c_str();
+    message.html.charSet = "utf-8";
+    message.html.transfer_encoding = Content_Transfer_Encoding::enc_7bit;
+
+    // Connect to the SMTP server
+    if (!smtp.connect(&session)) {
+      Serial.println("Failed to connect to SMTP server: " + smtp.errorReason());
+      display.setCursor(0, 10);
+      display.setTextSize(1);
+      display.setTextColor(SSD1306_WHITE);
+      display.println("Failed to connect to SMTP server: " + smtp.errorReason());
+      display.display();
+      delay(2000);
+      return;
+    } else {
+      Serial.println("SMTP Connected.");
+      display.setCursor(0, 10);
+      display.setTextSize(1);
+      display.setTextColor(SSD1306_WHITE);
+      display.println("SMTP Connected.");
+      display.display();
+      delay(2000);
+    }
+
+    // Send the email
+    if (!MailClient.sendMail(&smtp, &message)) {
+      Serial.println("Failed to send email: " + smtp.errorReason());
+    } else {
+      Serial.println("Email Alert sent!");
+      display.clearDisplay();
+      display.setCursor(0, 0);
+      display.setTextSize(1);
+      display.setTextColor(SSD1306_WHITE);
+      display.println("Email Alert sent!");
+      display.display();
+      delay(2000);
+      lastEmailPumpSent = millis();
     }
 
     // Close the SMTP session
@@ -166,31 +302,25 @@ void sendTempAlert(float temperature) {
 // Function to send sensor data to Blynk API
 void sendSensor() {
   // Units for temperature is Celsius
-  float h = dht.readHumidity();
-  float t = dht.readTemperature(); 
-
-  if (isnan(h) || isnan(t)) {
-    Serial.println("Failed to read from DHT sensor!");
-    return;
-  }
+  float humidity = dht.readHumidity();
+  float temperature = dht.readTemperature(); 
 
   // Send temperature and humidity to Blynk API
-  Blynk.virtualWrite(V0, t); // Pin V0 is for Temperature
-  Blynk.virtualWrite(V1, h); // Pin V1 is for Humidity
+  Blynk.virtualWrite(V0, temperature); // Pin V0 is for Temperature
+  Blynk.virtualWrite(V1, humidity); // Pin V1 is for Humidity
 
   Serial.print("Temperature : ");
-  Serial.print(t);
+  Serial.print(temperature);
   Serial.print("\nHumidity : ");
-  Serial.println(h);
+  Serial.println(humidity);
 
   // Check temperature and send email if above threshold
-  if (t > 36) {
-    sendTempAlert(t);
+  if (temperature > 36) {
+    sendTempAlert(temperature);
   }
 
   // Calculate flow rate
   unsigned long currentTime = millis();
-  unsigned long elapsedTime = currentTime - oldTime;
 
   // Send calculated flow rate to Blynk API
   detachInterrupt(digitalPinToInterrupt(FLOW_SENSOR_PIN));
@@ -202,14 +332,19 @@ void sendSensor() {
   oldTime = currentTime;
   attachInterrupt(digitalPinToInterrupt(FLOW_SENSOR_PIN), pulseCounter, FALLING);
 
+  // Check flow rate and send email equal to 0
+  // if (flowRate = 0) {
+  //   sendPumpAlert();
+  // }
+
   // Display sensor data at OLED Screen
   display.clearDisplay();
   display.setCursor(0, 0);
   display.setTextSize(1);
   display.setTextColor(SSD1306_WHITE);
-  display.println("Temp: " + String(t) + " C");
-  display.println("Humidity: " + String(h) + " %");
-  display.println("Flow Rate: " + String(flowRate) + " L/min");
+  display.println("Temp: " + String(temperature) + " C");
+  display.println("Humidity: " + String(humidity) + " %");
+  display.println("Flow: " + String(flowRate) + " L/min");
   display.display();
 
 }
@@ -238,35 +373,44 @@ void setup() {
   display.setCursor(0, 0);
   display.println("Connecting to WiFi...");
   display.display();
-  delay(200);
 
   WiFi.begin(WIFI_SSID, WIFI_PASS);
-  while (WiFi.status() != WL_CONNECTED) {
-    Serial.print(".");
-    delay(200);
+  delay(5000); // Delay for 5 seconds
+
+  if (WiFi.status() == WL_CONNECTED) {
+    Serial.println("WiFi connected.");
+    display.clearDisplay();
+    display.setTextSize(1);
+    display.setTextColor(SSD1306_WHITE);
+    display.setCursor(0, 0);
+    display.println("WiFi Connected.");
+    display.display();
+    delay(1000);
+
+    // Initialize Blynk
+    Blynk.begin(auth, WIFI_SSID, WIFI_PASS);
+
+    // Initialize DHT sensor
+    dht.begin();
+
+    // Initialize water flow sensor
+    pinMode(FLOW_SENSOR_PIN, INPUT_PULLUP);
+    attachInterrupt(digitalPinToInterrupt(FLOW_SENSOR_PIN), pulseCounter, FALLING);
+
+    // Set up timer to read sensor data every second
+    timer.setInterval(1000L, sendSensor);
+  } else {
+    Serial.println("\nFailed to connect to WiFi!");
+    display.clearDisplay();
+    display.setTextSize(1);
+    display.setTextColor(SSD1306_WHITE);
+    display.setCursor(0, 0);
+    display.println("WiFi Connection Failed!");
+    display.println("\nRestarting...");
+    display.display();
+    delay(3000);
+    ESP.restart(); // Restart the ESP32 to try again
   }
-
-  Serial.println("WiFi connected.");
-  display.clearDisplay();
-  display.setTextSize(1);
-  display.setTextColor(SSD1306_WHITE);
-  display.setCursor(0, 0);
-  display.println("WiFi Connected.");
-  display.display();
-  delay(1000);
-
-  // Initialize Blynk
-  Blynk.begin(auth, WIFI_SSID, WIFI_PASS);
-
-  // Initialize DHT sensor
-  dht.begin();
-
-  // Initialize water flow sensor
-  pinMode(FLOW_SENSOR_PIN, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(FLOW_SENSOR_PIN), pulseCounter, FALLING);
-
-  // Set up timer to read sensor data every second
-  timer.setInterval(1000L, sendSensor);
 }
 
 void loop() {
