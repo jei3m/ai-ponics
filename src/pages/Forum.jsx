@@ -20,7 +20,7 @@ function Forum() {
   const [hasMore, setHasMore] = useState(true);
   const [lastVisible, setLastVisible] = useState(null);
   const [searchForum, setSearchForum] = useState('');
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
   // Real-time fetching of forums
@@ -286,7 +286,6 @@ function Forum() {
           {forums.length > 0 && (
             <>
               {loading && <div className='loading-message'><Spin/></div>}
-              {!hasMore && <div className='no-more-forums-message'>No more forums to load...</div>}
             </>
           )}
         </div>

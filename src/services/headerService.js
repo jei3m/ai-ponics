@@ -91,3 +91,20 @@ export const deleteApiKey = async (currentUser, blynkApiKeys, selectedApiKeyInde
     setLoading(false);
   }
 };
+
+// Fetch the selected Blynk API key from Firestore
+export const fetchSelectedApiKey = async (currentUser, setSelectedApiKey, doc, getDoc) => {
+  try {
+    const docRef = doc(db, 'users', currentUser.uid);
+    const docSnap = await getDoc(docRef);
+
+    const {
+      selectedApiKey = '',
+    } = docSnap.data();
+
+    setSelectedApiKey(selectedApiKey);
+
+  } catch (error) {
+    console.error('Error fetching user data:', error);
+  }
+};
