@@ -75,11 +75,6 @@ function Header() {
         </div>
 
         <div>
-          {location.pathname === '/home' || location.pathname.startsWith('/forum/') || location.pathname === ('/forum') ? (
-            <a href='/detect'>
-              <FontAwesomeIcon icon={faImage} className='forum-icon' />
-            </a>
-          ):null }
 
           {location.pathname === '/detect' || location.pathname === '/forum' || location.pathname.startsWith('/forum/') ? (
             <a href='/home'>
