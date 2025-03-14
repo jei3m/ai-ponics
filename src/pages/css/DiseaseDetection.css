@@ -1,106 +1,55 @@
-/* Global CSS to hide horizontal overflow */
-body, html {
-  margin: 0;
-  padding: 0;
-  overflow-x: hidden;
+/* Ensures only the capture section is centered */
+.page-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 80px); /* Adjust to not overlap header */
   width: 100%;
 }
 
-
-
-/* Main Content Styling */
-.main-content {
+/* Keeps your content in a nice, centered card */
+.container {
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
   align-items: center;
-  height: calc(100vh - 70px);
-  padding-top: 70px;
-  box-sizing: border-box;
-  gap: 20px;
-}
-
-/* Join Screen Container */
-.container {
   text-align: center;
-  background-color: #fff;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-  width: 80%;
-  max-width: 600px;
-}
-
-/* Input Box Styling */
-.input-box {
-  padding: 10px;
-  width: 80%;
-  max-width: 300px;
-  margin: 10px 0;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 16px;
-}
-
-/* Button Container */
-.button-container {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 15px;
-}
-
-/* Button Styling */
-button {
-  background-color: #34a853;
-  color: white;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 16px;
-  transition: background-color 0.3s ease;
-}
-
-button:hover {
-  background-color: #2d8c42;
-}
-
-/* Chat Box Styling */
-.chat-box {
-  width: 80%;
-  max-width: 600px;
-  background-color: #f9f9f9;
   padding: 20px;
-  border-radius: 12px;
+  background-color: white;
+  border-radius: 10px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-  overflow-y: auto;
-  height: 60%;
+  max-width: 500px;
 }
 
-/* Controls */
-.controls {
-  display: flex;
-  gap: 10px;
+h2 {
+  margin-bottom: 10px;
 }
 
-.controls button {
-  background-color: #007bff;
+.btn {
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
   color: white;
-  padding: 10px 16px;
+  background-color: #28a745;
+  border: none;
   border-radius: 5px;
   cursor: pointer;
+  transition: 0.3s;
 }
 
-.controls button:hover {
-  background-color: #0056b3;
+.btn:hover {
+  background-color: #218838;
 }
 
-/* Stream Media Styling */
-video,
-audio {
-  margin: 10px 0;
-  border-radius: 8px;
+.captured-image {
+  max-width: 100%;
+  height: auto;
+  margin-top: 15px;
+  border: 2px solid #000;
+  border-radius: 5px;
 }
 
-
+.error-text {
+  color: red;
+  font-weight: bold;
+  margin-top: 10px;
+}
