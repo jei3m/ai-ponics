@@ -1,301 +1,109 @@
-import React, { useEffect, useRef, useState } from "react";
-import { doc, getDoc } from "firebase/firestore";
-import {
-  MeetingProvider,
-  useMeeting,
-  useParticipant,
-  Constants,
-} from "@videosdk.live/react-sdk";
-import { authToken, createStream } from "../API";
+import React, { useEffect, useState } from "react";
 import Header from "./components/Header";
-import Chat from "../pages/Chat";
 import "./css/DiseaseDetection.css";
 import { UserAuth } from "../context/AuthContext";
 import { fetchSelectedApiKey } from "../services/headerService";
 import { Spin } from "antd";
-import {
-  fetchSensorData,
-  getStatusConfig,
-  StatusMessage,
-} from "../services/sensorService";
 
-function JoinView({ initializeStream, setMode }) {
-  const [streamId, setStreamId] = useState("");
-
-  const handleAction = async (mode) => {
-    setMode(mode);
-    await initializeStream(streamId);
-  };
-
-  return (
-    <div className="join-container">
-      <input
-        type="text"
-        placeholder="Enter Stream Id"
-        value={streamId}
-        onChange={(e) => setStreamId(e.target.value)}
-        className="input-box"
-      />
-
-      <div className="button-container">
-        <button
-          className="btn"
-          onClick={() => handleAction(Constants.modes.SEND_AND_RECV)}
-        >
-          Create Live Stream as Host
-        </button>
-        <button
-          className="btn"
-          onClick={() => handleAction(Constants.modes.SEND_AND_RECV)}
-        >
-          Join as Host
-        </button>
-        <button
-          className="btn"
-          onClick={() => handleAction(Constants.modes.RECV_ONLY)}
-        >
-          Join as Audience
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function LSContainer({ streamId, onLeave }) {
-  const [joined, setJoined] = useState(false);
-
-  const { join } = useMeeting({
-    onMeetingJoined: () => setJoined(true),
-    onMeetingLeft: onLeave,
-    onError: (error) => alert(error.message),
-  });
-
-  return (
-    <div className="container">
-      <h3>Stream Id: {streamId}</h3>
-      {joined ? <StreamView /> : <button onClick={join}>Join Stream</button>}
-    </div>
-  );
-}
-
-function StreamView() {
-  const { participants } = useMeeting();
-
-  return (
-    <div>
-      <LSControls />
-      {[...participants.values()]
-        .filter((p) => p.mode === Constants.modes.SEND_AND_RECV)
-        .map((p) => (
-          <Participant participantId={p.id} key={p.id} />
-        ))}
-    </div>
-  );
-}
-
-function Participant({ participantId }) {
-  const { webcamStream, micStream, webcamOn, micOn, isLocal, displayName } =
-    useParticipant(participantId);
-
-  const audioRef = useRef(null);
-  const videoRef = useRef(null);
-
-  const setupStream = (stream, ref, condition) => {
-    if (ref.current && stream) {
-      ref.current.srcObject = condition
-        ? new MediaStream([stream.track])
-        : null;
-      condition && ref.current.play().catch(console.error);
-    }
-  };
-
-  useEffect(() => setupStream(micStream, audioRef, micOn), [micStream, micOn]);
-  useEffect(
-    () => setupStream(webcamStream, videoRef, webcamOn),
-    [webcamStream, webcamOn]
-  );
-
-  return (
-    <div>
-      <p>
-        {displayName} | Webcam: {webcamOn ? "ON" : "OFF"} | Mic:{" "}
-        {micOn ? "ON" : "OFF"}
-      </p>
-      <audio ref={audioRef} autoPlay muted={isLocal} />
-      {webcamOn && (
-        <video
-          ref={videoRef}
-          autoPlay
-          muted={isLocal}
-          height="200"
-          width="300"
-        />
-      )}
-    </div>
-  );
-}
-
-function LSControls() {
-  const { leave, toggleMic, toggleWebcam, changeMode, meeting } = useMeeting();
-  const currentMode = meeting.localParticipant.mode;
-
-  return (
-    <div className="controls">
-      <button onClick={leave}>Leave</button>
-
-      {currentMode === Constants.modes.SEND_AND_RECV && (
-        <>
-          <button onClick={toggleMic}>Toggle Mic</button>{" "}
-          <button onClick={toggleWebcam}>Toggle Camera</button>
-        </>
-      )}
-
-      <button
-        onClick={() =>
-          changeMode(
-            currentMode === Constants.modes.SEND_AND_RECV
-              ? Constants.modes.RECV_ONLY
-              : Constants.modes.SEND_AND_RECV
-          )
-        }
-      >
-        {currentMode === Constants.modes.SEND_AND_RECV
-          ? "Switch to Audience Mode"
-          : "Switch to Host Mode"}
-      </button>
-    </div>
-  );
-}
+const firebaseHost = process.env.REACT_APP_FIREBASE_DATABASE_URL;
+const firebaseAuth = process.env.REACT_APP_FIREBASE_AUTH;
 
 function DiseaseDetection() {
-  const [streamId, setStreamId] = useState(null);
-  const [mode, setMode] = useState(Constants.modes.SEND_AND_RECV);
   const { currentUser } = UserAuth();
-  const [isApiKeyValid, setIsApiKeyValid] = useState(true);
-  const [isDeviceOnline, setIsDeviceOnline] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-  const [temperature, setTemperature] = useState(null);
-  const [humidity, setHumidity] = useState(null);
-  const[flowRate, setFlowRate] = useState(null);
   const [selectedApiKey, setSelectedApiKey] = useState(null);
+  const [imageUrl, setImageUrl] = useState("");
+  const [lastImage, setLastImage] = useState(""); // Store last image to compare
 
   useEffect(() => {
-    fetchSelectedApiKey(currentUser, setSelectedApiKey, doc, getDoc);
-  }, [selectedApiKey, currentUser]);
-  
-  useEffect(() => {
+    fetchSelectedApiKey(currentUser, setSelectedApiKey);
+  }, [currentUser]);
 
-    if (!selectedApiKey) {
-      console.error("API key is missing!");
-      setIsLoading(false);
-      return;
-    }
-
-    setIsLoading(true);
-    const fetchData = async () => {
-      try {
-        await fetchSensorData({
-          selectedApiKey,
-          setIsDeviceOnline,
-          setTemperature,
-          setHumidity,
-          setFlowRate,
-          setIsLoading,
-          setIsApiKeyValid,
-        });
-      } catch (error) {
-        console.error("Error fetching sensor data:", error);
-      }
-    };
-
-    fetchData();
-
-    const interval = setInterval(fetchData, 2000);
-
-    return () => {
-      clearInterval(interval);
-    };
-  }, [selectedApiKey]);
-  
-  // Initialize Stream
-  const initializeStream = async (id) => {
-    setIsLoading(true);
+  // ✅ Define fetchImage before using it
+  const fetchImage = async () => {
     try {
-      const newStreamId = id || (await createStream({ token: authToken }));
-      setStreamId(newStreamId);
+      console.log("📸 Fetching latest image from Firebase...");
+
+      const response = await fetch(
+        `https://${firebaseHost}/images.json?auth=${firebaseAuth}`
+      );
+
+      if (!response.ok) {
+        throw new Error(`🚨 HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log("✅ Fetched image data:", data);
+
+      if (data) {
+        const imageBase64 = data.image || Object.values(data)[0]?.image;
+        if (imageBase64) {
+          // ✅ Only update if new image is different
+          if (imageBase64 !== lastImage) {
+            setImageUrl(`data:image/jpeg;base64,${imageBase64}`);
+            setLastImage(imageBase64); // Update last image
+            console.log("🖼 New image detected! Updating...");
+          } else {
+            console.log("🔄 No new image, skipping update.");
+          }
+        } else {
+          console.warn("⚠️ No image found in Firebase!");
+        }
+      }
     } catch (error) {
-      console.error("Stream initialization failed:", error);
-    } finally {
-      setIsLoading(false);
+      console.error("❌ Error fetching image:", error);
     }
   };
 
-  const onStreamLeave = () => setStreamId(null);
+  // ✅ Fetch new image every 5 seconds
+  useEffect(() => {
+    const interval = setInterval(fetchImage, 5000);
+    return () => clearInterval(interval);
+  }, [lastImage]); // Only refresh if lastImage changes
 
-  // Status configuration for stream
-  const statusConfig = getStatusConfig(
-    selectedApiKey,
-    isApiKeyValid,
-    isDeviceOnline,
-    isLoading
-  );
-  const activeStatus = statusConfig.find((status) => status.when);
+  // ✅ Capture command function
+  const sendCaptureCommand = async () => {
+    try {
+      console.log("📢 Sending capture command...");
+      await fetch(
+        `https://${firebaseHost}/capture.json?auth=${firebaseAuth}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ capture: true }),
+        }
+      );
+      console.log("✅ Capture command sent!");
+
+      // ✅ Wait before fetching the new image
+      setTimeout(() => {
+        console.log("⏳ Waiting before fetching new image...");
+        fetchImage();
+      }, 3000);
+    } catch (error) {
+      console.error("❌ Failed to send capture command:", error);
+    }
+  };
 
   return (
     <div style={{ width: "100%", overflowX: "hidden" }}>
-      <Header />
-
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          textAlign: "center",
-          padding: "0.4rem",
-          margin: "0 auto",
-        }}
-      >
-        <div
-          style={{
-            maxWidth: "100vw",
-            borderRadius: "14px",
-            height: "fit-content",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            flexDirection: "column",
-            padding: "1.8rem",
-          }}
-        >
-          {activeStatus ? (
-            <div style={{ textAlign: "center", paddingTop: "20px" }}>
-              <StatusMessage {...activeStatus} />
-              {isLoading && <Spin />}
-            </div>
+      <Header /> {/* Keep header at the top */}
+      <div className="page-container"> {/* Center only the capture section */}
+        <div className="container">
+          <h2>Capture Image</h2>
+          <button className="btn" onClick={sendCaptureCommand}>
+            Capture
+          </button>
+          {isLoading ? (
+            <Spin />
+          ) : imageUrl ? (
+            <img
+              src={imageUrl}
+              alt="Captured"
+              className="captured-image"
+            />
           ) : (
-            <>
-              {!streamId ? (
-                <JoinView
-                  initializeStream={initializeStream}
-                  setMode={setMode}
-                />
-              ) : (
-                <MeetingProvider
-                  config={{
-                    meetingId: streamId,
-                    micEnabled: true,
-                    webcamEnabled: true,
-                    name: currentUser?.displayName || "Guest",
-                    mode,
-                  }}
-                  token={authToken}
-                >
-                  <LSContainer streamId={streamId} onLeave={onStreamLeave} />
-                </MeetingProvider>
-              )}
-
-              {streamId && <Chat />}
-            </>
+            <p className="error-text">⚠️ No image available</p>
           )}
         </div>
       </div>
