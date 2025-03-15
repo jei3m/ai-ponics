@@ -56,6 +56,7 @@ const Chat = () => {
   const [humidity, setHumidity] = useState(null);
   const [temperature, setTemperature] = useState(null);
   const [flowRate, setFlowRate] = useState(null);
+  const [pHlevel, setpHlevel] = useState(null);
   const [isApiKeyValid, setIsApiKeyValid] = useState(true);
   const [isDeviceOnline, setIsDeviceOnline] = useState(false);
 
@@ -67,6 +68,7 @@ const Chat = () => {
       setTemperature, 
       setHumidity, 
       setFlowRate,
+      setpHlevel,
       setIsLoading: setSensorDataLoaded, 
       setIsApiKeyValid
     });
@@ -86,8 +88,9 @@ const Chat = () => {
 
   // Function for Greeting the User
   useEffect(() => {
-    greetUser(sensorDataLoaded, isApiKeyValid, setMessages, selectedApiKey,isDeviceOnline, temperature, MAX_TEMPERATURE, MIN_TEMPERATURE, plantName, daysSincePlanting, humidity, flowRate);
-  }, [sensorDataLoaded, isDeviceOnline, plantName, daysSincePlanting, temperature, humidity, flowRate, isApiKeyValid, selectedApiKey]);
+    greetUser(sensorDataLoaded, isApiKeyValid, setMessages, selectedApiKey,isDeviceOnline, temperature, MAX_TEMPERATURE, MIN_TEMPERATURE, plantName, daysSincePlanting, pHlevel, humidity);
+
+  }, [sensorDataLoaded, isDeviceOnline, plantName, daysSincePlanting, temperature, pHlevel, humidity, flowRate, isApiKeyValid, selectedApiKey]);
 
   // AI conversation after greeting
   async function aiRun() {
@@ -108,8 +111,8 @@ const Chat = () => {
       ]);
   
       const previousMessages = messages;
-      const responseStream = generateAIResponse(textPrompt, imageInlineData, plantName, daysSincePlanting, temperature, humidity, previousMessages);
-      
+      const responseStream = generateAIResponse(textPrompt, imageInlineData, plantName, daysSincePlanting, temperature, humidity, pHlevel, previousMessages);
+
       // Create a local variable to store the accumulated text
       let currentText = '';
   
