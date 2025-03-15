@@ -13,13 +13,14 @@ export const MIN_TEMPERATURE = 15;
 export const MAX_FLOWRATE  = 30;
 
 // Functions for pulling sensor data from Blynk API
-export const fetchSensorData = async ({ selectedApiKey, setIsDeviceOnline, setTemperature, setHumidity, setFlowRate, setIsLoading, setIsApiKeyValid }) => {
+export const fetchSensorData = async ({ selectedApiKey, setIsDeviceOnline, setTemperature, setHumidity, setFlowRate, setpHlevel, setIsLoading, setIsApiKeyValid }) => {
   try {
-    const [deviceStatusResponse, temperatureResponse, humidityResponse, flowResponse] = await Promise.all([
+    const [deviceStatusResponse, temperatureResponse, humidityResponse, flowResponse, pHResponse] = await Promise.all([
       axios.get(`https://blynk.cloud/external/api/isHardwareConnected?token=${selectedApiKey}`),
       axios.get(`https://blynk.cloud/external/api/get?token=${selectedApiKey}&V0`),
       axios.get(`https://blynk.cloud/external/api/get?token=${selectedApiKey}&V1`),
-      axios.get(`https://blynk.cloud/external/api/get?token=${selectedApiKey}&V2`)
+      axios.get(`https://blynk.cloud/external/api/get?token=${selectedApiKey}&V2`),
+      axios.get(`https://blynk.cloud/external/api/get?token=${selectedApiKey}&V3`)
     ]);
 
     // Round temperature and humidity values
@@ -30,6 +31,7 @@ export const fetchSensorData = async ({ selectedApiKey, setIsDeviceOnline, setTe
     setTemperature(roundedTemperature);
     setHumidity(roundedHumidity);
     setFlowRate(flowResponse.data)
+    setpHlevel(pHResponse.data)
     setIsLoading(false);
     
   } catch (error) {
