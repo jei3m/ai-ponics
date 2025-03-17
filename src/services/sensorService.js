@@ -9,7 +9,17 @@ dayjs.extend(customParseFormat);
 
 // Temperature thresholds
 export const MAX_TEMPERATURE = 73; 
-export const MIN_TEMPERATURE = 15; 
+export const MIN_TEMPERATURE = 15;
+
+// Humidity thresholds
+export const MAX_HUMIDITY = 70;
+export const MIN_HUMIDITY = 50;
+
+// pH level thresholds
+export const MAX_PH_LEVEL = 7.5;
+export const MIN_PH_LEVEL = 5.5;
+
+// Flow rate thresholds 
 export const MAX_FLOWRATE  = 30;
 
 // Functions for pulling sensor data from Blynk API
@@ -27,7 +37,7 @@ export const fetchSensorData = async ({ selectedApiKey, setIsDeviceOnline, setTe
     const roundedTemperature = Math.round(temperatureResponse.data);
     const roundedHumidity = Math.round(humidityResponse.data);
 
-    setIsDeviceOnline(deviceStatusResponse.data);
+    setIsDeviceOnline(true);
     setTemperature(roundedTemperature);
     setHumidity(roundedHumidity);
     setFlowRate(flowResponse.data)
