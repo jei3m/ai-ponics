@@ -30,6 +30,9 @@ function DiseaseDetection() {
   const [isDeviceOnline, setIsDeviceOnline] = useState(false);
   const [sensorDataLoaded, setSensorDataLoaded] = useState(false);
 
+
+
+  
   const fetchSensorDataFromBlynk = async (selectedApiKey) => {
     await fetchSensorData({ 
       selectedApiKey, 
