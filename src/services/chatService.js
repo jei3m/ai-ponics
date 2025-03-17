@@ -53,7 +53,7 @@ export const generateGreeting = async (plantName, daysSincePlanting, temperature
 };
 
 // Greet User Function
-export async function greetUser(sensorDataLoaded, isApiKeyValid, setMessages, selectedApiKey, isDeviceOnline, temperature, MAX_TEMPERATURE, MIN_TEMPERATURE, plantName, daysSincePlanting, humidity) {
+export async function greetUser(sensorDataLoaded, isApiKeyValid, setMessages, selectedApiKey, isDeviceOnline, temperature, MAX_TEMPERATURE, MIN_TEMPERATURE, plantName, daysSincePlanting, pHlevel, humidity) {
 
   const getErrorState = () => {
     if (!sensorDataLoaded) return 'LOADING';
@@ -104,6 +104,7 @@ export async function greetUser(sensorDataLoaded, isApiKeyValid, setMessages, se
   *   **Age:** ${daysSincePlanting} days
   *   **Temperature:** ${temperature} °C
   *   **Humidity:** ${humidity}% \n
+  *   **pH Level:** ${pHlevel} \n
 ${warningMessage}`
 
     // const greetingText = await generateGreeting(plantName, daysSincePlanting, temperature, humidity);
@@ -115,10 +116,10 @@ ${warningMessage}`
 }
 
 // Generate AI response for user queries
-export const generateAIResponse = async function* ( textPrompt, imageInlineData, plantName, daysSincePlanting, temperature, humidity, previousMessages = [] ) {
+export const generateAIResponse = async function* ( textPrompt, imageInlineData, plantName, daysSincePlanting, temperature, humidity, pHlevel, previousMessages = [] ) {
   const model = genAI.getGenerativeModel({
     model: "gemini-2.0-flash-exp", // Recently released 2.0 Flash Model
-    systemInstruction: getSystemInstructions(plantName, daysSincePlanting, temperature, humidity),
+    systemInstruction: getSystemInstructions(plantName, daysSincePlanting, temperature, humidity, pHlevel),
   });
 
   // Declaration of messageHistory

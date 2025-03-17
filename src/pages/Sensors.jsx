@@ -15,6 +15,7 @@ import {
   getDatePickerConfig,
   getStatusConfig
 } from '../services/sensorService';
+import PHLevel from "./components/Sensors/PHLevel";
 
 dayjs.extend(customParseFormat);
 
@@ -24,6 +25,7 @@ function Sensors() {
   const [temperature, setTemperature] = useState(null);
   const [humidity, setHumidity] = useState(null);
   const [flowRate, setFlowRate] = useState(null);
+  const [pHlevel, setpHlevel] = useState(null);
 
   // States for plant info
   const [plantingDate, setPlantingDate] = useState(null);
@@ -61,6 +63,7 @@ function Sensors() {
           setTemperature,
           setHumidity,
           setFlowRate,
+          setpHlevel,
           setIsLoading,
           setIsApiKeyValid,
           signal: controller.signal
@@ -155,6 +158,11 @@ function Sensors() {
             <FlowRate
              flowRate={flowRate}
              status={status}
+            />
+
+            <PHLevel 
+              pHlevel={pHlevel}
+              status={status}
             />
 
             <PlantInfo
