@@ -1,9 +1,21 @@
 import React from 'react';
 import { CircularProgress, Box, Typography } from '@mui/material';
 
-export function Gauge({ value, max, label }) {
+export function Gauge({ value, max, min, label }) {
     const normalizedValue = (value / max) * 100;
-    const isNearMax = normalizedValue >= 90; // Check if value is at 90% or more of max
+    const isAboveMax = normalizedValue >= 101;
+    const isBelowMin = value < min;
+    const getGaugeColor = () => {
+        if (isAboveMax) return '#e70000';
+        if (isBelowMin) return '#e77b00';
+        return '#3cb371';
+    };
+
+    const getTextColor = () => {
+        if (isAboveMax) return '#e70000';
+        if (isBelowMin) return '#e77b00';
+        return 'textPrimaryu';
+    }
 
     return (
         <Box position="relative" display="inline-flex">
@@ -15,7 +27,7 @@ export function Gauge({ value, max, label }) {
                 sx={{
                     color: 'grey.400', 
                 }}
-                aria-label={`Background progress`} // Accessible name for the background progress
+                aria-label={`Background progress`}
             />
             <CircularProgress
                 variant="determinate"
@@ -26,10 +38,10 @@ export function Gauge({ value, max, label }) {
                     position: 'absolute',
                     top: 0,
                     left: 0,
-                    color: isNearMax ? '#e70000' : '#3cb371', // Red if near max, green otherwise
+                    color: getGaugeColor(),
                     borderRadius: '50%',
                 }}
-                aria-label={`Progress: ${Math.round(value)}${label}`} // Accessible name for the progress
+                aria-label={`Progress: ${Math.round(value)}${label}`}
             />
             <Box
                 position="absolute"
@@ -44,7 +56,7 @@ export function Gauge({ value, max, label }) {
                 <Typography 
                     variant="h5" 
                     component="div" 
-                    color={isNearMax ? 'error' : 'textPrimary'} 
+                    color={getTextColor()} 
                     sx={{
                         fontFamily: 'Inter, sans-serif', 
                         fontWeight: '500'
