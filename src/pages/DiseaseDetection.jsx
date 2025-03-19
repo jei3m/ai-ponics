@@ -216,7 +216,72 @@ function DiseaseDetection() {
       setIsAnalyzing(false);
       setTimeout(() => setAnalysisStatus(""), 3000);
     }
-  };
+};
+
+// Fetch image from Firebase
+const fetchImage = async (isFromCapture = false) => {
+    try {
+        if (!selectedApiKey) return;
+
+        // Fetch the latest image reference
+        const latestImageResponse = await fetch(`https://${firebaseHost}/latest_image/${selectedApiKey}.json?auth=${firebaseAuth}`);
+        if (!latestImageResponse.ok) throw new Error(`HTTP error! Status: ${latestImageResponse.status}`);
+        const latestImageData = await latestImageResponse.json();
+
+        if (latestImageData && latestImageData.path) {
+            // Fetch the actual image using the path
+            const imageResponse = await fetch(latestImageData.path);
+            if (!imageResponse.ok) throw new Error(`HTTP error! Status: ${imageResponse.status}`);
+            const imageData = await imageResponse.json();
+
+            const imageBase64 = imageData.image;
+            if (imageBase64 && imageBase64 !== lastImage) {
+                console.log("New image detected! Waiting 1 second before displaying...");
+                
+                setTimeout(() => {
+                    setImageUrl(`data:image/jpeg;base64,${imageBase64}`);
+                    setLastImage(imageBase64);
+                    setCaptureStatus("");
+                    console.log("New image displayed!");
+
+                    // Start AI analysis only if this fetch was triggered by a capture command
+                    if (isFromCapture) {
+                        setAnalysisStatus("Analyzing image...");
+                        setTimeout(() => analyzeImage(imageBase64), 2000);
+                    }
+                }, 1000); // Delay displaying the image by 1 second
+            }
+        }
+    } catch (error) {
+        console.error("Error fetching image:", error);
+    }
+};
+
+
+// Analyze image using AI
+const analyzeImage = async (imageBase64) => {
+    try {
+        console.log("Sending image to AI chatbot...");
+        const prompt = `Analyze the given plant image and provide:
+            - Health: (Healthy or Not Healthy)
+            - Status: (Ready to Harvest or Not Ready to Harvest)`;
+        const responseStream = generateAIResponse(
+            prompt, imageBase64, plantName, daysSincePlanting, temperature, humidity, messages
+        );
+        let currentText = "";
+        for await (const chunk of responseStream) currentText += chunk;
+        console.log("AI Response:", currentText);
+        setCropStatus({
+            health: extractValue(currentText, "Health", "Unknown"),
+            status: extractValue(currentText, "Status", "Not Ready to Harvest"),
+        });
+        setAnalysisStatus("");
+    } catch (error) {
+        console.error("Error analyzing image:", error);
+        setAnalysisStatus("Failed to analyze image.");
+        setTimeout(() => setAnalysisStatus(""), 1000);
+    }
+};
 
   const extractValue = (text, key, defaultValue) => {
     const regex = new RegExp(`${key}:\s*(.+)`, "i");
@@ -224,9 +289,13 @@ function DiseaseDetection() {
     return match ? match[1].trim() : defaultValue;
   };
 
-  // Get the current status configuration
-  const status = getStatusConfig(selectedApiKey, isApiKeyValid, isDeviceOnline, isLoading)
-    .find(status => status.when);
+  const getStatusMessage = () => {
+    if (!selectedApiKey) return "Missing API Key. Please configure your API key.";
+    if (!isApiKeyValid) return "Invalid API Key. Please check your API key.";
+    if (!isDeviceOnline) return "Device Offline. Please check your device connection.";
+    if (!sensorDataLoaded) return "Loading sensor data...";
+    return null;
+  };
 
   const getHealthIcon = (health) => {
     if (health === "Healthy") return <CheckCircleOutlined className="icon status-healthy" />;
