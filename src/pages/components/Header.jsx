@@ -3,7 +3,6 @@ import { Modal, Button, Select, Input, Avatar, Typography, message, Popconfirm }
 import { EyeInvisibleOutlined, EyeTwoTone, PlusOutlined, SaveOutlined, DeleteOutlined, LogoutOutlined } from '@ant-design/icons';
 import { UserAuth } from '../../context/AuthContext';
 import { useLocation } from 'react-router-dom';
-// import { useApiKey } from '../../context/ApiKeyContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faLeaf, faNewspaper, faHome, faImage } from '@fortawesome/free-solid-svg-icons';
 import { fetchBlynkKeysData, saveBlynkApiKey, addNewApiKey, deleteApiKey } from '../../services/headerService';
@@ -76,13 +75,19 @@ function Header() {
 
         <div>
 
-          {location.pathname === '/detect' || location.pathname === '/forum' || location.pathname.startsWith('/forum/') ? (
+          {location.pathname === '/analyse' || location.pathname === '/forum' || location.pathname.startsWith('/forum/') ? (
             <a href='/home'>
               <FontAwesomeIcon icon={faHome} className='forum-icon' />
             </a>
           ):null }
 
-          {location.pathname === '/home' || location.pathname === ('/detect') ? (
+          {location.pathname === '/home' || location.pathname === '/forum' || location.pathname.startsWith('/forum/') ? (
+            <a href='/analyse'>
+              <FontAwesomeIcon icon={faImage} className='forum-icon' />
+            </a>
+          ):null }
+
+          {location.pathname === '/home' || location.pathname === ('/analyse') ? (
             <a href='/forum'>
               <FontAwesomeIcon icon={faNewspaper} className='forum-icon' />
             </a>
