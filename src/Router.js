@@ -11,13 +11,14 @@ import Login from './pages/Login';
 import Forum from './pages/Forum';
 import DetailedView from './pages/ForumDetailed';
 import Sensors from './pages/Sensors';
-import DiseaseDetection from './pages/DiseaseDetection';
 import NotFound from './pages/NotFound';
+import DiseaseDetection from './pages/DiseaseDetection';
 
 // Import routes and context
 import PrivateRoutes from './routes/PrivateRoutes';
 import Loading from './pages/components/Loading';
 import Layout from './layout/Layout';
+import LandingPage from './pages/LandingPage';
 
 function Router() {
   const [user, setUser] = useState(null);
@@ -41,6 +42,15 @@ function Router() {
 
       <Route path="/" element={<Login />} />
       <Route path="*" element={<NotFound />} />
+
+      <Route 
+        path="/landing" 
+        element={
+          <Layout>
+            <LandingPage />
+          </Layout>
+        } 
+      />
 
       <Route
         path="/chat"
@@ -94,10 +104,12 @@ function Router() {
       />
 
       <Route
-        path="/detect"
+        path="/analyse"
         element={
           <PrivateRoutes>
-            <DiseaseDetection/>
+            <Layout>
+              <DiseaseDetection/>
+            </Layout>
           </PrivateRoutes>
         }
       />
