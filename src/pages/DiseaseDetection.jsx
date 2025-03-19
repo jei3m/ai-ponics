@@ -1,15 +1,31 @@
 import React, { useEffect, useState } from "react";
-import Header from "./components/Header";
-import "./css/DiseaseDetection.css";
+import "./css/HealthAnalysis.css";
 import { UserAuth } from "../context/AuthContext";
 import { fetchSelectedApiKey } from "../services/headerService";
 import { generateAIResponse, fetchUserData } from "../services/chatService";
-import { Spin, message, Typography } from "antd";
+import { 
+  Spin, 
+  message, 
+  Typography, 
+  Button, 
+  Card, 
+  Empty, 
+  Alert, 
+  Divider 
+} from "antd";
+import { 
+  CameraOutlined, 
+  CheckCircleOutlined, 
+  CloseCircleOutlined,
+  WarningOutlined,
+  LoadingOutlined
+} from "@ant-design/icons";
 import { fetchSensorData } from "../services/sensorService";
 import { db } from '../firebase';
 import { doc, getDoc } from 'firebase/firestore';
-import { getStatusConfig, StatusMessage } from '../services/sensorService'; // Adjust the import path
+import { getStatusConfig, StatusMessage } from '../services/sensorService';
 
+const { Title, Text } = Typography;
 const firebaseHost = process.env.REACT_APP_FIREBASE_DATABASE_URL;
 const firebaseAuth = process.env.REACT_APP_FIREBASE_AUTH;
 
@@ -25,32 +41,22 @@ function DiseaseDetection() {
   const [plantName, setPlantName] = useState('');
   const [humidity, setHumidity] = useState(null);
   const [temperature, setTemperature] = useState(null);
-  const [flowRate, setFlowRate] = useState(null); // New state for flow rate
+  const [flowRate, setFlowRate] = useState(null);
+  const [pHlevel, setpHlevel] = useState(null);
   const [isApiKeyValid, setIsApiKeyValid] = useState(true);
   const [isDeviceOnline, setIsDeviceOnline] = useState(false);
   const [sensorDataLoaded, setSensorDataLoaded] = useState(false);
-
-
-
-  
-  const fetchSensorDataFromBlynk = async (selectedApiKey) => {
-    await fetchSensorData({ 
-      selectedApiKey, 
-      setIsDeviceOnline, 
-      setTemperature, 
-      setHumidity, 
-      setFlowRate, // Pass setFlowRate to fetchSensorData
-      setIsLoading: setSensorDataLoaded, 
-      setIsApiKeyValid
-    });
-  };
+  const [captureStatus, setCaptureStatus] = useState("");
+  const [analysisStatus, setAnalysisStatus] = useState("");
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [isCapturing, setIsCapturing] = useState(false);
 
   useEffect(() => {
     if (!currentUser) {
-      setSensorDataLoaded(true);
+      setIsLoading(true);
       return;
     }
-    fetchUserData(doc, currentUser, db, getDoc, setSensorDataLoaded, setPlantName, setDaysSincePlanting, setSelectedApiKey, fetchSensorDataFromBlynk, message);
+    fetchUserData(doc, currentUser, db, getDoc, setIsLoading, setPlantName, setDaysSincePlanting, setSelectedApiKey, fetchSensorDataFromBlynk, message);
   }, [currentUser]);
 
   useEffect(() => {
@@ -58,12 +64,19 @@ function DiseaseDetection() {
   }, [currentUser]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      if (selectedApiKey) {
-        fetchSensorDataFromBlynk(selectedApiKey);
-      }
-    }, 2000);
-    return () => clearInterval(interval);
+    if (selectedApiKey) fetchSensorDataFromBlynk(selectedApiKey);
+  }, [selectedApiKey]);
+
+  useEffect(() => {
+    let interval;
+    if (selectedApiKey) {
+      interval = setInterval(() => fetchSensorDataFromBlynk(selectedApiKey), 2000);
+    }
+    return () => interval && clearInterval(interval);
+  }, [selectedApiKey]);
+
+  useEffect(() => {
+    if (selectedApiKey) fetchImage();
   }, [selectedApiKey]);
 
   useEffect(() => {
@@ -71,62 +84,137 @@ function DiseaseDetection() {
     return () => clearInterval(interval);
   }, [lastImage]);
 
-  const fetchImage = async () => {
+  const fetchSensorDataFromBlynk = async (selectedApiKey) => {
     try {
-      console.log("📸 Fetching latest image from Firebase...");
-      const response = await fetch(`https://${firebaseHost}/images.json?auth=${firebaseAuth}`);
-      if (!response.ok) throw new Error(`🚨 HTTP error! Status: ${response.status}`);
-      const data = await response.json();
-      if (data) {
-        const imageBase64 = data.image || Object.values(data)[0]?.image;
-        if (imageBase64 && imageBase64 !== lastImage) {
-          setImageUrl(`data:image/jpeg;base64,${imageBase64}`);
-          setLastImage(imageBase64);
-          console.log("🖼 New image detected! Updating...");
-        }
-      }
+      await fetchSensorData({ 
+        selectedApiKey, 
+        setIsDeviceOnline, 
+        setTemperature, 
+        setHumidity, 
+        setFlowRate,
+        setpHlevel,
+        setIsLoading, 
+        setIsApiKeyValid
+      });
+      setSensorDataLoaded(true);
     } catch (error) {
-      console.error("❌ Error fetching image:", error);
+      setIsDeviceOnline(false);
+      setIsApiKeyValid(false);
     }
   };
-
+  
   const sendCaptureCommand = async () => {
     try {
-      console.log("📢 Sending capture command...");
-      await fetch(`https://${firebaseHost}/capture.json?auth=${firebaseAuth}`, {
+      if (!selectedApiKey) return;
+
+      // Hide previous image
+      setImageUrl("");
+      setCaptureStatus("Capturing image...");
+      setAnalysisStatus("");
+      setIsCapturing(true);
+
+      console.log("Sending first capture command...");
+
+      // First capture command
+      await fetch(`https://${firebaseHost}/capture/${selectedApiKey}.json?auth=${firebaseAuth}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ capture: true }),
       });
-      console.log("✅ Capture command sent!");
+
+      console.log("First capture command sent!");
+
       setTimeout(async () => {
-        console.log("⏳ Fetching new image...");
-        await fetchImage();
-        setTimeout(() => analyzeImage(lastImage), 2000);
+        console.log("Sending second capture command...");
+
+        await fetch(`https://${firebaseHost}/capture/${selectedApiKey}.json?auth=${firebaseAuth}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ capture: true }),
+        });
+
+        console.log("Second capture command sent!");
+        setCaptureStatus("Image captured! Fetching new image...");
+
+        setTimeout(async () => {
+          console.log("Fetching new image...");
+          await fetchImage(true);
+          setIsCapturing(false);
+        }, 3000);
+
       }, 3000);
+
     } catch (error) {
-      console.error("❌ Failed to send capture command:", error);
+      console.error("Failed to send capture command:", error);
+      setCaptureStatus("Failed to capture image.");
+      setIsCapturing(false);
     }
   };
 
+  // Fetch image from Firebase
+  const fetchImage = async (isFromCapture = false) => {
+    try {
+      if (!selectedApiKey) return;
+
+      // Fetch the latest image reference
+      const latestImageResponse = await fetch(`https://${firebaseHost}/latest_image/${selectedApiKey}.json?auth=${firebaseAuth}`);
+      if (!latestImageResponse.ok) throw new Error(`HTTP error! Status: ${latestImageResponse.status}`);
+      const latestImageData = await latestImageResponse.json();
+
+      if (latestImageData && latestImageData.path) {
+        // Fetch the actual image using the path
+        const imageResponse = await fetch(latestImageData.path);
+        if (!imageResponse.ok) throw new Error(`HTTP error! Status: ${imageResponse.status}`);
+        const imageData = await imageResponse.json();
+
+        const imageBase64 = imageData.image;
+        if (imageBase64 && imageBase64 !== lastImage) {
+          console.log("New image detected! Waiting 1 second before displaying...");
+          
+          setTimeout(() => {
+            setImageUrl(`data:image/jpeg;base64,${imageBase64}`);
+            setLastImage(imageBase64);
+            setCaptureStatus("");
+            console.log("New image displayed!");
+
+            // Start AI analysis only if this fetch was triggered by a capture command
+            if (isFromCapture) {
+              setAnalysisStatus("Analyzing image...");
+              setIsAnalyzing(true);
+              setTimeout(() => analyzeImage(imageBase64), 2000);
+            }
+          }, 1000); // Delay displaying the image by 1 second
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching image:", error);
+    }
+  };
+
+  // Analyze image using AI
   const analyzeImage = async (imageBase64) => {
     try {
-      console.log("📤 Sending image to AI chatbot...");
+      console.log("Sending image to AI chatbot...");
       const prompt = `Analyze the given plant image and provide:
-        - Health: (Healthy or Not Healthy)
-        - Status: (Ready to Harvest or Not Ready to Harvest)`;
+          - Health: (Healthy or Not Healthy)
+          - Status: (Ready to Harvest or Not Ready to Harvest)`;
       const responseStream = generateAIResponse(
         prompt, imageBase64, plantName, daysSincePlanting, temperature, humidity, messages
       );
       let currentText = "";
       for await (const chunk of responseStream) currentText += chunk;
-      console.log("✅ AI Response:", currentText);
+      console.log("AI Response:", currentText);
       setCropStatus({
         health: extractValue(currentText, "Health", "Unknown"),
         status: extractValue(currentText, "Status", "Not Ready to Harvest"),
       });
+      setAnalysisStatus("");
+      setIsAnalyzing(false);
     } catch (error) {
-      console.error("❌ Error analyzing image:", error);
+      console.error("Error analyzing image:", error);
+      setAnalysisStatus("Failed to analyze image.");
+      setIsAnalyzing(false);
+      setTimeout(() => setAnalysisStatus(""), 3000);
     }
   };
 
@@ -140,38 +228,104 @@ function DiseaseDetection() {
   const status = getStatusConfig(selectedApiKey, isApiKeyValid, isDeviceOnline, isLoading)
     .find(status => status.when);
 
+  const getHealthIcon = (health) => {
+    if (health === "Healthy") return <CheckCircleOutlined className="icon status-healthy" />;
+    if (health === "Not Healthy") return <CloseCircleOutlined className="icon status-unhealthy" />;
+    return <WarningOutlined className="icon" />;
+  };
+
+  const getStatusIcon = (status) => {
+    if (status === "Ready to Harvest") return <CheckCircleOutlined className="icon status-ready" />;
+    return <WarningOutlined className="icon status-not-ready" />;
+  };
+
   return (
     <div style={{ width: "100%", overflowX: "hidden" }}>
-      <Header />
       <div className="page-container">
-        <div className="container">
-          <h2>Capture Image</h2>
-          {/* Display status message if applicable */}
-          {status && (
-            <StatusMessage
-              message={status.message}
-              className={status.className}
-              style={status.style}
-            />
-          )}
-          {/* Render the rest of the UI if no status message is displayed */}
-          {!status && (
-            <>
-              <button className="btn" onClick={sendCaptureCommand}>Capture</button>
-              {isLoading ? <Spin /> : imageUrl ? (
-                <>
-                  <img src={imageUrl} alt="Captured" className="captured-image" />
-                  {cropStatus && (
-                    <div className="analysis-result">
-                      <p>🌱 <strong>Crop Status:</strong> {cropStatus.health}</p>
-                      <p>⏳ <strong>Ready for Harvest:</strong> {cropStatus.status}</p>
-                    </div>
-                  )}
-                </>
-              ) : <p className="error-text">⚠️ No image available</p>}
-            </>
-          )}
-        </div>
+        <Card className="container"
+          title={
+            <Title level={3} className="card-title">Health Analysis</Title>
+          }
+        >
+          <div className="card-content">
+            {status && (
+              <StatusMessage message={status.message} className={status.className} style={status.style} />
+            )}
+            
+            {!status && (
+              <div>
+                {plantName && imageUrl && (
+                  <Alert
+                    className="status-message"
+                    message={`Analyzing: ${plantName} (${daysSincePlanting} days old)`}
+                    type="info"
+                    showIcon
+                  />
+                )}
+
+{isAnalyzing ? (
+                  <div className="loading-container">
+                    <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />
+                    <Text className="loading-text">Analyzing image...</Text>
+                  </div>
+                ) : isLoading ? (
+                  <div className="loading-container">
+                    <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />
+                    <Text className="loading-text">Loading...</Text>
+                  </div>
+                ) : imageUrl ? (
+                  <>
+                    <img src={imageUrl} alt="Captured" className="captured-image" />
+                    
+                    {cropStatus && (
+                      <div className="analysis-result">
+                        <Title level={4}>Analysis Results</Title>
+                        <Divider style={{ margin: '12px 0' }} />
+                        
+                        <div className="analysis-item">
+                          {getHealthIcon(cropStatus.health)}
+                          <Text className="label">Plant Health:</Text>
+                          <Text className={cropStatus.health === "Healthy" ? "status-healthy" : "status-unhealthy"}>
+                            {cropStatus.health}
+                          </Text>
+                        </div>
+                        
+                        <div className="analysis-item">
+                          {getStatusIcon(cropStatus.status)}
+                          <Text className="label">Harvest Status:</Text>
+                          <Text className={cropStatus.status === "Ready to Harvest" ? "status-ready" : "status-not-ready"}>
+                            {cropStatus.status}
+                          </Text>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <Empty
+                    description="No image available"
+                    image={Empty.PRESENTED_IMAGE_SIMPLE}
+                  />
+                )}
+                
+                <Button 
+                  type="primary" 
+                  icon={<CameraOutlined />} 
+                  size="large"
+                  className="capture-button"
+                  onClick={sendCaptureCommand}
+                  loading={isCapturing}
+                  disabled={!selectedApiKey || !isApiKeyValid || !isDeviceOnline}
+                >
+                  Capture Image
+                </Button>
+
+                {captureStatus && <Alert message={captureStatus} type="info" showIcon />}
+                {analysisStatus && <Alert message={analysisStatus} type="info" showIcon />}
+                
+              </div>
+            )}
+          </div>
+        </Card>
       </div>
     </div>
   );
