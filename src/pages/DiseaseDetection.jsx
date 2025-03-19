@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import "./css/HealthAnalysis.css";
+import "./css/DiseaseDetection.css";
 import { UserAuth } from "../context/AuthContext";
 import { fetchSelectedApiKey } from "../services/headerService";
 import { generateAIResponse, fetchUserData } from "../services/chatService";
