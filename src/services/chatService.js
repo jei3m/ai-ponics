@@ -1,5 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { getSystemInstructions } from "../chatbot-config/systemInstructions";
+import { getSystemInstructions, getImageSystemInstructions } from "../chatbot-config/systemInstructions";
 import {getSystemKnowledge} from "../chatbot-config/systemKnowledge"
 
 const apiKey = process.env.REACT_APP_API_KEY;
@@ -138,6 +138,44 @@ export const generateAIResponse = async function* ( textPrompt, imageInlineData,
 
   // Append Custom Knowledge Base
   chatContext.push({text: `System Knowledge: ${getSystemKnowledge()}`});
+
+  // Logging message history for debugging
+  // console.log(`textPrompt: ${textPrompt}`);
+  // console.log(`chatContext: ${JSON.stringify(chatContext)}`);
+
+  // Generate content stream then yield generated chunks
+  const result = await model.generateContentStream(chatContext);
+  for await (const chunk of result.stream) {
+    const chunkText = chunk.text();
+    if (chunkText) {
+      yield chunkText;
+    }
+  }
+};
+
+// Generate AI response for health anaylsis
+export const generateImageAIResponse = async function* ( textPrompt, imageInlineData, plantName, daysSincePlanting, temperature, humidity, pHlevel, previousMessages = [] ) {
+  const model = genAI.getGenerativeModel({
+    model: "gemini-2.0-flash-exp", // Recently released 2.0 Flash Model
+    systemInstruction: getImageSystemInstructions(plantName, daysSincePlanting, temperature, humidity, pHlevel),
+  });
+
+  // Declaration of messageHistory
+  const chatContext = previousMessages.filter((_, index) => index !== 0).map((msg) => ({
+    text: msg.user ? `User: ${msg.text}` : msg.text,
+  }));
+
+  // Append the current user prompts (Text and Images) as the latest entry
+  if (textPrompt) {
+    chatContext.push({ text: `User : ${textPrompt}` });
+  }
+
+  if (imageInlineData) {
+    chatContext.push(imageInlineData);
+  }
+
+  // Append Custom Knowledge Base
+  // chatContext.push({text: `System Knowledge: ${getSystemKnowledge()}`});
 
   // Logging message history for debugging
   // console.log(`textPrompt: ${textPrompt}`);
