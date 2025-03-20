@@ -137,7 +137,7 @@ export const generateAIResponse = async function* ( textPrompt, imageInlineData,
   }
 
   // Append Custom Knowledge Base
-  chatContext.push({text: `System Knowledge: ${getSystemKnowledge()}`});
+  // chatContext.push({text: `System Knowledge: ${getSystemKnowledge()}`});
 
   // Logging message history for debugging
   // console.log(`textPrompt: ${textPrompt}`);
