@@ -23,7 +23,6 @@ import {
 import { fetchSensorData } from "../services/sensorService";
 import { db } from '../firebase';
 import { doc, getDoc } from 'firebase/firestore';
-import { getStatusConfig, StatusMessage } from '../services/sensorService';
 
 const { Title, Text } = Typography;
 const firebaseHost = process.env.REACT_APP_FIREBASE_DATABASE_URL;
@@ -102,16 +101,16 @@ function DiseaseDetection() {
       setIsApiKeyValid(false);
     }
   };
-  
+
   const sendCaptureCommand = async () => {
     try {
       if (!selectedApiKey) return;
 
+      setIsCapturing(true);
       // Hide previous image
       setImageUrl("");
       setCaptureStatus("Capturing image...");
       setAnalysisStatus("");
-      setIsCapturing(true);
 
       console.log("Sending first capture command...");
 
@@ -216,72 +215,7 @@ function DiseaseDetection() {
       setIsAnalyzing(false);
       setTimeout(() => setAnalysisStatus(""), 3000);
     }
-};
-
-// Fetch image from Firebase
-const fetchImage = async (isFromCapture = false) => {
-    try {
-        if (!selectedApiKey) return;
-
-        // Fetch the latest image reference
-        const latestImageResponse = await fetch(`https://${firebaseHost}/latest_image/${selectedApiKey}.json?auth=${firebaseAuth}`);
-        if (!latestImageResponse.ok) throw new Error(`HTTP error! Status: ${latestImageResponse.status}`);
-        const latestImageData = await latestImageResponse.json();
-
-        if (latestImageData && latestImageData.path) {
-            // Fetch the actual image using the path
-            const imageResponse = await fetch(latestImageData.path);
-            if (!imageResponse.ok) throw new Error(`HTTP error! Status: ${imageResponse.status}`);
-            const imageData = await imageResponse.json();
-
-            const imageBase64 = imageData.image;
-            if (imageBase64 && imageBase64 !== lastImage) {
-                console.log("New image detected! Waiting 1 second before displaying...");
-                
-                setTimeout(() => {
-                    setImageUrl(`data:image/jpeg;base64,${imageBase64}`);
-                    setLastImage(imageBase64);
-                    setCaptureStatus("");
-                    console.log("New image displayed!");
-
-                    // Start AI analysis only if this fetch was triggered by a capture command
-                    if (isFromCapture) {
-                        setAnalysisStatus("Analyzing image...");
-                        setTimeout(() => analyzeImage(imageBase64), 2000);
-                    }
-                }, 1000); // Delay displaying the image by 1 second
-            }
-        }
-    } catch (error) {
-        console.error("Error fetching image:", error);
-    }
-};
-
-
-// Analyze image using AI
-const analyzeImage = async (imageBase64) => {
-    try {
-        console.log("Sending image to AI chatbot...");
-        const prompt = `Analyze the given plant image and provide:
-            - Health: (Healthy or Not Healthy)
-            - Status: (Ready to Harvest or Not Ready to Harvest)`;
-        const responseStream = generateAIResponse(
-            prompt, imageBase64, plantName, daysSincePlanting, temperature, humidity, messages
-        );
-        let currentText = "";
-        for await (const chunk of responseStream) currentText += chunk;
-        console.log("AI Response:", currentText);
-        setCropStatus({
-            health: extractValue(currentText, "Health", "Unknown"),
-            status: extractValue(currentText, "Status", "Not Ready to Harvest"),
-        });
-        setAnalysisStatus("");
-    } catch (error) {
-        console.error("Error analyzing image:", error);
-        setAnalysisStatus("Failed to analyze image.");
-        setTimeout(() => setAnalysisStatus(""), 1000);
-    }
-};
+  };
 
   const extractValue = (text, key, defaultValue) => {
     const regex = new RegExp(`${key}:\s*(.+)`, "i");
@@ -309,7 +243,7 @@ const analyzeImage = async (imageBase64) => {
   };
 
   return (
-    <div style={{ width: "100%", overflowX: "hidden" }}>
+    <>
       <div className="page-container">
         <Card className="container"
           title={
@@ -317,11 +251,16 @@ const analyzeImage = async (imageBase64) => {
           }
         >
           <div className="card-content">
-            {status && (
-              <StatusMessage message={status.message} className={status.className} style={status.style} />
+            {getStatusMessage() && (
+              <Alert
+                className="status-message"
+                message={getStatusMessage()}
+                type="warning"
+                showIcon
+              />
             )}
             
-            {!status && (
+            {!getStatusMessage() && (
               <div>
                 {plantName && imageUrl && (
                   <Alert
@@ -331,8 +270,8 @@ const analyzeImage = async (imageBase64) => {
                     showIcon
                   />
                 )}
-
-{isAnalyzing ? (
+                
+                {isAnalyzing ? (
                   <div className="loading-container">
                     <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />
                     <Text className="loading-text">Analyzing image...</Text>
@@ -375,7 +314,10 @@ const analyzeImage = async (imageBase64) => {
                     image={Empty.PRESENTED_IMAGE_SIMPLE}
                   />
                 )}
-                
+
+                {captureStatus && <Alert message={captureStatus} type="info" showIcon />}
+                {analysisStatus && <Alert message={analysisStatus} type="info" showIcon />}
+
                 <Button 
                   type="primary" 
                   icon={<CameraOutlined />} 
@@ -383,20 +325,16 @@ const analyzeImage = async (imageBase64) => {
                   className="capture-button"
                   onClick={sendCaptureCommand}
                   loading={isCapturing}
-                  disabled={!selectedApiKey || !isApiKeyValid || !isDeviceOnline}
+                  disabled={isCapturing}
                 >
                   Capture Image
                 </Button>
-
-                {captureStatus && <Alert message={captureStatus} type="info" showIcon />}
-                {analysisStatus && <Alert message={analysisStatus} type="info" showIcon />}
-                
               </div>
             )}
           </div>
         </Card>
       </div>
-    </div>
+    </>
   );
 }
 
