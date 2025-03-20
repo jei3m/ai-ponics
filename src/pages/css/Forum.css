@@ -1,6 +1,6 @@
 .forum-page-container {
   min-height: 100vh;
-  min-width: 100vw;
+  min-width: 100%;
   overflow: auto;
   background-color: white;
   position: absolute;
