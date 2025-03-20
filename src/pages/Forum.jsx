@@ -21,6 +21,7 @@ function Forum() {
   const [lastVisible, setLastVisible] = useState(null);
   const [searchForum, setSearchForum] = useState('');
   const [searchParams] = useSearchParams();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
   // Real-time fetching of forums
@@ -137,8 +138,9 @@ function Forum() {
 
   // Post forum function
   const handlePostForum = async () => {
-    if (newForumTitle.trim() !== '' && newForumContent.trim() !== '') {
+    if (newForumTitle.trim() !== '' && newForumContent.trim() !== '' && !isSubmitting) {
       try {
+        setIsSubmitting(true); // Prevent multiple submissions
         const newForum = {
           title: newForumTitle,
           content: newForumContent,
@@ -155,6 +157,8 @@ function Forum() {
       } catch (error) {
         console.error('Error posting forum:', error);
         alert('Failed to post forum. Please try again.');
+      } finally {
+        setIsSubmitting(false); // Re-enable submission
       }
     }
   };
@@ -218,7 +222,7 @@ function Forum() {
               <Button key="back" onClick={() => setShowModal(false)}>
                 Cancel
               </Button>,
-              <Button key="submit" type="primary" onClick={handlePostForum}>
+              <Button key="submit" type="primary" onClick={handlePostForum} loading={isSubmitting} disabled={isSubmitting}>
                 Post
               </Button>,
             ]}

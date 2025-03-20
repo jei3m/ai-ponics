@@ -1,305 +1,317 @@
-import React, { useEffect, useRef, useState } from "react";
-import { doc, getDoc } from "firebase/firestore";
-import {
-  MeetingProvider,
-  useMeeting,
-  useParticipant,
-  Constants,
-} from "@videosdk.live/react-sdk";
-import { authToken, createStream } from "../API";
-import Header from "./components/Header";
-import Chat from "../pages/Chat";
+import React, { useEffect, useState } from "react";
 import "./css/DiseaseDetection.css";
 import { UserAuth } from "../context/AuthContext";
 import { fetchSelectedApiKey } from "../services/headerService";
-import { Spin } from "antd";
-import {
-  fetchSensorData,
-  getStatusConfig,
-  StatusMessage,
-} from "../services/sensorService";
+import { fetchUserData, generateImageAIResponse } from "../services/chatService";
+import { 
+  Spin, 
+  message, 
+  Typography, 
+  Button, 
+  Card, 
+  Empty, 
+  Alert, 
+} from "antd";
+import { 
+  CameraOutlined, 
+  LoadingOutlined
+} from "@ant-design/icons";
+import { fetchSensorData } from "../services/sensorService";
+import { db } from '../firebase';
+import { doc, getDoc } from 'firebase/firestore';
 
-function JoinView({ initializeStream, setMode }) {
-  const [streamId, setStreamId] = useState("");
-
-  const handleAction = async (mode) => {
-    setMode(mode);
-    await initializeStream(streamId);
-  };
-
-  return (
-    <div className="join-container">
-      <input
-        type="text"
-        placeholder="Enter Stream Id"
-        value={streamId}
-        onChange={(e) => setStreamId(e.target.value)}
-        className="input-box"
-      />
-
-      <div className="button-container">
-        <button
-          className="btn"
-          onClick={() => handleAction(Constants.modes.SEND_AND_RECV)}
-        >
-          Create Live Stream as Host
-        </button>
-        <button
-          className="btn"
-          onClick={() => handleAction(Constants.modes.SEND_AND_RECV)}
-        >
-          Join as Host
-        </button>
-        <button
-          className="btn"
-          onClick={() => handleAction(Constants.modes.RECV_ONLY)}
-        >
-          Join as Audience
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function LSContainer({ streamId, onLeave }) {
-  const [joined, setJoined] = useState(false);
-
-  const { join } = useMeeting({
-    onMeetingJoined: () => setJoined(true),
-    onMeetingLeft: onLeave,
-    onError: (error) => alert(error.message),
-  });
-
-  return (
-    <div className="container">
-      <h3>Stream Id: {streamId}</h3>
-      {joined ? <StreamView /> : <button onClick={join}>Join Stream</button>}
-    </div>
-  );
-}
-
-function StreamView() {
-  const { participants } = useMeeting();
-
-  return (
-    <div>
-      <LSControls />
-      {[...participants.values()]
-        .filter((p) => p.mode === Constants.modes.SEND_AND_RECV)
-        .map((p) => (
-          <Participant participantId={p.id} key={p.id} />
-        ))}
-    </div>
-  );
-}
-
-function Participant({ participantId }) {
-  const { webcamStream, micStream, webcamOn, micOn, isLocal, displayName } =
-    useParticipant(participantId);
-
-  const audioRef = useRef(null);
-  const videoRef = useRef(null);
-
-  const setupStream = (stream, ref, condition) => {
-    if (ref.current && stream) {
-      ref.current.srcObject = condition
-        ? new MediaStream([stream.track])
-        : null;
-      condition && ref.current.play().catch(console.error);
-    }
-  };
-
-  useEffect(() => setupStream(micStream, audioRef, micOn), [micStream, micOn]);
-  useEffect(
-    () => setupStream(webcamStream, videoRef, webcamOn),
-    [webcamStream, webcamOn]
-  );
-
-  return (
-    <div>
-      <p>
-        {displayName} | Webcam: {webcamOn ? "ON" : "OFF"} | Mic:{" "}
-        {micOn ? "ON" : "OFF"}
-      </p>
-      <audio ref={audioRef} autoPlay muted={isLocal} />
-      {webcamOn && (
-        <video
-          ref={videoRef}
-          autoPlay
-          muted={isLocal}
-          height="200"
-          width="300"
-        />
-      )}
-    </div>
-  );
-}
-
-function LSControls() {
-  const { leave, toggleMic, toggleWebcam, changeMode, meeting } = useMeeting();
-  const currentMode = meeting.localParticipant.mode;
-
-  return (
-    <div className="controls">
-      <button onClick={leave}>Leave</button>
-
-      {currentMode === Constants.modes.SEND_AND_RECV && (
-        <>
-          <button onClick={toggleMic}>Toggle Mic</button>{" "}
-          <button onClick={toggleWebcam}>Toggle Camera</button>
-        </>
-      )}
-
-      <button
-        onClick={() =>
-          changeMode(
-            currentMode === Constants.modes.SEND_AND_RECV
-              ? Constants.modes.RECV_ONLY
-              : Constants.modes.SEND_AND_RECV
-          )
-        }
-      >
-        {currentMode === Constants.modes.SEND_AND_RECV
-          ? "Switch to Audience Mode"
-          : "Switch to Host Mode"}
-      </button>
-    </div>
-  );
-}
+const { Title, Text } = Typography;
+const firebaseHost = process.env.REACT_APP_FIREBASE_DATABASE_URL;
+const firebaseAuth = process.env.REACT_APP_FIREBASE_AUTH;
 
 function DiseaseDetection() {
-  const [streamId, setStreamId] = useState(null);
-  const [mode, setMode] = useState(Constants.modes.SEND_AND_RECV);
   const { currentUser } = UserAuth();
-  const [isApiKeyValid, setIsApiKeyValid] = useState(true);
-  const [isDeviceOnline, setIsDeviceOnline] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-  const [temperature, setTemperature] = useState(null);
-  const [humidity, setHumidity] = useState(null);
-  const[flowRate, setFlowRate] = useState(null);
   const [selectedApiKey, setSelectedApiKey] = useState(null);
+  const [imageUrl, setImageUrl] = useState("");
+  const [lastImage, setLastImage] = useState("");
+  const [cropStatus, setCropStatus] = useState(null);
+  const [messages, setMessages] = useState([]);
+  const [daysSincePlanting, setDaysSincePlanting] = useState(0);
+  const [plantName, setPlantName] = useState('');
+  const [humidity, setHumidity] = useState(null);
+  const [temperature, setTemperature] = useState(null);
+  const [flowRate, setFlowRate] = useState(null);
+  const [pHlevel, setpHlevel] = useState(null);
+  const [isApiKeyValid, setIsApiKeyValid] = useState(true);
+  const [isDeviceOnline, setIsDeviceOnline] = useState(false);
+  const [sensorDataLoaded, setSensorDataLoaded] = useState(false);
+  const [captureStatus, setCaptureStatus] = useState("");
+  const [analysisStatus, setAnalysisStatus] = useState("");
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [isCapturing, setIsCapturing] = useState(false);
 
   useEffect(() => {
-    fetchSelectedApiKey(currentUser, setSelectedApiKey, doc, getDoc);
-  }, [selectedApiKey, currentUser]);
-  
-  useEffect(() => {
-
-    if (!selectedApiKey) {
-      console.error("API key is missing!");
-      setIsLoading(false);
+    if (!currentUser) {
+      setIsLoading(true);
       return;
     }
-
-    setIsLoading(true);
-    const fetchData = async () => {
-      try {
-        await fetchSensorData({
-          selectedApiKey,
-          setIsDeviceOnline,
-          setTemperature,
-          setHumidity,
-          setFlowRate,
-          setIsLoading,
-          setIsApiKeyValid,
-        });
-      } catch (error) {
-        console.error("Error fetching sensor data:", error);
-      }
-    };
-
-    fetchData();
-
-    const interval = setInterval(fetchData, 2000);
-
-    return () => {
-      clearInterval(interval);
-    };
-  }, [selectedApiKey]);
+    fetchUserData(doc, currentUser, db, getDoc, setIsLoading, setPlantName, setDaysSincePlanting, setSelectedApiKey, fetchSensorDataFromBlynk, message);
+  }, [currentUser]);
   
-  // Initialize Stream
-  const initializeStream = async (id) => {
-    setIsLoading(true);
+  useEffect(() => {
+    fetchSelectedApiKey(currentUser, setSelectedApiKey);
+  }, [currentUser]);
+
+  useEffect(() => {
+    if (selectedApiKey) fetchSensorDataFromBlynk(selectedApiKey);
+  }, [selectedApiKey]);
+
+  useEffect(() => {
+    let interval;
+    if (selectedApiKey) {
+      interval = setInterval(() => fetchSensorDataFromBlynk(selectedApiKey), 2000);
+    }
+    return () => interval && clearInterval(interval);
+  }, [selectedApiKey]);
+
+  useEffect(() => {
+    if (selectedApiKey) fetchImage();
+  }, [selectedApiKey]);
+
+  useEffect(() => {
+    const interval = setInterval(fetchImage, 5000);
+    return () => clearInterval(interval);
+  }, [lastImage]);
+
+  const fetchSensorDataFromBlynk = async (selectedApiKey) => {
     try {
-      const newStreamId = id || (await createStream({ token: authToken }));
-      setStreamId(newStreamId);
+      await fetchSensorData({ 
+        selectedApiKey, 
+        setIsDeviceOnline, 
+        setTemperature, 
+        setHumidity, 
+        setFlowRate,
+        setpHlevel,
+        setIsLoading, 
+        setIsApiKeyValid
+      });
+      setSensorDataLoaded(true);
     } catch (error) {
-      console.error("Stream initialization failed:", error);
-    } finally {
-      setIsLoading(false);
+      setIsDeviceOnline(false);
+      setIsApiKeyValid(false);
     }
   };
 
-  const onStreamLeave = () => setStreamId(null);
+  const sendCaptureCommand = async () => {
+    try {
+      if (!selectedApiKey) return;
 
-  // Status configuration for stream
-  const statusConfig = getStatusConfig(
-    selectedApiKey,
-    isApiKeyValid,
-    isDeviceOnline,
-    isLoading
-  );
-  const activeStatus = statusConfig.find((status) => status.when);
+      setIsCapturing(true);
+      // Hide previous image
+      setImageUrl("");
+      setCaptureStatus("Capturing image...");
+      setAnalysisStatus("");
+
+      console.log("Sending first capture command...");
+
+      // First capture command
+      await fetch(`https://${firebaseHost}/capture/${selectedApiKey}.json?auth=${firebaseAuth}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ capture: true }),
+      });
+
+      console.log("First capture command sent!");
+
+      setTimeout(async () => {
+        console.log("Sending second capture command...");
+
+        await fetch(`https://${firebaseHost}/capture/${selectedApiKey}.json?auth=${firebaseAuth}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ capture: true }),
+        });
+
+        console.log("Second capture command sent!");
+        setCaptureStatus("Image captured! Fetching new image...");
+
+        setTimeout(async () => {
+          console.log("Fetching new image...");
+          await fetchImage(true);
+          setIsCapturing(false);
+        }, 3000);
+
+      }, 3000);
+
+    } catch (error) {
+      console.error("Failed to send capture command:", error);
+      setCaptureStatus("Failed to capture image.");
+      setIsCapturing(false);
+    }
+  };
+
+  // Fetch image from Firebase
+  const fetchImage = async (isFromCapture = false) => {
+    try {
+      if (!selectedApiKey) return;
+
+      // Fetch the latest image reference
+      const latestImageResponse = await fetch(`https://${firebaseHost}/latest_image/${selectedApiKey}.json?auth=${firebaseAuth}`);
+      if (!latestImageResponse.ok) throw new Error(`HTTP error! Status: ${latestImageResponse.status}`);
+      const latestImageData = await latestImageResponse.json();
+
+      if (latestImageData && latestImageData.path) {
+        // Fetch the actual image using the path
+        const imageResponse = await fetch(latestImageData.path);
+        if (!imageResponse.ok) throw new Error(`HTTP error! Status: ${imageResponse.status}`);
+        const imageData = await imageResponse.json();
+
+        const imageBase64 = imageData.image;
+        if (imageBase64 && imageBase64 !== lastImage) {
+          console.log("New image detected! Waiting 1 second before displaying...");
+          
+          setTimeout(() => {
+            setImageUrl(`data:image/jpeg;base64,${imageBase64}`);
+            setLastImage(imageBase64);
+            setCaptureStatus("");
+            console.log("New image displayed!");
+
+            // Start AI analysis only if this fetch was triggered by a capture command
+            if (isFromCapture) {
+              setAnalysisStatus("Analyzing image...");
+              setIsAnalyzing(true);
+              setTimeout(() => analyzeImage(imageBase64), 2000);
+            }
+          }, 1000); // Delay displaying the image by 1 second
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching image:", error);
+    }
+  };
+
+  // Analyze image using AI
+  const analyzeImage = async (imageBase64) => {
+    try {
+      console.log("Sending image to AI chatbot...");
+      const prompt = `Analyze the given plant image and provide:
+          - Health: (Healthy or Not Healthy)
+          - Status: (Ready to Harvest or Not Ready to Harvest)`;
+      const responseStream = generateImageAIResponse(
+        prompt, imageBase64, plantName, daysSincePlanting, temperature, humidity, messages
+      );
+      let currentText = "";
+      for await (const chunk of responseStream) currentText += chunk;
+      console.log("AI Response:", currentText);
+      setCropStatus({
+        health: extractValue(currentText, "Health", "Unknown"),
+        status: extractValue(currentText, "Status", "Not Ready to Harvest"),
+      });
+      setAnalysisStatus("");
+      setIsAnalyzing(false);
+    } catch (error) {
+      console.error("Error analyzing image:", error);
+      setAnalysisStatus("Failed to analyze image.");
+      setIsAnalyzing(false);
+      setTimeout(() => setAnalysisStatus(""), 3000);
+    }
+  };
+
+  const extractValue = (text, key, defaultValue) => {
+    const regex = new RegExp(`${key}:\s*(.+)`, "i");
+    const match = text.match(regex);
+    return match ? match[1].trim() : defaultValue;
+  };
+
+  const getStatusMessage = () => {
+    if (!selectedApiKey) return "Missing API Key. Please configure your API key.";
+    if (!isApiKeyValid) return "Invalid API Key. Please check your API key.";
+    if (!isDeviceOnline) return "Device Offline. Please check your device connection.";
+    if (!sensorDataLoaded) return "Loading sensor data...";
+    return null;
+  };
 
   return (
-    <div style={{ width: "100%", overflowX: "hidden" }}>
-      <Header />
-
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          textAlign: "center",
-          padding: "0.4rem",
-          margin: "0 auto",
-        }}
-      >
-        <div
-          style={{
-            maxWidth: "100vw",
-            borderRadius: "14px",
-            height: "fit-content",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            flexDirection: "column",
-            padding: "1.8rem",
-          }}
+    <>
+      <div className="page-container">
+        <Card className="container"
+          title={
+            <Title level={3} className="card-title">Health Analysis</Title>
+          }
         >
-          {activeStatus ? (
-            <div style={{ textAlign: "center", paddingTop: "20px" }}>
-              <StatusMessage {...activeStatus} />
-              {isLoading && <Spin />}
-            </div>
-          ) : (
-            <>
-              {!streamId ? (
-                <JoinView
-                  initializeStream={initializeStream}
-                  setMode={setMode}
-                />
-              ) : (
-                <MeetingProvider
-                  config={{
-                    meetingId: streamId,
-                    micEnabled: true,
-                    webcamEnabled: true,
-                    name: currentUser?.displayName || "Guest",
-                    mode,
-                  }}
-                  token={authToken}
-                >
-                  <LSContainer streamId={streamId} onLeave={onStreamLeave} />
-                </MeetingProvider>
-              )}
+          <div className="card-content">
+            {getStatusMessage() && (
+              <Alert
+                className="status-message"
+                message={getStatusMessage()}
+                type="warning"
+                showIcon
+              />
+            )}
+            
+            {!getStatusMessage() && (
+              <div>
+                {plantName && imageUrl && !isAnalyzing && (
+                  <Alert
+                    className="status-message"
+                    message={`Plant: ${plantName} (${daysSincePlanting} days old)`}
+                    type="info"
+                    showIcon
+                  />
+                )}
+                
+                {isAnalyzing ? (
+                  <div className="loading-container">
+                    <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />
+                    <Text className="loading-text">Analyzing image...</Text>
+                  </div>
+                ) : isLoading ? (
+                  <div className="loading-container">
+                    <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />
+                    <Text className="loading-text">Loading...</Text>
+                  </div>
+                ) : imageUrl ? (
+                  <>
+                    <img src={imageUrl} alt="Captured" className="captured-image" />
+                    
+                    {cropStatus && (
+                      <div className="analysis-result">
+                        <div className="analysis-item">
+                          <Text className="label">Plant Health:</Text>
+                          <Text className={`result ${cropStatus.health === "Healthy" ? "status-healthy" : "status-unhealthy"}`}>
+                            {cropStatus.health}
+                          </Text>
+                        </div>
+                        
+                        <div className="analysis-item">
+                          <Text className="label">Harvest Status:</Text>
+                          <Text className={`result ${cropStatus.status === "Ready to Harvest" ? "status-ready" : "status-not-ready"}`}>
+                            {cropStatus.status}
+                          </Text>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <Empty
+                    description="No image available"
+                    image={Empty.PRESENTED_IMAGE_SIMPLE}
+                  />
+                )}
 
-              {streamId && <Chat />}
-            </>
-          )}
-        </div>
+                <Button 
+                  type="primary" 
+                  icon={<CameraOutlined />} 
+                  size="large"
+                  className="capture-button"
+                  onClick={sendCaptureCommand}
+                  loading={isCapturing}
+                  disabled={isCapturing}
+                >
+                  Capture Image
+                </Button>
+              </div>
+            )}
+          </div>
+        </Card>
       </div>
-    </div>
+    </>
   );
 }
 

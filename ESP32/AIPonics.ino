@@ -27,6 +27,14 @@ volatile int flowPulseCount = 0;
 float flowRate = 0.0;
 unsigned long oldTime = 0;
 
+// pH sensor setup
+#define PH_PIN 33         
+float ph_value = 0.0;      
+float calibph686 = 2.42;   // Calculated Voltage at pH 6.86 
+float calibph4 = 3.17;     // Calculated Voltage at pH 4.01 
+unsigned int samples = 10;  
+float adc_resolution = 4096.0; // ESP32 ADC resolution
+
 // Email setup
 SMTPSession smtp;
 
@@ -46,6 +54,26 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 void IRAM_ATTR pulseCounter() {
   flowPulseCount++;
+}
+
+// Function to calculate pH level
+float readPH() {
+  float avg_value = 0.0;
+  for (int i = 0; i < samples; i++) {
+      avg_value += analogRead(PH_PIN);
+      delay(10);
+  }
+  float adc_raw = avg_value / samples;
+  float voltage = adc_raw * 3.3 / adc_resolution;
+
+  // Calculate slope (m) and intercept (b)
+  double m = (4.01 - 6.86) / (calibph4 - calibph686);
+  double b = 6.86 - m * calibph686;
+
+  // Calculate pH value
+  double ph_act = m * voltage + b;
+
+  return ph_act;
 }
 
 // Function to send Temperature email alert
@@ -305,14 +333,20 @@ void sendSensor() {
   float humidity = dht.readHumidity();
   float temperature = dht.readTemperature(); 
 
+  // Read pH value
+  ph_value = readPH();
+
   // Send temperature and humidity to Blynk API
   Blynk.virtualWrite(V0, temperature); // Pin V0 is for Temperature
   Blynk.virtualWrite(V1, humidity); // Pin V1 is for Humidity
+  Blynk.virtualWrite(V3, ph_value); // Pin V3 is for pH
 
   Serial.print("Temperature : ");
   Serial.print(temperature);
   Serial.print("\nHumidity : ");
   Serial.println(humidity);
+  Serial.print("pH Value : ");
+  Serial.println(ph_value);
 
   // Check temperature and send email if above threshold
   if (temperature > 36) {
@@ -333,9 +367,9 @@ void sendSensor() {
   attachInterrupt(digitalPinToInterrupt(FLOW_SENSOR_PIN), pulseCounter, FALLING);
 
   // Check flow rate and send email equal to 0
-  // if (flowRate = 0) {
-  //   sendPumpAlert();
-  // }
+  if (flowRate = 0) {
+    sendPumpAlert();
+  }
 
   // Display sensor data at OLED Screen
   display.clearDisplay();
@@ -345,12 +379,16 @@ void sendSensor() {
   display.println("Temp: " + String(temperature) + " C");
   display.println("Humidity: " + String(humidity) + " %");
   display.println("Flow: " + String(flowRate) + " L/min");
+  display.println("pH: " + String(ph_value));
   display.display();
 
 }
 
 void setup() {
   Serial.begin(115200);
+
+  // Initialize pH sensor pin
+  pinMode(PH_PIN, INPUT);
 
   // Initialize OLED display
   if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { // Address 0x3C for 128x64

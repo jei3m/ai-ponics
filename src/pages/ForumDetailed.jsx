@@ -20,6 +20,7 @@ function DetailedView() {
   const [replyInputs, setReplyInputs] = useState({});
   const [showReplies, setShowReplies] = useState({});
   const [showReplyForm, setShowReplyForm] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const fetchForum = async () => {
@@ -44,23 +45,30 @@ function DetailedView() {
   }, [id]);
 
   const handleComment = async () => {
-    if (newComment.trim() !== '' && forum) {
-      const forumRef = doc(db, 'forums', forum.id);
-      const newCommentObj = {
-        comment: newComment,
-        postedBy: currentUser,
-        authorName: auth.currentUser.displayName || 'Anonymous',
-        authorAvatar: auth.currentUser.photoURL || 'https://via.placeholder.com/50',
-        createdAt: new Date().toISOString(),
-      };
-      await updateDoc(forumRef, {
-        comments: arrayUnion(newCommentObj),
-      });
-      setNewComment('');
-      setForum(prevForum => ({
-        ...prevForum,
-        comments: [...prevForum.comments, newCommentObj],
-      }));
+    if (newComment.trim() !== '' && forum && !isSubmitting) {
+      try {
+        setIsSubmitting(true);
+        const forumRef = doc(db, 'forums', forum.id);
+        const newCommentObj = {
+          comment: newComment,
+          postedBy: currentUser,
+          authorName: auth.currentUser.displayName || 'Anonymous',
+          authorAvatar: auth.currentUser.photoURL || 'https://via.placeholder.com/50',
+          createdAt: new Date().toISOString(),
+        };
+        await updateDoc(forumRef, {
+          comments: arrayUnion(newCommentObj),
+        });
+        setNewComment('');
+        setForum(prevForum => ({
+          ...prevForum,
+          comments: [...prevForum.comments, newCommentObj],
+        }));
+      } catch (error) {
+        console.error('Error posting comment:', error);
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   };
 
@@ -107,25 +115,32 @@ function DetailedView() {
 
   const handleReply = async (commentIndex) => {
     const reply = replyInputs[commentIndex];
-    if (reply && reply.trim() !== '' && forum) {
-      const forumRef = doc(db, 'forums', forum.id);
-      const newReplyObj = {
-        comment: reply,
-        postedBy: currentUser,
-        authorName: auth.currentUser.displayName || 'Anonymous',
-        authorAvatar: auth.currentUser.photoURL || 'https://via.placeholder.com/50',
-        createdAt: new Date().toISOString(),
-      };
-      const updatedComments = [...forum.comments];
-      updatedComments[commentIndex].replies = updatedComments[commentIndex].replies || [];
-      updatedComments[commentIndex].replies.push(newReplyObj);
-      await updateDoc(forumRef, { comments: updatedComments });
-      setForum(prevForum => ({
-        ...prevForum,
-        comments: updatedComments,
-      }));
-      setReplyInputs(prev => ({ ...prev, [commentIndex]: '' }));
-      setShowReplyForm(prev => ({ ...prev, [commentIndex]: false }));
+    if (reply && reply.trim() !== '' && forum && !isSubmitting) {
+      try {
+        setIsSubmitting(true);
+        const forumRef = doc(db, 'forums', forum.id);
+        const newReplyObj = {
+          comment: reply,
+          postedBy: currentUser,
+          authorName: auth.currentUser.displayName || 'Anonymous',
+          authorAvatar: auth.currentUser.photoURL || 'https://via.placeholder.com/50',
+          createdAt: new Date().toISOString(),
+        };
+        const updatedComments = [...forum.comments];
+        updatedComments[commentIndex].replies = updatedComments[commentIndex].replies || [];
+        updatedComments[commentIndex].replies.push(newReplyObj);
+        await updateDoc(forumRef, { comments: updatedComments });
+        setForum(prevForum => ({
+          ...prevForum,
+          comments: updatedComments,
+        }));
+        setReplyInputs(prev => ({ ...prev, [commentIndex]: '' }));
+        setShowReplyForm(prev => ({ ...prev, [commentIndex]: false }));
+      } catch (error) {
+        console.error('Error posting reply:', error);
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   };
 
@@ -185,7 +200,14 @@ function DetailedView() {
               />
               <div className='button-group'> 
                 <Button onClick={() => navigate('/forum')} className="button-back" type="text" ><FontAwesomeIcon icon={faArrowLeft}/> Back</Button>
-                <Button onClick={handleComment} className="forum-button-detailed" type="text"><FontAwesomeIcon icon={faComment}/> Comment</Button>
+                <Button 
+                  onClick={handleComment} 
+                  className="forum-button-detailed" 
+                  type="text"
+                  disabled={isSubmitting}
+                >
+                  <FontAwesomeIcon icon={faComment}/> {isSubmitting ? 'Posting...' : 'Comment'}
+                </Button>
               </div>
             </div>
             <ul className="comment-list">
@@ -242,7 +264,14 @@ function DetailedView() {
                         className='ql-comment'
                         style={{minHeight:'5em'}}
                       />
-                      <Button className='forum-button' onClick={() => handleReply(index)} style={{marginTop:'10px', display:'flex', marginLeft:'auto'}}><FontAwesomeIcon icon={faReply}/> Submit Reply</Button>
+                      <Button 
+                        className='forum-button' 
+                        onClick={() => handleReply(index)} 
+                        style={{marginTop:'10px', display:'flex', marginLeft:'auto'}}
+                        disabled={isSubmitting}
+                      >
+                        <FontAwesomeIcon icon={faReply}/> {isSubmitting ? 'Posting...' : 'Submit Reply'}
+                      </Button>
                     </div>
                   )}
                   {showReplies[index] && comment.replies && comment.replies.length > 0 && (

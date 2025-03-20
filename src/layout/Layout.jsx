@@ -4,8 +4,10 @@ import Header from '../pages/components/Header';
 const Layout = ({ children }) => {
   return (
     <>
-      <Header />
-      <main>{children}</main>
+      <div style={{overflowX: 'hidden'}}>
+        <Header />
+        <main>{children}</main>
+      </div>
     </>
   );
 };
