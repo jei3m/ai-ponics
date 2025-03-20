@@ -81,11 +81,11 @@ function Header() {
             </a>
           ):null }
 
-          {location.pathname === '/home' || location.pathname === '/forum' || location.pathname.startsWith('/forum/') ? (
+          {/* {location.pathname === '/home' || location.pathname === '/forum' || location.pathname.startsWith('/forum/') ? (
             <a href='/analyse'>
               <FontAwesomeIcon icon={faImage} className='forum-icon' />
             </a>
-          ):null }
+          ):null } */}
 
           {location.pathname === '/home' || location.pathname === ('/analyse') ? (
             <a href='/forum'>
