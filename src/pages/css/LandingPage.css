@@ -1,42 +1,49 @@
-.landing-page {
+  .landing-page {
     font-family: 'Roboto', sans-serif !important;
     color: #333333;
     line-height: 1.6;
     background-color: #FBFCF8;
+    overflow-x: hidden;
   }
-  
-  .landing-page .ant-layout {
-    background: transparent;
-  }
-  
+    
   /* Hero Section */
   .hero {
-    text-align: center;
-    min-height: calc(40vh);
-    padding: 10px;
     padding-top: 30px;
+    text-align: center;
+    min-height: 100dvh;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    max-width: 60%;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .hero-content {
     margin: 0 auto;
   }
   
-  .hero h1 {
+  .hero-badge {
+    background-color: oklch(0.925 0.084 155.995);
+    color:oklch(0.532 0.157 131.589);
+    font-weight: 600;
+    padding: 4px 14px 4px;
+    width: fit-content;
+    margin: 0 auto;
+    border-radius: 12px;
+  }
+
+  .landing-title {
     font-size: 4rem;
-    margin-bottom: 2px;
+    margin-bottom: -10px;
+    font-weight: bold;
   }
-  
-  .hero h1:first-child {
-    margin-bottom: -80px;
-  }
-  
-  .hero p {
-    font-size: 1.5rem;
+
+  .landing-p {
+    font-size: 1.4rem;
     font-weight: 400;
-    color: #374151;
-    margin-top: 0;
+    color: #5D6B81;
+    margin-top: 10px;
     padding-left: 2rem;
     padding-right: 2rem;
   }
@@ -47,37 +54,50 @@
     background-clip: text;
     -webkit-text-fill-color: transparent;
     display: inline-block;
+    line-height: 0.7;
+    width: 100%;
+    margin: 0;    
+    padding: 10px 0; 
+  }
+
+  .hero p {
+    font-size: 1.4rem;
+    font-weight: 400;
+    color: #374151;
+    margin: 0 auto;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    width: 80%;
+    margin-top: 20px;
   }
   
-  .google-login-btn {
+  .google-login-button {
     display: flex;
     align-items: center;
     background-color: #4285F4; /* Google Blue */
     color: #ffffff; /* White text for contrast */
     border: none;
-    border-radius: 6px;
-    padding: 0.75rem 1.5rem;
-    font-size: 1rem;
+    border-radius: 12px;
+    padding: 0.8rem 1.5rem;
     cursor: pointer;
     transition: background-color 0.3s, transform 0.2s;
-    margin-top: 2px;
-    margin-bottom: 8px;
     justify-content: center; /* Center content horizontally */
-    width: auto; 
-    padding: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25); /* Subtle shadow for depth */
-    font-weight: 500;
+    font-weight: 600 ;
+    font-size: 1rem;
+    margin: 0 auto;
+    margin-top: 14px;
   }
   
-  .google-login-btn:hover {
+  .google-login-button:hover {
     background-color: #ffffff;
     color: #000000; /* Changed to black text */
     transform: scale(1.02);
   }
   
   .google-logo {
-    width: 18px;
-    height: 18px;
+    width: 22px;
+    height: 22px;
     margin-right: 10px;
   }
   
@@ -85,184 +105,94 @@
     font-size: 16px;
   }
   
-  /* Features Section */
-  .features {
-    padding: 80px 0;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-  
-  .section-header {
-    text-align: center;
-    margin-bottom: 60px;
-  }
-  
-  .section-header h2 {
-    font-size: 2.5rem;
-    margin-bottom: 16px;
-    color: #2E3A59;
-  }
-  
-  .section-header p {
-    font-size: 1.25rem;
-    color: #5D6B81;
-    max-width: 700px;
-    margin: 0 auto;
-  }
-  
-  .features-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 30px;
-    padding: 0 20px;
-  }
-  
-  .feature-card {
-    background-color: #FFFFFF;
-    border-radius: 12px;
-    padding: 30px;
-    transition: transform 0.3s, box-shadow 0.3s;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
-    text-align: center;
-  }
-  
-  .feature-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.1);
-  }
-  
-  .feature-icon {
-    width: 80px;
-    height: 80px;
-    margin: 0 auto 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, rgba(76, 175, 80, 0.1), rgba(33, 150, 243, 0.1));
-    border-radius: 50%;
-  }
-  
-  .feature-icon img {
-    width: 48px;
-    height: 48px;
-  }
-  
-  .feature-card h3 {
-    font-size: 1.4rem;
-    margin-bottom: 15px;
-    color: #2E3A59;
-  }
-  
-  .feature-card p {
-    color: #5D6B81;
-    line-height: 1.6;
-  }
-  
-  /* Tech Stack Section */
-  .tech-stack {
-    padding: 80px 0;
-    background-color: #F5F9FF;
-  }
-  
-  .tech-logos {
-    margin-top: 50px;
-  }
-  
-  .tech-logo {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
-    transition: transform 0.3s;
-  }
-  
-  .tech-logo:hover {
-    transform: scale(1.05);
-  }
-  
-  .tech-logo img {
-    width: 60px;
-    height: 60px;
-    margin-bottom: 10px;
-  }
-  
-  .tech-logo .ant-typography {
-    font-size: 1rem;
-    color: #2E3A59;
-  }
-  
-  /* Footer */
-  .footer {
-    background-color: #1C2331;
-    padding: 40px 20px;
-    color: #FFFFFF;
-  }
-  
-  .footer-bottom {
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-  
-  .social-links {
-    display: flex;
-  }
-  
-  .social-link {
-    color: #FFFFFF;
-    font-size: 1.5rem;
-    transition: color 0.3s, transform 0.2s;
-    margin-left: 15px;
-  }
-  
-  .social-link:hover {
-    color: #4CAF50;
-    transform: scale(1.1);
-  }
-  
   /* Responsive adjustments */
+  @media (max-width: 1200px) {    
+    .hero-content {
+      max-width: 80%;
+    }
+    
+    .landing-title {
+      font-size: 3.5rem;
+    }
+  }
+  
+  @media (max-width: 992px) {
+    .landing-title {
+      font-size: 3rem;
+    }
+    
+    .hero p {
+      font-size: 1.2rem;
+    }
+    
+    .landing-p {
+      font-size: 1.2rem;
+    }
+  }
+  
   @media (max-width: 768px) {
     .hero {
+      max-width: 100%;
+      min-height: 100dvh;
+      padding: 20px;
+    }
+    
+    .hero-content {
       max-width: 90%;
-      min-height: 50vh;
     }
     
-    .hero h1 {
+    .landing-title {
       font-size: 2.5rem;
+      margin-bottom: 0px;
     }
     
-    .hero h1:first-child {
-      margin-bottom: -50px;
+    .gradient-text {
+      margin-top: -15px;
     }
     
     .hero p {
       font-size: 1.1rem;
-      padding-left: 1rem;
-      padding-right: 1rem;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .hero-badge {
+      padding: 3px 12px 3px;
+      font-size: 0.9rem;
+    }
+
+  }
+  
+  @media (max-width: 480px) {
+    .landing-title {
+      font-size: 3rem;
+      line-height: 1;
+    }
+
+    .gradient-text {
+      margin-top: 0px;
     }
     
-    .features-grid {
-      grid-template-columns: 1fr;
+    .hero p {
+      font-size: 1rem;
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
     }
     
-    .section-header h2 {
-      font-size: 2rem;
+    .landing-p {
+      font-size: 1rem;
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
     }
-  }
-  
-  /* Ant Design Override Styles */
-  .landing-page .ant-btn-primary {
-    background: linear-gradient(90deg, #4CAF50 0%, #2196F3 100%);
-    border: none;
-    height: auto;
-    padding: 10px 24px;
-    font-size: 16px;
-    font-weight: 500;
-  }
-  
-  .landing-page .ant-typography {
-    color: inherit;
-  }
-  
-  .landing-page .ant-divider {
-    border-color: rgba(0, 0, 0, 0.06);
+        
+    .google-login-button {
+      padding: 0.6rem 1.2rem;
+      font-size: 0.9rem;
+    }
+
+    .hero-badge {
+      padding: 2px 10px 2px;
+      font-size: 0.8rem;
+      margin-bottom: 10px;
+    }
   }

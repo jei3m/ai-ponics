@@ -6,6 +6,7 @@
   min-height: calc(100vh - 80px); /* Adjust to not overlap header */
   width: 100%;
   margin: 0 auto;
+  font-family: "Roboto", sans-serif !important;
 }
 
 .container {
@@ -40,18 +41,15 @@
 .captured-image {
   max-width: 100%;
   height: auto;
-  margin: 20px 0;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .analysis-result {
-  background-color: #f9f9f9;
   border-radius: 8px;
-  padding: 15px;
-  margin-top: 15px;
+  margin-bottom: 20px;
   width: 100%;
-  border-left: 4px solid #1890ff;
+  margin-top: 10px;
 }
 
 .analysis-item {
@@ -69,6 +67,13 @@
 .analysis-item .label {
   font-weight: 600;
   margin-right: 5px;
+  font-size: 20px;
+}
+
+.analysis-item .result {
+  font-weight: 500;
+  margin-right: 5px;
+  font-size: 20px;
 }
 
 .error-text {
