@@ -40,17 +40,8 @@ function Router() {
   return (
     <Routes>
 
-      <Route path="/" element={<Login />} />
+      <Route path="/" element={<LandingPage />} />
       <Route path="*" element={<NotFound />} />
-
-      <Route 
-        path="/landing" 
-        element={
-          <Layout>
-            <LandingPage />
-          </Layout>
-        } 
-      />
 
       <Route
         path="/chat"
