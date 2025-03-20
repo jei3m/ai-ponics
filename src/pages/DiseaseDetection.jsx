@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./css/DiseaseDetection.css";
 import { UserAuth } from "../context/AuthContext";
 import { fetchSelectedApiKey } from "../services/headerService";
-import { generateAIResponse, fetchUserData } from "../services/chatService";
+import { fetchUserData, generateImageAIResponse } from "../services/chatService";
 import { 
   Spin, 
   message, 
@@ -11,13 +11,9 @@ import {
   Card, 
   Empty, 
   Alert, 
-  Divider 
 } from "antd";
 import { 
   CameraOutlined, 
-  CheckCircleOutlined, 
-  CloseCircleOutlined,
-  WarningOutlined,
   LoadingOutlined
 } from "@ant-design/icons";
 import { fetchSensorData } from "../services/sensorService";
@@ -57,7 +53,7 @@ function DiseaseDetection() {
     }
     fetchUserData(doc, currentUser, db, getDoc, setIsLoading, setPlantName, setDaysSincePlanting, setSelectedApiKey, fetchSensorDataFromBlynk, message);
   }, [currentUser]);
-
+  
   useEffect(() => {
     fetchSelectedApiKey(currentUser, setSelectedApiKey);
   }, [currentUser]);
@@ -197,7 +193,7 @@ function DiseaseDetection() {
       const prompt = `Analyze the given plant image and provide:
           - Health: (Healthy or Not Healthy)
           - Status: (Ready to Harvest or Not Ready to Harvest)`;
-      const responseStream = generateAIResponse(
+      const responseStream = generateImageAIResponse(
         prompt, imageBase64, plantName, daysSincePlanting, temperature, humidity, messages
       );
       let currentText = "";
@@ -231,17 +227,6 @@ function DiseaseDetection() {
     return null;
   };
 
-  const getHealthIcon = (health) => {
-    if (health === "Healthy") return <CheckCircleOutlined className="icon status-healthy" />;
-    if (health === "Not Healthy") return <CloseCircleOutlined className="icon status-unhealthy" />;
-    return <WarningOutlined className="icon" />;
-  };
-
-  const getStatusIcon = (status) => {
-    if (status === "Ready to Harvest") return <CheckCircleOutlined className="icon status-ready" />;
-    return <WarningOutlined className="icon status-not-ready" />;
-  };
-
   return (
     <>
       <div className="page-container">
@@ -262,10 +247,10 @@ function DiseaseDetection() {
             
             {!getStatusMessage() && (
               <div>
-                {plantName && imageUrl && (
+                {plantName && imageUrl && !isAnalyzing && (
                   <Alert
                     className="status-message"
-                    message={`Analyzing: ${plantName} (${daysSincePlanting} days old)`}
+                    message={`Plant: ${plantName} (${daysSincePlanting} days old)`}
                     type="info"
                     showIcon
                   />
@@ -287,21 +272,16 @@ function DiseaseDetection() {
                     
                     {cropStatus && (
                       <div className="analysis-result">
-                        <Title level={4}>Analysis Results</Title>
-                        <Divider style={{ margin: '12px 0' }} />
-                        
                         <div className="analysis-item">
-                          {getHealthIcon(cropStatus.health)}
                           <Text className="label">Plant Health:</Text>
-                          <Text className={cropStatus.health === "Healthy" ? "status-healthy" : "status-unhealthy"}>
+                          <Text className={`result ${cropStatus.health === "Healthy" ? "status-healthy" : "status-unhealthy"}`}>
                             {cropStatus.health}
                           </Text>
                         </div>
                         
                         <div className="analysis-item">
-                          {getStatusIcon(cropStatus.status)}
                           <Text className="label">Harvest Status:</Text>
-                          <Text className={cropStatus.status === "Ready to Harvest" ? "status-ready" : "status-not-ready"}>
+                          <Text className={`result ${cropStatus.status === "Ready to Harvest" ? "status-ready" : "status-not-ready"}`}>
                             {cropStatus.status}
                           </Text>
                         </div>
@@ -314,9 +294,6 @@ function DiseaseDetection() {
                     image={Empty.PRESENTED_IMAGE_SIMPLE}
                   />
                 )}
-
-                {captureStatus && <Alert message={captureStatus} type="info" showIcon />}
-                {analysisStatus && <Alert message={analysisStatus} type="info" showIcon />}
 
                 <Button 
                   type="primary" 
