@@ -17,7 +17,9 @@
 }
 
 .sensor-cards-container {
-  max-width: 100vw;
+  margin-bottom: 1.2rem;
+  width: 100%;
+  max-width: 600px;
   border-radius: 14px;
   height: fit-content;
   display: flex;
