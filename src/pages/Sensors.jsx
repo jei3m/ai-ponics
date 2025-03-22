@@ -16,6 +16,7 @@ import {
   getStatusConfig
 } from '../services/sensorService';
 import PHLevel from "./components/Sensors/PHLevel";
+import WeatherCard from "./components/WeatherLocation";
 
 dayjs.extend(customParseFormat);
 
@@ -149,16 +150,20 @@ function Sensors() {
 
           <div className="sensor-cards-container">
 
+            <WeatherCard>
+              
+            </WeatherCard>
+
             <TempHumidCard
               temperature={temperature}
               humidity={humidity}
               status={status}
             />
 
-            <FlowRate
+            {/* <FlowRate
              flowRate={flowRate}
              status={status}
-            />
+            /> */}
 
             <PHLevel 
               pHlevel={pHlevel}
