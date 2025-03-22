@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, Typography } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMapMarkerAlt, faCloudSun, faWind, faTemperature0, faTemperatureHalf, faTint } from '@fortawesome/free-solid-svg-icons';
-import '../css/WeatherLocation.css';
+import './css/WeatherCard.css';
 
 function WeatherCard() {
   const [weatherData, setWeatherData] = useState(null);
