@@ -16,7 +16,7 @@ import {
   getStatusConfig
 } from '../services/sensorService';
 import PHLevel from "./components/Sensors/PHLevel";
-import WeatherCard from "./components/WeatherLocation";
+import WeatherCard from "./components/Sensors/WeatherCard";
 
 dayjs.extend(customParseFormat);
 
