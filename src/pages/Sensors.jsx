@@ -14,7 +14,7 @@ import {
   calculateDaysSincePlanting,
   getDatePickerConfig,
   getStatusConfig,
-  getPlantThresholds
+  getPlantData
 } from '../services/sensorService';
 import PHLevel from "./components/Sensors/PHLevel";
 import WeatherCard from "./components/Sensors/WeatherCard";
@@ -49,7 +49,7 @@ function Sensors() {
   // Fetch thresholds based on plantName
   useEffect(() => {
     if (plantName) {
-      const thresholds = getPlantThresholds(plantName);
+      const thresholds = getPlantData(plantName);
       if (!thresholds) {
         setIsLoading(true); // Set isLoading to true if thresholds are null
       } else {
