@@ -7,7 +7,6 @@ import { auth } from './firebase';
 
 // Pages
 import Chat from './pages/Chat';
-import Login from './pages/Login';
 import Forum from './pages/Forum';
 import DetailedView from './pages/ForumDetailed';
 import Sensors from './pages/Sensors';
@@ -94,7 +93,7 @@ function Router() {
         }
       />
 
-      <Route
+      {/* <Route
         path="/analyse"
         element={
           <PrivateRoutes>
@@ -103,7 +102,7 @@ function Router() {
             </Layout>
           </PrivateRoutes>
         }
-      />
+      /> */}
         
     </Routes>
   );
