@@ -53,7 +53,7 @@ export const generateGreeting = async (plantName, daysSincePlanting, temperature
 };
 
 // Greet User Function
-export async function greetUser(sensorDataLoaded, isApiKeyValid, setMessages, selectedApiKey, isDeviceOnline, temperature, MAX_TEMPERATURE, MIN_TEMPERATURE, plantName, daysSincePlanting, pHlevel, humidity) {
+export async function greetUser(sensorDataLoaded, isApiKeyValid, setMessages, selectedApiKey, isDeviceOnline, temperature, plantName, daysSincePlanting, pHlevel, humidity) {
 
   const getErrorState = () => {
     if (!sensorDataLoaded) return 'LOADING';
@@ -89,13 +89,6 @@ export async function greetUser(sensorDataLoaded, isApiKeyValid, setMessages, se
   }
 
   try {
-    const warningMessage =
-      temperature > MAX_TEMPERATURE
-      ? "**Warning:** Temperature is too Hot"
-      : temperature < MIN_TEMPERATURE
-      ? "**Warning:** Temperature is too Cold"
-      : "Need help or have questions? Don&apos;t hesitate to ask!";
-
     // Hard-coded message greeting, to reduce loading time from AI generated greeting
     const greetingText = 
 `Hey there, I'm AI-Ponics, your friendly Aeroponic System Assistant! 👋 \n
@@ -105,7 +98,7 @@ export async function greetUser(sensorDataLoaded, isApiKeyValid, setMessages, se
   *   **Temperature:** ${temperature} °C
   *   **Humidity:** ${humidity}% \n
   *   **pH Level:** ${pHlevel} \n
-${warningMessage}`
+Need help or have questions? Don&apos;t hesitate to ask!`
 
     // const greetingText = await generateGreeting(plantName, daysSincePlanting, temperature, humidity);
     setMessages([{ user: false, text: greetingText}]);

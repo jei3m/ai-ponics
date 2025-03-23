@@ -27,8 +27,6 @@ import {
 } from '../services/chatService';
 
 import { 
-  MAX_TEMPERATURE, 
-  MIN_TEMPERATURE,
   fetchSensorData 
 } from "../services/sensorService";
 
@@ -88,7 +86,7 @@ const Chat = () => {
 
   // Function for Greeting the User
   useEffect(() => {
-    greetUser(sensorDataLoaded, isApiKeyValid, setMessages, selectedApiKey,isDeviceOnline, temperature, MAX_TEMPERATURE, MIN_TEMPERATURE, plantName, daysSincePlanting, pHlevel, humidity);
+    greetUser(sensorDataLoaded, isApiKeyValid, setMessages, selectedApiKey,isDeviceOnline, temperature, plantName, daysSincePlanting, pHlevel, humidity);
 
   }, [sensorDataLoaded, isDeviceOnline, plantName, daysSincePlanting, temperature, pHlevel, humidity, flowRate, isApiKeyValid, selectedApiKey]);
 
