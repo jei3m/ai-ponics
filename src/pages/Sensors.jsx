@@ -13,7 +13,8 @@ import {
   fetchUserData,
   calculateDaysSincePlanting,
   getDatePickerConfig,
-  getStatusConfig
+  getStatusConfig,
+  getPlantThresholds
 } from '../services/sensorService';
 import PHLevel from "./components/Sensors/PHLevel";
 import WeatherCard from "./components/Sensors/WeatherCard";
@@ -33,17 +34,29 @@ function Sensors() {
   const [plantName, setPlantName] = useState("");
   const [isPlantInfoChanged, setIsPlantInfoChanged] = useState(false);
 
-
+  // States for loading and thresholds
   const [isLoading, setIsLoading] = useState(false);
+  const [thresholds, setThresholds] = useState(null);
 
   // States for conditional rendering
   const [isApiKeyValid, setIsApiKeyValid] = useState(true);
   const [isDeviceOnline, setIsDeviceOnline] = useState(true);
 
   // States for user info
-  // const { selectedApiKey } = useApiKey();
   const [user, setUser] = useState(null);
   const [selectedApiKey, setSelectedApiKey] = useState(null);
+
+  // Fetch thresholds based on plantName
+  useEffect(() => {
+    if (plantName) {
+      const thresholds = getPlantThresholds(plantName);
+      if (!thresholds) {
+        setIsLoading(true); // Set isLoading to true if thresholds are null
+      } else {
+        setThresholds(thresholds);
+      }
+    }
+  }, [plantName]);
 
   // Fetch sensor data effect
   useEffect(() => {
@@ -156,6 +169,8 @@ function Sensors() {
               temperature={temperature}
               humidity={humidity}
               status={status}
+              plantName={plantName}
+              thresholds={thresholds}
             />
 
             {/* <FlowRate
@@ -166,6 +181,8 @@ function Sensors() {
             <PHLevel 
               pHlevel={pHlevel}
               status={status}
+              plantName={plantName}
+              thresholds={thresholds}
             />
 
             <PlantInfo
