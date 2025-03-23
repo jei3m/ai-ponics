@@ -5,17 +5,6 @@ import { useNavigate } from 'react-router-dom';
 import { signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from '../firebase';
 import TempHumidCard from './components/Sensors/TempHumid';
-import { 
-  Leaf, 
-  Thermometer, 
-  Monitor, 
-  Mail, 
-  Layers,
-  Code,
-  Brain,
-  Cpu,
-  Database
-} from 'lucide-react';
 
 const LandingPage = () => {
 
@@ -39,62 +28,6 @@ const LandingPage = () => {
           console.error('Error signing in with Google:', error);
       }
   };
-
-  const features = [
-    {
-      icon: Leaf,
-      title: "Plant State Detection",
-      description: "Powered by Gemini 2.0 Flash AI to analyze plant health, identify diseases, and provide growth insights."
-    },
-    {
-      icon: Thermometer,
-      title: "Real-Time Sensor Monitoring",
-      description: "Track temperature, humidity, and other critical parameters remotely with Blynk API integration."
-    },
-    {
-      icon: Monitor,
-      title: "AI-Powered Chatbot",
-      description: "Get personalized plant care advice and answers to your questions through our Gemini 2.0 Flash chatbot."
-    },
-    {
-      icon: Mail,
-      title: "Email Notifications",
-      description: "Stay informed with alerts when environmental conditions require your attention."
-    },
-    {
-      icon: Monitor,
-      title: "User-Friendly Interface",
-      description: "Intuitive React JS and Ant Design interface for seamless management of your aeroponic system."
-    },
-    {
-      icon: Layers,
-      title: "Multiple System Support",
-      description: "Manage different aeroponic setups with multiple Blynk API keys for scalable operations."
-    }
-  ];
-
-  const technologies = [
-    {
-      icon: Code,
-      title: "React JS",
-      description: "For building a dynamic and responsive user interface."
-    },
-    {
-      icon: Brain,
-      title: "Gemini AI",
-      description: "For image and text prompt analysis tailored to aeroponic systems."
-    },
-    {
-      icon: Cpu,
-      title: "Blynk API",
-      description: "For real-time sensor data integration and monitoring."
-    },
-    {
-      icon: Database,
-      title: "Firebase",
-      description: "For user authentication and synchronization of data."
-    }
-  ];
 
   return (
     <Layout className="landing-page">
