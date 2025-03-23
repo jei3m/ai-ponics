@@ -6,6 +6,8 @@ import { useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faLeaf, faNewspaper, faHome, faImage } from '@fortawesome/free-solid-svg-icons';
 import { fetchBlynkKeysData, saveBlynkApiKey, addNewApiKey, deleteApiKey } from '../../services/headerService';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../../firebase';
 import "../css/Header.css";
 
 const { Option } = Select;
@@ -19,8 +21,8 @@ function Header() {
   const [selectedApiKeyIndex, setSelectedApiKeyIndex] = useState(0);
   const location = useLocation();
   const [selectedApiKey, setSelectedApiKey] = useState(null);
-  // const { setSelectedApiKey } = useApiKey();
   const [loading, setLoading] = useState(false);
+  const [userLocation, setUserLocation] = useState({ city: '', province: '' });
 
   useEffect(() => {
     fetchBlynkKeysData(
@@ -29,6 +31,29 @@ function Header() {
       setSelectedApiKeyIndex,
       setEditableBlynkApiKey,
     );
+    
+    // Fetch user location data
+    const fetchUserLocation = async () => {
+      if (currentUser?.uid) {
+        try {
+          const userDocRef = doc(db, "users", currentUser.uid);
+          const userDoc = await getDoc(userDocRef);
+          
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            setUserLocation({
+              city: userData.location.city || '',
+              province: userData.location.province || '',
+              barangay: userData.location.barangay || ''
+            });
+          }
+        } catch (error) {
+          console.error("Error fetching user location:", error);
+        }
+      }
+    };
+    
+    fetchUserLocation();
   }, [currentUser]);
   
   useEffect(() => {
@@ -136,6 +161,12 @@ function Header() {
             <Text strong>Email:</Text>
             <br />
             <Text>{currentUser?.email}</Text>
+          </div>
+
+          <div style={{ marginTop: '1rem' }}>
+            <Text strong>Address:</Text>
+            <br />
+            <Text>{userLocation.province}, {userLocation.city}, {userLocation.barangay}</Text>
           </div>
 
           <div style={{ marginTop: '1rem' }}>

@@ -37,7 +37,7 @@ export const fetchSensorData = async ({ selectedApiKey, setIsDeviceOnline, setTe
     const roundedTemperature = Math.round(temperatureResponse.data);
     const roundedHumidity = Math.round(humidityResponse.data);
 
-    setIsDeviceOnline(deviceStatusResponse.data);
+    setIsDeviceOnline(true);
     setTemperature(roundedTemperature);
     setHumidity(roundedHumidity);
     setFlowRate(flowResponse.data)
