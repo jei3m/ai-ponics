@@ -33,6 +33,7 @@ function Sensors() {
   const [plantingDate, setPlantingDate] = useState(null);
   const [plantName, setPlantName] = useState("");
   const [isPlantInfoChanged, setIsPlantInfoChanged] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   // States for loading and thresholds
   const [isLoading, setIsLoading] = useState(false);
@@ -135,6 +136,7 @@ function Sensors() {
   const handleSaveChanges = async () => {
     const currentUser = auth.currentUser;
     if (currentUser) {
+      setIsSaving(true);
       try {
         await setDoc(doc(db, "users", currentUser.uid), {
           plantName,
@@ -146,6 +148,8 @@ function Sensors() {
         setIsPlantInfoChanged(false);
       } catch (error) {
         message.error('Failed to save plant data:', error);
+      } finally {
+        setIsSaving(false);
       }
     }
   };
@@ -194,6 +198,7 @@ function Sensors() {
               daysSincePlanting={daysSincePlanting}
               isPlantInfoChanged={isPlantInfoChanged}
               handleSaveChanges={handleSaveChanges}
+              isSaving={isSaving}
             />
 
           </div>
