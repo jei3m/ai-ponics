@@ -3,8 +3,9 @@
 .sensor-page-container {
   width: 100%;
   overflow-x: hidden;
-  margin-top: 10px;
+  padding: 8px;
   font-family: "Roboto", sans-serif;
+  background-color:  #f0f2f5;
 }
 
 .sensor-content-container {
