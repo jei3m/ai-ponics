@@ -54,7 +54,7 @@ function Header() {
     };
     
     fetchUserLocation();
-  }, [currentUser]);
+  }, [currentUser, userLocation]);
   
   useEffect(() => {
     if (blynkApiKeys.length > 0) {
