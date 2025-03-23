@@ -1,5 +1,5 @@
 import React from 'react'
-import { Card, Input, DatePicker, Button, Typography } from 'antd'
+import { Card, Input, DatePicker, Button, Typography, Select } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLeaf } from '@fortawesome/free-solid-svg-icons'
 import { StatusMessage } from '../../../services/sensorService'
@@ -33,15 +33,20 @@ function PlantInfo({
         {!status && (
         <div>
             <div className='info-card-content'>
-                <Input
-                    type="text"
+                <Select
                     id="plantName"
                     name="plantName"
                     value={plantName}
                     onChange={handlePlantNameChange}
-                    placeholder="Enter plant name"
+                    placeholder="Select plant"
                     className='info-card-input'
-                />
+                >
+                    <Select.Option value="Lettuce">Lettuce</Select.Option>
+                    <Select.Option value="Basil">Basil</Select.Option>
+                    <Select.Option value="Spinach">Spinach</Select.Option>
+                    <Select.Option value="Tomatoes">Tomatoes</Select.Option>
+                    <Select.Option value="Strawberries">Strawberries</Select.Option>
+                </Select>
                 <DatePicker
                     {...datePickerConfig}
                     id="plantingDate"

@@ -114,8 +114,8 @@ function Sensors() {
     setIsPlantInfoChanged(true);
   };
 
-  const handlePlantNameChange = (event) => {
-    setPlantName(event.target.value);
+  const handlePlantNameChange = (value) => {
+    setPlantName(value);
     setIsPlantInfoChanged(true);
   };
 
