@@ -42,9 +42,9 @@ function Header() {
           if (userDoc.exists()) {
             const userData = userDoc.data();
             setUserLocation({
-              city: userData.location.city || '',
-              province: userData.location.province || '',
-              barangay: userData.location.barangay || ''
+              city: userData.location?.city || '',
+              province: userData.location?.province || '',
+              barangay: userData.location?.barangay || ''
             });
           }
         } catch (error) {
