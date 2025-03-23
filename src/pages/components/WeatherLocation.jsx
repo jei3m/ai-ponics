@@ -4,8 +4,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMapMarkerAlt, faCloudSun, faWind, faTemperature0, faTemperatureHalf, faTint } from '@fortawesome/free-solid-svg-icons';
 import '../css/WeatherLocation.css';
 
-const API_KEY = 'fe8fdf4a679557807c63d297f2817e6b';
-
 function WeatherCard() {
   const [weatherData, setWeatherData] = useState(null);
   const [location, setLocation] = useState({ city: '', country: '' });
@@ -17,7 +15,7 @@ function WeatherCard() {
 
       try {
         // Get city and country from coordinates
-        const geoRes = await fetch(`https://api.openweathermap.org/geo/1.0/reverse?lat=${latitude}&lon=${longitude}&limit=1&appid=${API_KEY}`);
+        const geoRes = await fetch(`https://api.openweathermap.org/geo/1.0/reverse?lat=${latitude}&lon=${longitude}&limit=1&appid=${process.env.REACT_APP_OPENWEATHER_API_KEY}`);
         const geoData = await geoRes.json();
         const city = geoData[0].name;
         const country = geoData[0].country;
@@ -25,7 +23,7 @@ function WeatherCard() {
         setLocation({ city, country });
 
         // Get weather using city
-        const weatherRes = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city},${country}&units=metric&appid=${API_KEY}`);
+        const weatherRes = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city},${country}&units=metric&appid=${process.env.REACT_APP_OPENWEATHER_API_KEY}`);
         const weatherJson = await weatherRes.json();
         setWeatherData(weatherJson);
       } catch (err) {
