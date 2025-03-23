@@ -24,12 +24,13 @@ function PlantInfo({
             Plant Information
         </div>
         }
-        bordered={false}
+        variant='borderless'
         className='info-card'
     >
         {status && (
-        <StatusMessage message={status.message} className={status.className} style={status.style} />
+            <StatusMessage message={status.message} className={status.className} style={status.style} />
         )}
+        
         {!status && (
         <div>
             <div className='info-card-content'>
