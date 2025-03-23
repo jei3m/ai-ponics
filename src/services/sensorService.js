@@ -7,17 +7,53 @@ import { doc, getDoc } from "firebase/firestore";
 
 dayjs.extend(customParseFormat);
 
-// Temperature thresholds
-export const MAX_TEMPERATURE = 73; 
-export const MIN_TEMPERATURE = 15;
+// Thresholds based on plantName
+export const getPlantThresholds = (plantName) => {
+  const thresholds = {
+    Lettuce: {
+      MIN_TEMPERATURE: 15,
+      MAX_TEMPERATURE: 21,
+      MIN_HUMIDITY: 50,
+      MAX_HUMIDITY: 70,
+      MIN_PH_LEVEL: 5.5,
+      MAX_PH_LEVEL: 6.5,
+    },
+    Basil: {
+      MIN_TEMPERATURE: 24,
+      MAX_TEMPERATURE: 29,
+      MIN_HUMIDITY: 60,
+      MAX_HUMIDITY: 80,
+      MIN_PH_LEVEL: 5.5,
+      MAX_PH_LEVEL: 6.5,
+    },
+    Spinach: {
+      MIN_TEMPERATURE: 15,
+      MAX_TEMPERATURE: 18,
+      MIN_HUMIDITY: 50,
+      MAX_HUMIDITY: 70,
+      MIN_PH_LEVEL: 6.0,
+      MAX_PH_LEVEL: 7.0,
+    },
+    Strawberries: {
+      MIN_TEMPERATURE: 18,
+      MAX_TEMPERATURE: 24,
+      MIN_HUMIDITY: 65,
+      MAX_HUMIDITY: 75,
+      MIN_PH_LEVEL: 5.8,
+      MAX_PH_LEVEL: 6.2,
+    },
+    Tomatoes: {
+      MIN_TEMPERATURE: 20,
+      MAX_TEMPERATURE: 30,
+      MIN_HUMIDITY: 50,
+      MAX_HUMIDITY: 70,
+      MIN_PH_LEVEL: 5.8,
+      MAX_PH_LEVEL: 6.3,
+    },
+  };
 
-// Humidity thresholds
-export const MAX_HUMIDITY = 70;
-export const MIN_HUMIDITY = 50;
-
-// pH level thresholds
-export const MAX_PH_LEVEL = 7.5;
-export const MIN_PH_LEVEL = 5.5;
+  return thresholds[plantName] || null;
+};
 
 // Flow rate thresholds 
 export const MAX_FLOWRATE  = 30;
