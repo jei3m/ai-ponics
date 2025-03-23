@@ -42,6 +42,7 @@ const Chat = () => {
   // Planting Information States
   const [daysSincePlanting, setDaysSincePlanting] = useState(0);
   const [plantName, setPlantName] = useState('');
+  const [userLocation, setUserLocation] = useState({ lat: '', lon: '' });
 
   // API Key States
   const [selectedApiKey, setSelectedApiKey] = useState('');
@@ -84,6 +85,31 @@ const Chat = () => {
     fetchUserData(doc, currentUser, db, getDoc, setSensorDataLoaded, setPlantName, setDaysSincePlanting, setSelectedApiKey, fetchSensorDataFromBlynk, message);
   }, [currentUser]);
 
+  // Fetch user location data
+  useEffect(() => {
+    const fetchUserLocation = async () => {
+      if (currentUser?.uid) {
+        try {
+          const userDocRef = doc(db, "users", currentUser.uid);
+          const userDoc = await getDoc(userDocRef);
+          
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            const coordinates = {
+              lat: userData.location?.coordinates.lat || '',
+              lon: userData.location?.coordinates.lon || '',
+            };
+            setUserLocation(coordinates);
+          }
+        } catch (error) {
+          console.error("Error fetching user location:", error);
+        }
+      }
+    };
+    
+    fetchUserLocation();
+  }, [currentUser]);
+  
   // Function for Greeting the User
   useEffect(() => {
     greetUser(sensorDataLoaded, isApiKeyValid, setMessages, selectedApiKey,isDeviceOnline, temperature, plantName, daysSincePlanting, pHlevel, humidity);
