@@ -3,7 +3,7 @@
 .sensor-page-container {
   width: 100%;
   overflow-x: hidden;
-  padding: 8px;
+  margin-top: 10px;
   font-family: "Roboto", sans-serif;
   background-color:  #f0f2f5;
 }
@@ -18,9 +18,7 @@
 }
 
 .sensor-cards-container {
-  margin-bottom: 1.2rem;
-  width: 100%;
-  max-width: 600px;
+  max-width: 100vw;
   border-radius: 14px;
   height: fit-content;
   display: flex;
