@@ -14,7 +14,8 @@ function PlantInfo({
     plantingDate,
     daysSincePlanting,
     isPlantInfoChanged,
-    handleSaveChanges
+    handleSaveChanges,
+    isSaving
 }) {
   return (
     <Card
@@ -66,9 +67,10 @@ function PlantInfo({
 
                 {isPlantInfoChanged && (
                     <Button
-                    type="primary"
-                    className='info-card-save-button'
-                    onClick={handleSaveChanges}
+                        type="primary"
+                        className='info-card-save-button'
+                        onClick={handleSaveChanges}
+                        disabled={isSaving}
                     >
                     Save
                     </Button>
