@@ -64,6 +64,39 @@ const LandingPage = () => {
     }
   ];
 
+  const techStack = [
+    {
+      name: "React",
+      icon: "/svg/react.svg",
+      description: "Frontend Framework"
+    },
+    {
+      name: "Firebase",
+      icon: "svg/firebase.svg",
+      description: "Backend & Authentication"
+    },
+    {
+      name: "Gemini AI",
+      icon: "svg/gemini.svg",
+      description: "AI Integration"
+    },
+    {
+      name: "Blynk IoT",
+      icon: "svg/blynk.svg",
+      description: "IoT Platform"
+    },
+    {
+      name: "OpenWeather",
+      icon: "svg/openweather.svg",
+      description: "Weather Data"
+    },
+    {
+      name: "Ant Design",
+      icon: "svg/antd.svg",
+      description: "UI Components"
+    },
+  ];
+
   return (
     <Layout className="landing-page">
       {/* Hero Section */}
@@ -130,14 +163,21 @@ const LandingPage = () => {
       </section>
 
       {/* Tech Stack Section */}
-      <section className="tech-stack">
+      {/* <section className="tech-stack">
         <div className="section-header">
-          <div className='section-title'>Tech Stack</div>
+          <div className='section-title'>Tech That Nurtures Growth</div>
           <p className='landing-p'>
             Built with up-to-date technologies to provide a seamless plant monitoring experience.
           </p>
         </div>
-      </section>
+        <div className="tech-stack-grid">
+          {techStack.map((tech, index) => (
+            <div className="tech-icon" key={index}>
+              <img src={tech.icon} alt={tech.name} title={tech.name} />
+            </div>
+          ))}
+        </div>
+      </section> */}
 
       {/* CTA Section */}
       <section className="cta">
@@ -154,7 +194,14 @@ const LandingPage = () => {
                   className='google-logo' 
               />
               <span>Sign in with Google</span>
-          </button>   
+          </button>  
+          <div className="tech-stack-grid">
+            {techStack.map((tech, index) => (
+              <div className="tech-icon" key={index}>
+                <img src={tech.icon} alt={tech.name} title={tech.name} />
+              </div>
+            ))}
+          </div> 
         </div>     
       </section>
 
