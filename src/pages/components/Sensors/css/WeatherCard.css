@@ -21,13 +21,14 @@
     background: white;
     border-radius: 10px;
     position: relative;
+    min-height: 250px;
 }
 
 .weather-info {
     display: flex;
     flex-direction: column;
     gap: 12px;
-    padding: 16px;
+    height: 100%;
 }
 
 .weather-info .ant-typography {
@@ -46,3 +47,13 @@
     bottom: 12px;
     right: 12px;
 }
+
+.weather-card .ant-card-head {
+    min-height: 60px;
+  }
+  
+  .weather-card .ant-card-body {
+    position: relative;
+    height: calc(100%);
+    padding-bottom: 50px;
+  }

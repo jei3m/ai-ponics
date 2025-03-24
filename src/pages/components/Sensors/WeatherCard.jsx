@@ -13,17 +13,23 @@ import { db, auth } from '../../../firebase';
 function WeatherCard() {
   // State for weather and location data
   const [weatherData, setWeatherData] = useState(null);
-  const [location, setLocation] = useState({ city: '', province: '', country: 'Philippines' });
+  const [location, setLocation] = useState({
+    city: '',
+    province: '',
+    barangay: '',
+    country: 'Philippines'
+  });
+
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [form] = Form.useForm();
-  
+
   // Location data states
   const [regions, setRegions] = useState([]);
   const [provinces, setProvinces] = useState([]);
   const [cities, setCities] = useState([]);
   const [barangays, setBarangays] = useState([]);
-  
+
   // Selected values
   const [selectedRegion, setSelectedRegion] = useState(null);
   const [selectedProvince, setSelectedProvince] = useState(null);
@@ -36,11 +42,11 @@ function WeatherCard() {
       if (auth.currentUser) {
         const userDoc = doc(db, 'users', auth.currentUser.uid);
         const docSnap = await getDoc(userDoc);
-        
+
         if (docSnap.exists() && docSnap.data().location) {
           const savedLocation = docSnap.data().location;
           setLocation(savedLocation);
-          
+
           // Fetch weather data using saved coordinates
           if (savedLocation.coordinates) {
             const { lat, lon } = savedLocation.coordinates;
@@ -64,7 +70,7 @@ function WeatherCard() {
       setProvinces([]);
       return;
     }
-    const filteredProvinces = provinceData.filter(province => 
+    const filteredProvinces = provinceData.filter(province =>
       province.region_code === selectedRegion
     ).sort((a, b) => a.province_name.localeCompare(b.province_name));
     setProvinces(filteredProvinces);
@@ -76,7 +82,7 @@ function WeatherCard() {
       setCities([]);
       return;
     }
-    const filteredCities = cityData.filter(city => 
+    const filteredCities = cityData.filter(city =>
       city.province_code === selectedProvince
     ).sort((a, b) => a.city_name.localeCompare(b.city_name));
     setCities(filteredCities);
@@ -88,7 +94,7 @@ function WeatherCard() {
       setBarangays([]);
       return;
     }
-    const filteredBarangays = barangayData.filter(barangay => 
+    const filteredBarangays = barangayData.filter(barangay =>
       barangay.city_code === selectedCity
     ).sort((a, b) => a.brgy_name.localeCompare(b.brgy_name));
     setBarangays(filteredBarangays);
@@ -162,16 +168,16 @@ function WeatherCard() {
       const selectedCityObj = cities.find(city => city.city_code === values.city);
       const selectedProvinceObj = provinces.find(province => province.province_code === values.province);
       const selectedBarangayObj = barangays.find(barangay => barangay.brgy_code === values.barangay);
-      
+
       if (!selectedCityObj || !selectedProvinceObj) {
         console.error("City or province not found");
         return;
       }
-      
+
       const cityName = selectedCityObj.city_name;
       const provinceName = selectedProvinceObj.province_name;
       const barangayName = selectedBarangayObj ? selectedBarangayObj.brgy_name : '';
-      
+
       const addressQuery = encodeURIComponent(
         `${barangayName} ${cityName}, ${provinceName}, Philippines`
       );
@@ -185,13 +191,13 @@ function WeatherCard() {
       if (geoData.features && geoData.features.length > 0) {
         const coordinates = geoData.features[0].geometry.coordinates;
         const [lon, lat] = coordinates;
-        
+
         // Get weather data using coordinates
         const weatherRes = await fetch(
           `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${process.env.REACT_APP_OPENWEATHER_API_KEY}`
         );
         const weatherJson = await weatherRes.json();
-        
+
         const locationData = {
           city: cityName,
           province: provinceName,
@@ -224,32 +230,40 @@ function WeatherCard() {
       <div className='weather-card-container'>
         <Card
           title={
-            <div style={{ fontSize: '16px' }}>
-              <FontAwesomeIcon icon={faMapMarkerAlt} style={{ marginRight: 10 }} />
-              Weather Data
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <FontAwesomeIcon icon={faMapMarkerAlt} style={{ marginRight: 10, marginLeft: 175 }} />
+              <div>
+                <div style={{ fontSize: '16px', fontWeight: 'bold' }}>Weather Data</div>
+                {location.city && (
+                  <div style={{ fontSize: '12px', color: '#666' }}>
+                    {location.barangay && `${location.barangay}, `}
+                    {location.city}, {location.province}
+                  </div>
+                )}
+              </div>
             </div>
           }
           className='weather-card'
         >
           {weatherData ? (
             <div className="weather-info">
-              <Typography.Text style={{ marginTop: -15}}>
-                <FontAwesomeIcon icon={faCloudSun} style={{ marginRight: 8, marginLeft:200 }} />
+              <Typography.Text style={{ marginTop: -5 }}>
+                <FontAwesomeIcon icon={faCloudSun} style={{ marginRight: 8, marginLeft: 200 }} />
                 <strong>Weather:</strong> {weatherData.weather[0].main}
               </Typography.Text>
               <Typography.Text>
-                <FontAwesomeIcon icon={faTemperatureHalf} style={{ marginRight: 8, marginLeft:200 }}/>
+                <FontAwesomeIcon icon={faTemperatureHalf} style={{ marginRight: 8, marginLeft: 200 }} />
                 <strong>Temp:</strong> {weatherData.main.temp} °C
               </Typography.Text>
               <Typography.Text>
-                <FontAwesomeIcon icon={faTint} style={{ marginRight: 18, marginLeft:200 }} />
+                <FontAwesomeIcon icon={faTint} style={{ marginRight: 18, marginLeft: 200 }} />
                 <strong>Humidity:</strong> {weatherData.main.humidity}%
               </Typography.Text>
               <Typography.Text>
-                <FontAwesomeIcon icon={faWind} style={{ marginRight: 2, marginLeft:200 }} />
+                <FontAwesomeIcon icon={faWind} style={{ marginRight: 2, marginLeft: 200 }} />
                 <strong>Wind:</strong> {weatherData.wind.speed} m/s
               </Typography.Text>
-              <div style={{ position: 'absolute', bottom: '12px', right: '12px' }}>
+              <div style={{ position: 'absolute', bottom: '60px', right: '10px' }}>
                 <Button type="primary" onClick={showModal}>
                   Edit Location
                 </Button>
@@ -257,7 +271,20 @@ function WeatherCard() {
             </div>
           ) : (
             <div>
-              <Typography.Text>Please set a location to view weather data</Typography.Text>
+              <div>
+                <Typography.Text>Please set a location to view weather data</Typography.Text>
+                {location.city && (
+                  <Typography.Text style={{ display: 'block', marginTop: 8 }}>
+                    Current location: {location.barangay && `${location.barangay}, `}
+                    {location.city}, {location.province}
+                  </Typography.Text>
+                )}
+                <div style={{ position: 'absolute', bottom: '12px', right: '12px' }}>
+                  <Button type="primary" onClick={showModal}>
+                    {location.city ? 'Edit Location' : 'Add Location'}
+                  </Button>
+                </div>
+              </div>
               <div style={{ position: 'absolute', bottom: '12px', right: '12px' }}>
                 <Button type="primary" onClick={showModal}>
                   Add Location
