@@ -169,7 +169,7 @@ function Header() {
           <div style={{ marginTop: '1rem' }}>
             <Text strong>Address:</Text>
             <br />
-            <Text>{userLocation.province}, {userLocation.city}, {userLocation.barangay}</Text>
+            <Text>{userLocation.barangay}, {userLocation.city}, {userLocation.province}</Text>
           </div>
 
           <div style={{ marginTop: '1rem' }}>
