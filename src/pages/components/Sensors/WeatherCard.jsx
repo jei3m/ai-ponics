@@ -173,7 +173,7 @@ function WeatherCard() {
       const barangayName = selectedBarangayObj ? selectedBarangayObj.brgy_name : '';
       
       const addressQuery = encodeURIComponent(
-        `${barangayName}, ${cityName}, ${provinceName}, Philippines`
+        `${barangayName} ${cityName}, ${provinceName}, Philippines`
       );
 
       // Get coordinates using Geoapify
@@ -181,11 +181,11 @@ function WeatherCard() {
         `https://api.geoapify.com/v1/geocode/search?text=${addressQuery}&apiKey=${process.env.REACT_APP_GEOAPIFY_API_KEY}`
       );
       const geoData = await geoRes.json();
-      
+
       if (geoData.features && geoData.features.length > 0) {
-        const lon = geoData.features[0].properties.lon;
-        const lat = geoData.features[0].properties.lat;
-        console.log(lon, lat);
+        const coordinates = geoData.features[0].geometry.coordinates;
+        const [lon, lat] = coordinates;
+        
         // Get weather data using coordinates
         const weatherRes = await fetch(
           `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${process.env.REACT_APP_OPENWEATHER_API_KEY}`
@@ -233,20 +233,20 @@ function WeatherCard() {
         >
           {weatherData ? (
             <div className="weather-info">
-              <Typography.Text>
-                <FontAwesomeIcon icon={faCloudSun} style={{ marginRight: 8 }} />
+              <Typography.Text style={{ marginTop: -15}}>
+                <FontAwesomeIcon icon={faCloudSun} style={{ marginRight: 8, marginLeft:200 }} />
                 <strong>Weather:</strong> {weatherData.weather[0].main}
               </Typography.Text>
               <Typography.Text>
-                <FontAwesomeIcon icon={faTemperatureHalf} style={{ marginRight: 8 }}/>
+                <FontAwesomeIcon icon={faTemperatureHalf} style={{ marginRight: 8, marginLeft:200 }}/>
                 <strong>Temp:</strong> {weatherData.main.temp} °C
               </Typography.Text>
               <Typography.Text>
-                <FontAwesomeIcon icon={faTint} style={{ marginRight: 8 }} />
+                <FontAwesomeIcon icon={faTint} style={{ marginRight: 18, marginLeft:200 }} />
                 <strong>Humidity:</strong> {weatherData.main.humidity}%
               </Typography.Text>
               <Typography.Text>
-                <FontAwesomeIcon icon={faWind} style={{ marginRight: 8 }} />
+                <FontAwesomeIcon icon={faWind} style={{ marginRight: 2, marginLeft:200 }} />
                 <strong>Wind:</strong> {weatherData.wind.speed} m/s
               </Typography.Text>
               <div style={{ position: 'absolute', bottom: '12px', right: '12px' }}>

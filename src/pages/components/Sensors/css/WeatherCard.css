@@ -2,16 +2,14 @@
     width: 100%;
     height: fit-content;
     display: flex;
+    justify-content: center;
 }
 
 .weather-card-container {
     width: 94vw;
     max-width: 600px;
-    display: flex;
-    flex-direction: row;
     margin-top: -32px;
     border-radius: 10px;
-    justify-content: center;
     border: 1px solid #ddd;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     margin-bottom: 10px;
@@ -22,22 +20,29 @@
     height: 250px;
     background: white;
     border-radius: 10px;
+    position: relative;
 }
 
 .weather-info {
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    height: 100%;
-    font-size: 1rem;
-}
-
-.weather-info strong {
-    display: inline-block;
-    width: 100px;
-    margin-right: 8px;
+    gap: 12px;
+    padding: 16px;
 }
 
 .weather-info .ant-typography {
-    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    margin: 0;
+}
+
+.weather-info strong {
+    min-width: 80px; 
+    display: inline-block;
+}
+
+.weather-card .ant-btn {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
 }
