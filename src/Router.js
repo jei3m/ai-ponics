@@ -62,7 +62,7 @@ function Router() {
         }
       />
 
-      <Route
+      {/* <Route
         path="/forum"
         element={
           <PrivateRoutes>
@@ -82,7 +82,7 @@ function Router() {
             </Layout>
           </PrivateRoutes>
         }
-      />
+      /> */}
 
       <Route
         path="/loading"
