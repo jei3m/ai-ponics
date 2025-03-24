@@ -23,6 +23,7 @@
     background: white;
     border-radius: 10px;
     position: relative;
+    min-height: 250px;
 }
 
 .weather-info {

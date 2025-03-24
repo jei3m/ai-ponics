@@ -12,19 +12,22 @@ import { db, auth } from '../../../firebase';
 import { StatusMessage } from '../../../services/sensorService';
 
 function WeatherCard({status}) {
+
   // State for weather and location data
   const [weatherData, setWeatherData] = useState(null);
-  const [location, setLocation] = useState({ city: '', province: '', country: 'Philippines' });
+  const [location, setLocation] = useState({ city: '', province: '', barangay: '', country: 'Philippines' });
+
+  // States for modal and form submission
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [form] = Form.useForm();
-  
+
   // Location data states
   const [regions, setRegions] = useState([]);
   const [provinces, setProvinces] = useState([]);
   const [cities, setCities] = useState([]);
   const [barangays, setBarangays] = useState([]);
-  
+
   // Selected values
   const [selectedRegion, setSelectedRegion] = useState(null);
   const [selectedProvince, setSelectedProvince] = useState(null);
@@ -44,11 +47,11 @@ function WeatherCard({status}) {
       if (auth.currentUser) {
         const userDoc = doc(db, 'users', auth.currentUser.uid);
         const docSnap = await getDoc(userDoc);
-        
+
         if (docSnap.exists() && docSnap.data().location) {
           const savedLocation = docSnap.data().location;
           setLocation(savedLocation);
-          
+
           // Fetch weather data using saved coordinates
           if (savedLocation.coordinates) {
             const { lat, lon } = savedLocation.coordinates;
@@ -69,7 +72,7 @@ function WeatherCard({status}) {
       setProvinces([]);
       return;
     }
-    const filteredProvinces = provinceData.filter(province => 
+    const filteredProvinces = provinceData.filter(province =>
       province.region_code === selectedRegion
     ).sort((a, b) => a.province_name.localeCompare(b.province_name));
     setProvinces(filteredProvinces);
@@ -81,7 +84,7 @@ function WeatherCard({status}) {
       setCities([]);
       return;
     }
-    const filteredCities = cityData.filter(city => 
+    const filteredCities = cityData.filter(city =>
       city.province_code === selectedProvince
     ).sort((a, b) => a.city_name.localeCompare(b.city_name));
     setCities(filteredCities);
@@ -93,7 +96,7 @@ function WeatherCard({status}) {
       setBarangays([]);
       return;
     }
-    const filteredBarangays = barangayData.filter(barangay => 
+    const filteredBarangays = barangayData.filter(barangay =>
       barangay.city_code === selectedCity
     ).sort((a, b) => a.brgy_name.localeCompare(b.brgy_name));
     setBarangays(filteredBarangays);
@@ -167,16 +170,16 @@ function WeatherCard({status}) {
       const selectedCityObj = cities.find(city => city.city_code === values.city);
       const selectedProvinceObj = provinces.find(province => province.province_code === values.province);
       const selectedBarangayObj = barangays.find(barangay => barangay.brgy_code === values.barangay);
-      
+
       if (!selectedCityObj || !selectedProvinceObj) {
         console.error("City or province not found");
         return;
       }
-      
+
       const cityName = selectedCityObj.city_name;
       const provinceName = selectedProvinceObj.province_name;
       const barangayName = selectedBarangayObj ? selectedBarangayObj.brgy_name : '';
-      
+
       const addressQuery = encodeURIComponent(
         `${barangayName} ${cityName}, ${provinceName}, Philippines`
       );
@@ -221,9 +224,17 @@ function WeatherCard({status}) {
       <div className='weather-card-container'>
         <Card
           title={
-            <div style={{ fontSize: '16px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <FontAwesomeIcon icon={faMapMarkerAlt} style={{ marginRight: 10 }} />
-              Weather Data
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '16px', fontWeight: 'bold' }}>Weather Data</div>
+                {location.city && (
+                  <div style={{ fontSize: '12px', color: '#666' }}>
+                    {location.barangay && `${location.barangay}, `}
+                    {location.city}, {location.province}
+                  </div>
+                )}
+              </div>
             </div>
           }
           className='weather-card'
