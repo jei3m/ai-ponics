@@ -7,6 +7,7 @@
     justify-content: center;
     overflow: hidden;
     font-family: "Inter", sans-serif;
+    background-color: #f0f2f5;
 }
 
 /* Chat container */
@@ -108,8 +109,9 @@
 .message.user {
     background-color: #096609;
     color: #fff;
-    text-align: right;
-    max-width: 70%;
+    text-align: left;
+    max-width: 60%;
+    line-height: 1.4;
 }
 
 .message.user p {
