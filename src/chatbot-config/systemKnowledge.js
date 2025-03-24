@@ -1,21 +1,39 @@
 import { getPlantData } from '../services/sensorService';
 
-export const getSystemKnowledge = (plantName) => {
+export const getSystemKnowledge = (plantName, weatherData) => {
   const plantData = getPlantData(plantName);
 
   let plantSpecificKnowledge = '';
   if (plantData) {
     try {
+      // Build the plant-specific knowledge string
       plantSpecificKnowledge = `
         Plant-Specific Knowledge for ${plantName}:
         - Temperature Range: ${plantData.MIN_TEMPERATURE || 'N/A'}°C to ${plantData.MAX_TEMPERATURE || 'N/A'}°C
         - Humidity Range: ${plantData.MIN_HUMIDITY || 'N/A'}% to ${plantData.MAX_HUMIDITY || 'N/A'}%
         - pH Range: ${plantData.MIN_PH_LEVEL || 'N/A'} to ${plantData.MAX_PH_LEVEL || 'N/A'}
-        - Solution Temperature: ${plantData.SOLUTION_TEMP?.MIN || 'N/A'}°C to ${plantData.SOLUTION_TEMP?.MAX || 'N/A'}°C
-        ${plantData.DISEASES ? `- Common Diseases and Solutions:
+        
+        ${plantData.SEASONAL_DATA ? `- Seasonal Data:
+          ${Object.entries(plantData.SEASONAL_DATA)
+            .map(([season, data]) => `
+            * ${season}:
+              - pH: ${data.pH || 'N/A'}
+              - Humidity: ${data.Humidity || 'N/A'}
+              - Temperature: ${data.Temperature || 'N/A'}
+              - Solution Temperature: ${data.SolutionTemperature || 'N/A'}
+            `)
+            .join('')}` : ''}
+        
+        ${plantData.DISEASES ? `- Common Diseases:
           ${Object.entries(plantData.DISEASES)
-            .map(([disease, solution]) => `* ${disease}: ${solution}`)
-            .join('\n          ')}` : ''}
+            .map(([disease, details]) => `
+            * ${disease}:
+              - Symptoms: ${details.Symptoms || 'N/A'}
+              - Prevention: ${details.Prevention || 'N/A'}
+              - Cure: ${details.Cure || 'N/A'}
+            `)
+            .join('')}` : ''}
+        
         ${plantData.NOTES ? `- Notes:
           ${plantData.NOTES.map((note) => `* ${note}`).join('\n          ')}` : ''}
       `;
@@ -35,5 +53,11 @@ export const getSystemKnowledge = (plantName) => {
     
     Custom knowledge base:
     ${plantSpecificKnowledge || 'No plant-specific data available.'}
+    
+    Current Weather Conditions:
+    - Weather: ${weatherData?.weather[0]?.main || 'N/A'}
+    - Temperature: ${weatherData?.main?.temp || 'N/A'}°C
+    - Humidity: ${weatherData?.main?.humidity || 'N/A'}%
+    - Wind Speed: ${weatherData?.wind?.speed || 'N/A'} m/s
   `;
 };

@@ -5,6 +5,7 @@ import {getSystemKnowledge} from "../chatbot-config/systemKnowledge"
 const apiKey = process.env.REACT_APP_API_KEY;
 const genAI = new GoogleGenerativeAI(apiKey);
 
+
 // Fetch user data from firebase
 export const fetchUserData = async (doc, currentUser, db, getDoc, setSensorDataLoaded, setPlantName, setDaysSincePlanting, setSelectedApiKey, fetchSensorDataFromBlynk, message) => {
   try {
@@ -41,20 +42,31 @@ export const fetchUserData = async (doc, currentUser, db, getDoc, setSensorDataL
 };
 
 // AI Generated greeting message
-export const generateGreeting = async (plantName, daysSincePlanting, temperature, humidity) => {
+export const generateGreeting = async (plantName, daysSincePlanting, temperature, humidity, useCurrentUTCDate) => {
   const model = genAI.getGenerativeModel({
     model: "gemini-2.0-flash-exp", //Recently release 2.0 Flash Model
   });
   const result = await model.generateContent(
-    `Be somehow concise and friendly. Introduce yourself as AI-Ponics an Aeroponic System Assistant. Share in a bullet form that the plant name is ${plantName}, planted ${daysSincePlanting} days ago, with sensor readings of ${temperature}°C and ${humidity}%.`
+    `Be somehow concise and friendly. Introduce yourself as AI-Ponics an Aeroponic System Assistant. Share in a bullet form that the plant name is ${plantName}, Today is ${useCurrentUTCDate} and it has been planted for ${daysSincePlanting} days ago, with sensor readings of ${temperature}°C and ${humidity}%.`
   );
   const response = await result.response;
   return response.text();
 };
 
 // Greet User Function
-export async function greetUser(sensorDataLoaded, isApiKeyValid, setMessages, selectedApiKey, isDeviceOnline, temperature, plantName, daysSincePlanting, pHlevel, humidity) {
-
+export async function greetUser(
+  sensorDataLoaded,
+  isApiKeyValid,
+  setMessages,
+  selectedApiKey,
+  isDeviceOnline,
+  temperature,
+  plantName,
+  daysSincePlanting,
+  pHlevel,
+  humidity,
+  weatherData
+) {
   const getErrorState = () => {
     if (!sensorDataLoaded) return 'LOADING';
     if (!isApiKeyValid) return 'INVALID_KEY';
@@ -62,7 +74,13 @@ export async function greetUser(sensorDataLoaded, isApiKeyValid, setMessages, se
     if (!isDeviceOnline) return 'OFFLINE';
     return 'READY';
   };
-  
+
+  const currentDate = new Date().toLocaleDateString('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  });
+
   switch (getErrorState()) {
     case 'LOADING':
       setMessages([{ user: false, text: "Sensor data is still loading... Please wait." }]);
@@ -89,30 +107,39 @@ export async function greetUser(sensorDataLoaded, isApiKeyValid, setMessages, se
   }
 
   try {
-    // Hard-coded message greeting, to reduce loading time from AI generated greeting
     const greetingText = 
-`Hey there, I'm AI-Ponics, your friendly Aeroponic System Assistant! 👋 \n
-* Here's a quick update on your system:\n
-  *   **Plant:** ${plantName}
-  *   **Age:** ${daysSincePlanting} days
-  *   **Temperature:** ${temperature} °C
-  *   **Humidity:** ${humidity}% \n
-  *   **pH Level:** ${pHlevel} \n
-Need help or have questions? Don&apos;t hesitate to ask!`
+`Hey there, I'm AI-Ponics, your friendly Aeroponic System Assistant! 👋 
 
-    // const greetingText = await generateGreeting(plantName, daysSincePlanting, temperature, humidity);
-    setMessages([{ user: false, text: greetingText}]);
+**Today's Date:** ${currentDate}
+
+**System Status:**
+- Plant: ${plantName || 'N/A'}
+- Age: ${daysSincePlanting} days
+- Temperature: ${temperature} °C
+- Humidity: ${humidity}%
+- pH Level: ${pHlevel}
+
+**Weather Conditions:**
+- Weather: ${weatherData?.weather[0]?.main || 'N/A'}
+- Temperature: ${weatherData?.main?.temp || 'N/A'}°C
+- Humidity: ${weatherData?.main?.humidity || 'N/A'}%
+- Wind Speed: ${weatherData?.wind?.speed || 'N/A'} m/s
+
+Need help or have questions? Don't hesitate to ask!`;
+
+    setMessages([{ user: false, text: greetingText }]);
   } catch (error) {
     console.error('Error generating greeting:', error);
     setMessages([{ user: false, text: "Sorry, I encountered an error while generating a greeting." }]);
   }
 }
 
+
 // Generate AI response for user queries
-export const generateAIResponse = async function* ( textPrompt, imageInlineData, plantName, daysSincePlanting, temperature, humidity, pHlevel, previousMessages = [] ) {
+export const generateAIResponse = async function* ( textPrompt, imageInlineData, plantName, daysSincePlanting, temperature, humidity, pHlevel, weatherData, previousMessages = [] ) {
   const model = genAI.getGenerativeModel({
     model: "gemini-2.0-flash-exp", // Recently released 2.0 Flash Model
-    systemInstruction: getSystemInstructions(plantName, daysSincePlanting, temperature, humidity, pHlevel),
+    systemInstruction: getSystemInstructions(plantName, daysSincePlanting, temperature, humidity, pHlevel, weatherData),
   });
 
   // Declaration of messageHistory

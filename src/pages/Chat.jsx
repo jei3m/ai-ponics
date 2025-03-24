@@ -9,6 +9,8 @@ import './css/Chat.css';
 import ReactMarkdown from 'react-markdown';
 import { message, Button } from 'antd';
 
+
+
 import { 
   faArrowLeft, 
   faImage, 
@@ -27,7 +29,7 @@ import {
 } from '../services/chatService';
 
 import { 
-  fetchSensorData 
+  fetchSensorData,
 } from "../services/sensorService";
 
 const Chat = () => {
@@ -50,6 +52,9 @@ const Chat = () => {
   // Loading States
   const [loading, setLoading] = useState(false);
   const [sensorDataLoaded, setSensorDataLoaded] = useState(false);
+
+  // Weather Data State
+  const [weatherData, setWeatherData] = useState(null);
 
   // Sensor Data States
   const [humidity, setHumidity] = useState(null);
@@ -74,6 +79,9 @@ const Chat = () => {
     setSensorDataLoaded(true);
   };
 
+
+
+  
   // Fetch user data and sensor data
   const { currentUser } = UserAuth();
 
@@ -85,36 +93,45 @@ const Chat = () => {
     fetchUserData(doc, currentUser, db, getDoc, setSensorDataLoaded, setPlantName, setDaysSincePlanting, setSelectedApiKey, fetchSensorDataFromBlynk, message);
   }, [currentUser]);
 
-  // Fetch user location data
-  useEffect(() => {
-    const fetchUserLocation = async () => {
-      if (currentUser?.uid) {
-        try {
-          const userDocRef = doc(db, "users", currentUser.uid);
-          const userDoc = await getDoc(userDocRef);
-          
-          if (userDoc.exists()) {
-            const userData = userDoc.data();
-            const coordinates = {
-              lat: userData.location?.coordinates.lat || '',
-              lon: userData.location?.coordinates.lon || '',
-            };
-            setUserLocation(coordinates);
+// Fetch user location and weather data
+useEffect(() => {
+  const fetchUserLocationAndWeather = async () => {
+    if (currentUser?.uid) {
+      try {
+        const userDocRef = doc(db, "users", currentUser.uid);
+        const userDoc = await getDoc(userDocRef);
+        
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          const coordinates = {
+            lat: userData.location?.coordinates.lat || '',
+            lon: userData.location?.coordinates.lon || '',
+          };
+          setUserLocation(coordinates);
+
+          // Fetch weather data using coordinates
+          if (coordinates.lat && coordinates.lon) {
+            const weatherRes = await fetch(
+              `https://api.openweathermap.org/data/2.5/weather?lat=${coordinates.lat}&lon=${coordinates.lon}&units=metric&appid=${process.env.REACT_APP_OPENWEATHER_API_KEY}`
+            );
+            const weatherJson = await weatherRes.json();
+            setWeatherData(weatherJson);
           }
-        } catch (error) {
-          console.error("Error fetching user location:", error);
         }
+      } catch (error) {
+        console.error("Error fetching weather data:", error);
       }
-    };
-    
-    fetchUserLocation();
-  }, [currentUser]);
+    }
+  };
+  
+  fetchUserLocationAndWeather();
+}, [currentUser]);
   
   // Function for Greeting the User
   useEffect(() => {
-    greetUser(sensorDataLoaded, isApiKeyValid, setMessages, selectedApiKey,isDeviceOnline, temperature, plantName, daysSincePlanting, pHlevel, humidity);
+    greetUser(sensorDataLoaded, isApiKeyValid, setMessages, selectedApiKey,isDeviceOnline, temperature, plantName, daysSincePlanting, pHlevel, humidity,weatherData);
 
-  }, [sensorDataLoaded, isDeviceOnline, plantName, daysSincePlanting, temperature, pHlevel, humidity, flowRate, isApiKeyValid, selectedApiKey]);
+  }, [sensorDataLoaded, isDeviceOnline, plantName, daysSincePlanting, temperature, pHlevel, humidity, flowRate, isApiKeyValid, selectedApiKey, weatherData]);
 
   // AI conversation after greeting
   async function aiRun() {
@@ -135,7 +152,7 @@ const Chat = () => {
       ]);
   
       const previousMessages = messages;
-      const responseStream = generateAIResponse(textPrompt, imageInlineData, plantName, daysSincePlanting, temperature, humidity, pHlevel, previousMessages);
+      const responseStream = generateAIResponse(textPrompt, imageInlineData, plantName, daysSincePlanting, temperature, humidity, pHlevel, weatherData, previousMessages);
 
       // Create a local variable to store the accumulated text
       let currentText = '';
