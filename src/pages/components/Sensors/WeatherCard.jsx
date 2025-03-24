@@ -225,7 +225,6 @@ function WeatherCard({status}) {
         <Card
           title={
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <FontAwesomeIcon icon={faMapMarkerAlt} style={{ marginRight: 10 }} />
               <div style={{ textAlign: 'center' }}>
                 <div style={{ fontSize: '16px', fontWeight: 'bold' }}>Weather Data</div>
                 {location.city && (
