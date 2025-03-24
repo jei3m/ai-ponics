@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Typography, Button, Modal, Form, Select } from 'antd';
+import { Card, Typography, Button, Modal, Form, Select, message } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMapMarkerAlt, faCloudSun, faWind, faTemperature0, faTemperatureHalf, faTint } from '@fortawesome/free-solid-svg-icons';
+import { faMapMarkerAlt, faWind, faTemperatureHalf, faTint, faCloud } from '@fortawesome/free-solid-svg-icons';
 import './css/WeatherCard.css';
 import regionData from '../../../ph-json/region.json';
 import provinceData from '../../../ph-json/province.json';
@@ -9,8 +9,9 @@ import cityData from '../../../ph-json/city.json';
 import barangayData from '../../../ph-json/barangay.json';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { db, auth } from '../../../firebase';
+import { StatusMessage } from '../../../services/sensorService';
 
-function WeatherCard() {
+function WeatherCard({status}) {
   // State for weather and location data
   const [weatherData, setWeatherData] = useState(null);
   const [location, setLocation] = useState({ city: '', province: '', country: 'Philippines' });
@@ -30,6 +31,13 @@ function WeatherCard() {
   const [selectedCity, setSelectedCity] = useState(null);
   const [selectedBarangay, setSelectedBarangay] = useState(null);
 
+  const fetchWeatherData = async (lat, lon) => {
+    const weatherRes = await fetch(
+      `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${process.env.REACT_APP_OPENWEATHER_API_KEY}`
+    );
+    return await weatherRes.json();
+  };
+
   // Load saved location data on component mount
   useEffect(() => {
     const loadSavedLocation = async () => {
@@ -44,16 +52,13 @@ function WeatherCard() {
           // Fetch weather data using saved coordinates
           if (savedLocation.coordinates) {
             const { lat, lon } = savedLocation.coordinates;
-            const weatherRes = await fetch(
-              `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${process.env.REACT_APP_OPENWEATHER_API_KEY}`
-            );
-            const weatherJson = await weatherRes.json();
+            const weatherJson = await fetchWeatherData(lat, lon);
             setWeatherData(weatherJson);
           }
         }
       }
     };
-
+  
     loadSavedLocation();
     setRegions(regionData);
   }, []);
@@ -175,22 +180,18 @@ function WeatherCard() {
       const addressQuery = encodeURIComponent(
         `${barangayName} ${cityName}, ${provinceName}, Philippines`
       );
-
+  
       // Get coordinates using Geoapify
       const geoRes = await fetch(
         `https://api.geoapify.com/v1/geocode/search?text=${addressQuery}&apiKey=${process.env.REACT_APP_GEOAPIFY_API_KEY}`
       );
       const geoData = await geoRes.json();
-
+  
       if (geoData.features && geoData.features.length > 0) {
         const coordinates = geoData.features[0].geometry.coordinates;
         const [lon, lat] = coordinates;
         
-        // Get weather data using coordinates
-        const weatherRes = await fetch(
-          `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${process.env.REACT_APP_OPENWEATHER_API_KEY}`
-        );
-        const weatherJson = await weatherRes.json();
+        const weatherJson = await fetchWeatherData(lat, lon);
         
         const locationData = {
           city: cityName,
@@ -198,19 +199,15 @@ function WeatherCard() {
           barangay: barangayName,
           country: 'Philippines'
         };
-
+  
         setLocation(locationData);
         setWeatherData(weatherJson);
-
+  
         // Save to Firebase
         await saveLocationToFirebase(locationData, { lat, lon });
-
+  
         setIsModalVisible(false);
-        form.resetFields();
-        setSelectedRegion(null);
-        setSelectedProvince(null);
-        setSelectedCity(null);
-        setSelectedBarangay(null);
+        message.success('Address saved successfully!');
       }
     } catch (err) {
       console.error("Failed to fetch weather data:", err);
@@ -231,34 +228,54 @@ function WeatherCard() {
           }
           className='weather-card'
         >
-          {weatherData ? (
+          {status ? (
+            <StatusMessage message={status.message} className={status.className} style={status.style} />
+          ) : weatherData ? (
             <div className="weather-info">
-              <Typography.Text style={{ marginTop: -15}}>
-                <FontAwesomeIcon icon={faCloudSun} style={{ marginRight: 8, marginLeft:200 }} />
-                <strong>Weather:</strong> {weatherData.weather[0].main}
+              <Typography.Text style={{ marginTop: -20}}>
+                <span className="label-section">
+                  <FontAwesomeIcon icon={faCloud} style={{ marginRight: 4 }} />
+                  <strong>Weather:</strong>
+                </span>
+                <span className="data-section">
+                  {weatherData.weather[0].main}
+                </span>
               </Typography.Text>
               <Typography.Text>
-                <FontAwesomeIcon icon={faTemperatureHalf} style={{ marginRight: 8, marginLeft:200 }}/>
-                <strong>Temp:</strong> {weatherData.main.temp} °C
+                <span className="label-section">
+                  <FontAwesomeIcon icon={faTemperatureHalf} style={{ marginRight: 6 }}/>
+                  <strong>Temp:</strong>
+                </span>
+                <span className="data-section">
+                  {weatherData.main.temp} °C
+                </span>
               </Typography.Text>
               <Typography.Text>
-                <FontAwesomeIcon icon={faTint} style={{ marginRight: 18, marginLeft:200 }} />
-                <strong>Humidity:</strong> {weatherData.main.humidity}%
+                <span className="label-section">
+                  <FontAwesomeIcon icon={faTint} style={{ marginRight: 6 }} />
+                  <strong>Humidity:</strong>
+                </span>
+                <span className="data-section">
+                  {weatherData.main.humidity}%
+                </span>
               </Typography.Text>
               <Typography.Text>
-                <FontAwesomeIcon icon={faWind} style={{ marginRight: 2, marginLeft:200 }} />
-                <strong>Wind:</strong> {weatherData.wind.speed} m/s
+                <span className="label-section">
+                  <FontAwesomeIcon icon={faWind} style={{ marginRight: 6 }} />
+                  <strong>Wind:</strong>
+                </span>
+                <span className="data-section">
+                  {weatherData.wind.speed} m/s
+                </span>
               </Typography.Text>
-              <div style={{ position: 'absolute', bottom: '12px', right: '12px' }}>
-                <Button type="primary" onClick={showModal}>
-                  Edit Location
-                </Button>
-              </div>
+              <Button type="primary" onClick={showModal}>
+                Edit Location
+              </Button>
             </div>
           ) : (
-            <div>
-              <Typography.Text>Please set a location to view weather data</Typography.Text>
-              <div style={{ position: 'absolute', bottom: '12px', right: '12px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', minHeight: '180px' }}>
+              <StatusMessage message="Please set location to view weather data." className="loading-text" />
+              <div style={{ marginTop: 'auto', textAlign: 'center'}}>
                 <Button type="primary" onClick={showModal}>
                   Add Location
                 </Button>
