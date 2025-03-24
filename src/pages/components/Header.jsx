@@ -112,11 +112,11 @@ function Header() {
             </a>
           ):null } */}
 
-          {location.pathname === '/home' || location.pathname === ('/analyse') ? (
+          {/* {location.pathname === '/home' || location.pathname === ('/analyse') ? (
             <a href='/forum'>
               <FontAwesomeIcon icon={faNewspaper} className='forum-icon' />
             </a>
-          ):null }
+          ):null } */}
 
           {currentUser && (
             <FontAwesomeIcon
