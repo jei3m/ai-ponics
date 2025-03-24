@@ -4,6 +4,7 @@ export const getSystemKnowledge = (plantName, weatherData) => {
   const plantData = getPlantData(plantName);
 
   let plantSpecificKnowledge = '';
+  const temperature = weatherData?.main?.temp || 'N/A';
   if (plantData) {
     try {
       // Build the plant-specific knowledge string
@@ -12,6 +13,14 @@ export const getSystemKnowledge = (plantName, weatherData) => {
         - Temperature Range: ${plantData.MIN_TEMPERATURE || 'N/A'}°C to ${plantData.MAX_TEMPERATURE || 'N/A'}°C
         - Humidity Range: ${plantData.MIN_HUMIDITY || 'N/A'}% to ${plantData.MAX_HUMIDITY || 'N/A'}%
         - pH Range: ${plantData.MIN_PH_LEVEL || 'N/A'} to ${plantData.MAX_PH_LEVEL || 'N/A'}
+
+          Critical Alerts:
+        ${temperature < plantData.MIN_TEMPERATURE ? `- ❄️ LOW TEMP ALERT: Below minimum (${plantData.MIN_TEMPERATURE}°C)` : ''}
+        ${temperature > plantData.MAX_TEMPERATURE ? `- 🔥 HIGH TEMP ALERT: Above maximum (${plantData.MAX_TEMPERATURE}°C)` : ''}
+        
+        Maintenance History:
+        - Last pH calibration: ${plantData.LAST_PH_CALIBRATION || 'Not recorded'}
+        - Nutrient solution age: ${plantData.NUTRIENT_AGE_DAYS || 'Unknown'} days
         
         ${plantData.SEASONAL_DATA ? `- Seasonal Data:
           ${Object.entries(plantData.SEASONAL_DATA)
@@ -46,6 +55,13 @@ export const getSystemKnowledge = (plantName, weatherData) => {
   return `
     When responding to queries, prioritize information from this custom knowledge base. 
     If the requested information is not found in the custom knowledge base, rely on pre-trained data to generate a response. 
+
+    Data Source Transparency:
+    - Always specify when mixing pre-trained and custom data with: "(Source: ${plantData ? 'Local System' : 'General Knowledge'})"
+    
+    User Customization Flags:
+    - Detect phrases like "my custom system" to trigger non-standard recommendations
+
     Ensure accuracy and relevance by clearly distinguishing between knowledge sources when necessary.
     
     Only include details from the custom knowledge base when they are directly relevant to the user's query. 

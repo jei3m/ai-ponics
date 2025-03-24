@@ -331,3 +331,21 @@ export const StatusMessage = ({ message, className, style }) => (
     {message}
   </Typography.Text>
 );
+
+export const getCompatiblePlants = (temperature, humidity, pHlevel) => {
+  const ALL_PLANTS = ['Lettuce', 'Basil', 'Spinach', 'Strawberries', 'Tomatoes'];
+  
+  return ALL_PLANTS.filter(plant => {
+    const data = getPlantData(plant);
+    if (!data) return false;
+    
+    return (
+      temperature >= data.MIN_TEMPERATURE &&
+      temperature <= data.MAX_TEMPERATURE &&
+      humidity >= data.MIN_HUMIDITY &&
+      humidity <= data.MAX_HUMIDITY &&
+      pHlevel >= data.MIN_PH_LEVEL &&
+      pHlevel <= data.MAX_PH_LEVEL
+    );
+  });
+};
