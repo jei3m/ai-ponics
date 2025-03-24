@@ -167,7 +167,9 @@ function Sensors() {
 
           <div className="sensor-cards-container">
 
-            <WeatherCard />
+            <WeatherCard 
+              status={status}
+            />
               
             <TempHumidCard
               temperature={temperature}
