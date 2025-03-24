@@ -65,7 +65,8 @@ export async function greetUser(
   daysSincePlanting,
   pHlevel,
   humidity,
-  weatherData
+  weatherData,
+  currentDate
 ) {
   const getErrorState = () => {
     if (!sensorDataLoaded) return 'LOADING';
@@ -74,12 +75,6 @@ export async function greetUser(
     if (!isDeviceOnline) return 'OFFLINE';
     return 'READY';
   };
-
-  const currentDate = new Date().toLocaleDateString('en-US', {
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric',
-  });
 
   switch (getErrorState()) {
     case 'LOADING':
@@ -108,7 +103,7 @@ export async function greetUser(
 
   try {
     const greetingText = 
-`Hey there, I'm AI-Ponics, your friendly Aeroponic System Assistant! 👋 
+`Hey there, I'm AI-Ponics, your friendly Aeroponic System Assistant! 👋
 
 **Today's Date:** ${currentDate}
 
@@ -136,10 +131,10 @@ Need help or have questions? Don't hesitate to ask!`;
 
 
 // Generate AI response for user queries
-export const generateAIResponse = async function* ( textPrompt, imageInlineData, plantName, daysSincePlanting, temperature, humidity, pHlevel, weatherData, previousMessages = [] ) {
+export const generateAIResponse = async function* ( textPrompt, imageInlineData, plantName, daysSincePlanting, temperature, humidity, pHlevel, weatherData, previousMessages = [], currentDate ) {
   const model = genAI.getGenerativeModel({
     model: "gemini-2.0-flash-exp", // Recently released 2.0 Flash Model
-    systemInstruction: getSystemInstructions(plantName, daysSincePlanting, temperature, humidity, pHlevel, weatherData),
+    systemInstruction: getSystemInstructions(plantName, daysSincePlanting, temperature, humidity, pHlevel, weatherData, currentDate),
   });
 
   // Declaration of messageHistory
@@ -188,7 +183,7 @@ export const fileToGenerativePart = async (blob) => {
 
 // Custom components for ReactMarkdown
 export const components = {
-  p: ({ children }) => <div style={{ margin: 0 }}>{children}</div>,
+  p: ({ children }) => <div style={{ margin: 4 }}>{children}</div>,
   strong: ({ children }) => <strong>{children}</strong>,
   br: () => <br />,
   h2: ({ children }) => <h3>{children}</h3>
