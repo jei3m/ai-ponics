@@ -6,7 +6,7 @@ import { useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faLeaf, faNewspaper, faHome, faImage } from '@fortawesome/free-solid-svg-icons';
 import { fetchBlynkKeysData, saveBlynkApiKey, addNewApiKey, deleteApiKey } from '../../services/headerService';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, onSnapshot } from 'firebase/firestore';
 import { db } from '../../firebase';
 import "../css/Header.css";
 
@@ -37,16 +37,19 @@ function Header() {
       if (currentUser?.uid) {
         try {
           const userDocRef = doc(db, "users", currentUser.uid);
-          const userDoc = await getDoc(userDocRef);
+          const unsubscribe = onSnapshot(userDocRef, (doc) => {
+            if (doc.exists()) {
+              const userData = doc.data();
+              setUserLocation({
+                city: userData.location?.city || '',
+                province: userData.location?.province || '',
+                barangay: userData.location?.barangay || ''
+              });
+            }
+          });
           
-          if (userDoc.exists()) {
-            const userData = userDoc.data();
-            setUserLocation({
-              city: userData.location?.city || '',
-              province: userData.location?.province || '',
-              barangay: userData.location?.barangay || ''
-            });
-          }
+          // Cleanup subscription on unmount
+          return () => unsubscribe();
         } catch (error) {
           console.error("Error fetching user location:", error);
         }
@@ -54,7 +57,7 @@ function Header() {
     };
     
     fetchUserLocation();
-  }, [currentUser, userLocation]);
+  }, [currentUser]);
   
   useEffect(() => {
     if (blynkApiKeys.length > 0) {
