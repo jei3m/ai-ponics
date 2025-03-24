@@ -9,8 +9,6 @@ import './css/Chat.css';
 import ReactMarkdown from 'react-markdown';
 import { message, Button } from 'antd';
 
-
-
 import { 
   faArrowLeft, 
   faImage, 
@@ -63,6 +61,14 @@ const Chat = () => {
   const [pHlevel, setpHlevel] = useState(null);
   const [isApiKeyValid, setIsApiKeyValid] = useState(true);
   const [isDeviceOnline, setIsDeviceOnline] = useState(false);
+
+  // Current Date with PH time zone
+  const currentDate = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Manila',
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric'
+  }).format(new Date());
 
   // Fetch sensor data from Blynk API
   const fetchSensorDataFromBlynk = async (selectedApiKey) => {
@@ -129,9 +135,9 @@ useEffect(() => {
   
   // Function for Greeting the User
   useEffect(() => {
-    greetUser(sensorDataLoaded, isApiKeyValid, setMessages, selectedApiKey,isDeviceOnline, temperature, plantName, daysSincePlanting, pHlevel, humidity,weatherData);
+    greetUser(sensorDataLoaded, isApiKeyValid, setMessages, selectedApiKey,isDeviceOnline, temperature, plantName, daysSincePlanting, pHlevel, humidity,weatherData, currentDate);
 
-  }, [sensorDataLoaded, isDeviceOnline, plantName, daysSincePlanting, temperature, pHlevel, humidity, flowRate, isApiKeyValid, selectedApiKey, weatherData]);
+  }, [sensorDataLoaded, isDeviceOnline, plantName, daysSincePlanting, temperature, pHlevel, humidity, flowRate, isApiKeyValid, selectedApiKey, weatherData, currentDate]);
 
   // AI conversation after greeting
   async function aiRun() {
@@ -152,7 +158,7 @@ useEffect(() => {
       ]);
   
       const previousMessages = messages;
-      const responseStream = generateAIResponse(textPrompt, imageInlineData, plantName, daysSincePlanting, temperature, humidity, pHlevel, weatherData, previousMessages);
+      const responseStream = generateAIResponse(textPrompt, imageInlineData, plantName, daysSincePlanting, temperature, humidity, pHlevel, weatherData, previousMessages, currentDate);
 
       // Create a local variable to store the accumulated text
       let currentText = '';
