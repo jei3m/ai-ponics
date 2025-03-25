@@ -55,9 +55,6 @@ export const getSystemKnowledge = (plantName, weatherData) => {
   return `
     When responding to queries, prioritize information from this custom knowledge base. 
     If the requested information is not found in the custom knowledge base, rely on pre-trained data to generate a response. 
-
-    Data Source Transparency:
-    - Always specify when mixing pre-trained and custom data with: "(Source: ${plantData ? 'Local System' : 'General Knowledge'})"
     
     User Customization Flags:
     - Detect phrases like "my custom system" to trigger non-standard recommendations
