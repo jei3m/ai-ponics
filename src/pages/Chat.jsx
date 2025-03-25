@@ -84,9 +84,6 @@ const Chat = () => {
     });
     setSensorDataLoaded(true);
   };
-
-
-
   
   // Fetch user data and sensor data
   const { currentUser } = UserAuth();
@@ -99,10 +96,9 @@ const Chat = () => {
     fetchUserData(doc, currentUser, db, getDoc, setSensorDataLoaded, setPlantName, setDaysSincePlanting, setSelectedApiKey, fetchSensorDataFromBlynk, message);
   }, [currentUser]);
 
-// Fetch user location and weather data
-useEffect(() => {
-  const fetchUserLocationAndWeather = async () => {
-    if (currentUser?.uid) {
+  // Fetch user location and weather data
+  useEffect(() => {
+    const fetchUserLocationAndWeather = async () => {
       try {
         const userDocRef = doc(db, "users", currentUser.uid);
         const userDoc = await getDoc(userDocRef);
@@ -127,11 +123,10 @@ useEffect(() => {
       } catch (error) {
         console.error("Error fetching weather data:", error);
       }
-    }
-  };
-  
-  fetchUserLocationAndWeather();
-}, [currentUser]);
+    };
+    
+    fetchUserLocationAndWeather();
+  }, [currentUser]);
   
   // Function for Greeting the User
   useEffect(() => {
