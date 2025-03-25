@@ -18,10 +18,6 @@ export const getSystemKnowledge = (plantName, weatherData) => {
         ${temperature < plantData.MIN_TEMPERATURE ? `- ❄️ LOW TEMP ALERT: Below minimum (${plantData.MIN_TEMPERATURE}°C)` : ''}
         ${temperature > plantData.MAX_TEMPERATURE ? `- 🔥 HIGH TEMP ALERT: Above maximum (${plantData.MAX_TEMPERATURE}°C)` : ''}
         
-        Maintenance History:
-        - Last pH calibration: ${plantData.LAST_PH_CALIBRATION || 'Not recorded'}
-        - Nutrient solution age: ${plantData.NUTRIENT_AGE_DAYS || 'Unknown'} days
-        
         ${plantData.SEASONAL_DATA ? `- Seasonal Data:
           ${Object.entries(plantData.SEASONAL_DATA)
             .map(([season, data]) => `
