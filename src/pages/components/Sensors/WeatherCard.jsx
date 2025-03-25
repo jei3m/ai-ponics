@@ -189,11 +189,12 @@ function WeatherCard({status}) {
         `https://api.geoapify.com/v1/geocode/search?text=${addressQuery}&apiKey=${process.env.REACT_APP_GEOAPIFY_API_KEY}`
       );
       const geoData = await geoRes.json();
-  
+
       if (geoData.features && geoData.features.length > 0) {
-        const coordinates = geoData.features[0].geometry.coordinates;
-        const [lon, lat] = coordinates;
-        
+
+        const lat = geoData.features[0].properties.lat;
+        const lon = geoData.features[0].properties.lon;
+      
         const weatherJson = await fetchWeatherData(lat, lon);
         
         const locationData = {
