@@ -138,6 +138,10 @@
     text-align: left;
 }
 
+.message.ai ul {
+    margin-top: 0px;
+}
+
 .message.streaming {
   position: relative;
 }
