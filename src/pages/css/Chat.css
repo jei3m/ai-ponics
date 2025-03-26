@@ -34,9 +34,9 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: -4px;
+    margin-bottom: -6px;
     position: relative;
-    margin-top: -14px;
+    margin-top: -20px;
 }
 
 .chat-title {
