@@ -42,7 +42,7 @@ const Chat = () => {
   // Planting Information States
   const [daysSincePlanting, setDaysSincePlanting] = useState(0);
   const [plantName, setPlantName] = useState('');
-  const [userLocation, setUserLocation] = useState({ lat: '', lon: '' });
+  const [userLocation, setUserLocation] = useState({ lat: '', lon: '',   city: '', province: '', barangay: '' });
 
   // API Key States
   const [selectedApiKey, setSelectedApiKey] = useState('');
@@ -105,16 +105,19 @@ const Chat = () => {
         
         if (userDoc.exists()) {
           const userData = userDoc.data();
-          const coordinates = {
-            lat: userData.location?.coordinates.lat || '',
-            lon: userData.location?.coordinates.lon || '',
+          const locationData = {
+            lat: userData.location?.coordinates?.lat || '',
+            lon: userData.location?.coordinates?.lon || '',
+            city: userData.location?.city || '',
+            province: userData.location?.province || '',
+            barangay: userData.location?.barangay || ''
           };
-          setUserLocation(coordinates);
-
+          setUserLocation(locationData);
+  
           // Fetch weather data using coordinates
-          if (coordinates.lat && coordinates.lon) {
+          if (locationData.lat && locationData.lon) {
             const weatherRes = await fetch(
-              `https://api.openweathermap.org/data/2.5/weather?lat=${coordinates.lat}&lon=${coordinates.lon}&units=metric&appid=${process.env.REACT_APP_OPENWEATHER_API_KEY}`
+              `https://api.openweathermap.org/data/2.5/weather?lat=${locationData.lat}&lon=${locationData.lon}&units=metric&appid=${process.env.REACT_APP_OPENWEATHER_API_KEY}`
             );
             const weatherJson = await weatherRes.json();
             setWeatherData(weatherJson);
@@ -127,6 +130,7 @@ const Chat = () => {
     
     fetchUserLocationAndWeather();
   }, [currentUser]);
+  
   
   // Function for Greeting the User
   useEffect(() => {
@@ -153,7 +157,7 @@ const Chat = () => {
       ]);
   
       const previousMessages = messages;
-      const responseStream = generateAIResponse(textPrompt, imageInlineData, plantName, daysSincePlanting, temperature, humidity, pHlevel, weatherData, previousMessages, currentDate);
+      const responseStream = generateAIResponse(textPrompt, imageInlineData, plantName, daysSincePlanting, temperature, humidity, pHlevel, weatherData, previousMessages, currentDate, userLocation);
 
       // Create a local variable to store the accumulated text
       let currentText = '';
