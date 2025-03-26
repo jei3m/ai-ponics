@@ -64,7 +64,6 @@ export const getSystemKnowledge = (plantName, weatherData) => {
             .map(([stage, detail]) => `* ${stage}: ${detail}`)
             .join('\n          ')}` : ''}
       `;
-      console.log(plantSpecificKnowledge)
     } catch (error) {
       console.error('Error processing plant data:', error);
       plantSpecificKnowledge = 'Error processing plant-specific data.';
