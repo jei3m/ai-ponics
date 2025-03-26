@@ -6,7 +6,7 @@ import { signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from '../firebase';
 import LandingTempHumidCard from './components/Landingpage/LandingTempHumidCard';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLeaf, faThermometerHalf, faEnvelope, faCloud, faLayerGroup, faMessage, faLink, faExternalLink } from '@fortawesome/free-solid-svg-icons';
+import { faLeaf, faThermometerHalf, faEnvelope, faCloud, faLayerGroup, faMessage, faLink, faExternalLink, faDatabase } from '@fortawesome/free-solid-svg-icons';
 
 const LandingPage = () => {
 
@@ -34,8 +34,8 @@ const LandingPage = () => {
   const features = [
     {
       icon: faLeaf,
-      title: "Plant State Detection",
-      description: "Powered by Gemini 2.0 Flash AI to analyze images and assess plant health, identify diseases, and provide growth insights."
+      title: "AI-Powered Plant Assistant",
+      description: "Plant health analysis and personalized care advice through AI with image recognition, and text-based queries."
     },
     {
       icon: faThermometerHalf,
@@ -43,9 +43,9 @@ const LandingPage = () => {
       description: "Track temperature, humidity, and pH level remotely with Blynk API integration."
     },
     {
-      icon: faMessage,
-      title: "AI-Powered Chatbot",
-      description: "Get personalized plant care advice and answers to your questions through our Gemini 2.0 Flash chatbot."
+      icon: faCloud,
+      title: "Real-Time Weather Forecast",
+      description: "Integrated OpenWeather API providing accurate local weather data and forecasts for optimal plant growth conditions."
     },
     {
       icon: faEnvelope,
@@ -53,9 +53,9 @@ const LandingPage = () => {
       description: "Stay informed with alerts when environmental conditions require your attention."
     },
     {
-      icon: faCloud,
-      title: "Real-Time Weather Forecast",
-      description: "Integrated OpenWeather API providing accurate local weather data and forecasts for optimal plant growth conditions."
+      icon: faDatabase,
+      title: "Plant Intelligence",
+      description: "Custom knowledge base providing data-driven insights for optimal plant care and growth strategies."
     },
     {
       icon: faLayerGroup,
