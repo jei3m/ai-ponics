@@ -17,17 +17,6 @@ export const getSystemKnowledge = (plantName, weatherData) => {
         ${temperature < plantData.MIN_TEMPERATURE ? `- ❄️ LOW TEMP ALERT: Below minimum (${plantData.MIN_TEMPERATURE}°C)` : ''}
         ${temperature > plantData.MAX_TEMPERATURE ? `- 🔥 HIGH TEMP ALERT: Above maximum (${plantData.MAX_TEMPERATURE}°C)` : ''}
         
-        ${plantData.SEASONAL_DATA ? `- Seasonal Data:
-          ${Object.entries(plantData.SEASONAL_DATA)
-            .map(([season, data]) => `
-            * ${season}:
-              - pH: ${data.pH || 'N/A'}
-              - Humidity: ${data.Humidity || 'N/A'}
-              - Temperature: ${data.Temperature || 'N/A'}
-              - Solution Temperature: ${data.SolutionTemperature || 'N/A'}
-            `)
-            .join('')}` : ''}
-        
         ${plantData.DISEASES ? `- Common Diseases:
           ${Object.entries(plantData.DISEASES)
             .map(([disease, details]) => `
@@ -75,6 +64,7 @@ export const getSystemKnowledge = (plantName, weatherData) => {
             .map(([stage, detail]) => `* ${stage}: ${detail}`)
             .join('\n          ')}` : ''}
       `;
+      console.log(plantSpecificKnowledge)
     } catch (error) {
       console.error('Error processing plant data:', error);
       plantSpecificKnowledge = 'Error processing plant-specific data.';
