@@ -135,10 +135,10 @@ Need help or have questions? Don't hesitate to ask!`;
 
 
 // Generate AI response for user queries
-export const generateAIResponse = async function* ( textPrompt, imageInlineData, plantName, daysSincePlanting, temperature, humidity, pHlevel, weatherData, previousMessages = [], currentDate ) {
+export const generateAIResponse = async function* ( textPrompt, imageInlineData, plantName, daysSincePlanting, temperature, humidity, pHlevel, weatherData, previousMessages = [], currentDate, userLocation ) {
   const model = genAI.getGenerativeModel({
     model: "gemini-2.0-flash-exp", // Recently released 2.0 Flash Model
-    systemInstruction: getSystemInstructions(plantName, daysSincePlanting, temperature, humidity, pHlevel, weatherData, currentDate),
+    systemInstruction: getSystemInstructions(plantName, daysSincePlanting, temperature, humidity, pHlevel, weatherData, currentDate, userLocation),
   });
 
   // Declaration of messageHistory

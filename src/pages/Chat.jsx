@@ -131,7 +131,6 @@ const Chat = () => {
     fetchUserLocationAndWeather();
   }, [currentUser]);
   
-  
   // Function for Greeting the User
   useEffect(() => {
     greetUser(sensorDataLoaded, isApiKeyValid, setMessages, selectedApiKey,isDeviceOnline, temperature, plantName, daysSincePlanting, pHlevel, humidity,weatherData, currentDate);
