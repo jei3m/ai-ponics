@@ -6,7 +6,7 @@ import { signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from '../firebase';
 import LandingTempHumidCard from './components/Landingpage/LandingTempHumidCard';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLeaf, faThermometerHalf, faEnvelope, faCloud, faLayerGroup, faMessage, faLink, faExternalLink, faDatabase } from '@fortawesome/free-solid-svg-icons';
+import { faLeaf, faThermometerHalf, faEnvelope, faCloud, faLayerGroup, faExternalLink, faDatabase, faChartLine, faClock, faTint } from '@fortawesome/free-solid-svg-icons';
 
 const LandingPage = () => {
 
@@ -34,7 +34,7 @@ const LandingPage = () => {
   const features = [
     {
       icon: faLeaf,
-      title: "AI-Powered Plant Assistant",
+      title: "AI-Powered Chat Assistant",
       description: "Plant health analysis and personalized care advice through AI with image recognition, and text-based queries."
     },
     {
@@ -161,23 +161,6 @@ const LandingPage = () => {
           />
         </div>
       </section>
-
-      {/* Tech Stack Section */}
-      {/* <section className="tech-stack">
-        <div className="section-header">
-          <div className='section-title'>Tech That Nurtures Growth</div>
-          <p className='landing-p'>
-            Built with up-to-date technologies to provide a seamless plant monitoring experience.
-          </p>
-        </div>
-        <div className="tech-stack-grid">
-          {techStack.map((tech, index) => (
-            <div className="tech-icon" key={index}>
-              <img src={tech.icon} alt={tech.name} title={tech.name} />
-            </div>
-          ))}
-        </div>
-      </section> */}
 
       {/* CTA Section */}
       <section className="cta">
