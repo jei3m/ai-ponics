@@ -105,7 +105,11 @@ export async function greetUser(
     const greetingText = 
 `Hey there, I'm AI-Ponics, your friendly Aeroponic System Assistant! 👋
 
+&nbsp;  
+
 **Today's Date:** ${currentDate}
+
+&nbsp;  
 
 **System Status:**
 - Plant: ${plantName || 'N/A'}
@@ -152,7 +156,7 @@ export const generateAIResponse = async function* ( textPrompt, imageInlineData,
   }
 
   // Append Custom Knowledge Base
-  chatContext.push({text: `System Knowledge: ${getSystemKnowledge(plantName)}`});
+  chatContext.push({text: `System Knowledge: ${getSystemKnowledge(plantName, weatherData)}`});
 
   // Logging message history for debugging
   // console.log(`textPrompt: ${textPrompt}`);
@@ -183,7 +187,7 @@ export const fileToGenerativePart = async (blob) => {
 
 // Custom components for ReactMarkdown
 export const components = {
-  p: ({ children }) => <div style={{ margin: 4 }}>{children}</div>,
+  p: ({ children }) => <div>{children}</div>,
   strong: ({ children }) => <strong>{children}</strong>,
   br: () => <br />,
   h2: ({ children }) => <h3>{children}</h3>
