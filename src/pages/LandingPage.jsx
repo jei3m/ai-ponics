@@ -97,6 +97,34 @@ const LandingPage = () => {
     },
   ];
 
+  const metrics = [
+    {
+      icon: faLeaf,
+      value: "24/7",
+      label: "AI-Powered Plant Support"
+    },
+    {
+      icon: faThermometerHalf,
+      value: "±0.5°C",
+      label: "Temperature Accuracy"
+    },
+    {
+      icon: faTint,
+      value: "±2–5%",
+      label: "Humidity Accuracy"
+    },
+    {
+      icon: faChartLine,
+      value: "±0.05 pH",
+      label: "pH Sensor Accuracy"
+    },
+    {
+      icon: faClock,
+      value: "90%+",
+      label: "Blynk IoT Uptime"
+    }
+  ];
+
   return (
     <Layout className="landing-page">
       {/* Hero Section */}
@@ -145,6 +173,21 @@ const LandingPage = () => {
           ))}
         </div>
         <a href='https://github.com/jei3m/ai-ponics' target='_blank'>Learn more about AI-Ponics <FontAwesomeIcon icon={faExternalLink} style={{ marginLeft: '8px' }} /></a>
+      </section>
+
+      {/* Metrics Section */}
+      <section className="metrics">
+        <div className="metrics-grid">
+          {metrics.map((metric, index) => (
+            <div className="metric-card" key={index}>
+              <div className="metric-icon">
+                <FontAwesomeIcon icon={metric.icon} />
+              </div>
+              <div className="metric-value">{metric.value}</div>
+              <div className="metric-label">{metric.label}</div>
+            </div>
+          ))}
+        </div>
       </section>
 
       {/* AI Chat Section */}
