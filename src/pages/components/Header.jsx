@@ -123,7 +123,7 @@ function Header() {
         >
           <Avatar
             size={80}
-            src={currentUser ? currentUser.photoURL : 'https://via.placeholder.com/50'}
+            src='/img/profile_placeholder.jpg'
             style={{
               border: '3px solid #006400',
               marginBottom: '10px',
