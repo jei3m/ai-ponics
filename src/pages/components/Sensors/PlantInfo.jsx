@@ -1,5 +1,5 @@
 import React from 'react'
-import { Card, Input, DatePicker, Button, Typography } from 'antd'
+import { Card, Input, DatePicker, Button, Typography, Select } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLeaf } from '@fortawesome/free-solid-svg-icons'
 import { StatusMessage } from '../../../services/sensorService'
@@ -14,7 +14,8 @@ function PlantInfo({
     plantingDate,
     daysSincePlanting,
     isPlantInfoChanged,
-    handleSaveChanges
+    handleSaveChanges,
+    isSaving
 }) {
   return (
     <Card
@@ -24,24 +25,30 @@ function PlantInfo({
             Plant Information
         </div>
         }
-        bordered={false}
+        variant='borderless'
         className='info-card'
     >
         {status && (
-        <StatusMessage message={status.message} className={status.className} style={status.style} />
+            <StatusMessage message={status.message} className={status.className} style={status.style} />
         )}
+        
         {!status && (
         <div>
             <div className='info-card-content'>
-                <Input
-                    type="text"
+                <Select
                     id="plantName"
                     name="plantName"
                     value={plantName}
                     onChange={handlePlantNameChange}
-                    placeholder="Enter plant name"
+                    placeholder="Select plant"
                     className='info-card-input'
-                />
+                >
+                    <Select.Option value="Lettuce">Lettuce</Select.Option>
+                    <Select.Option value="Basil">Basil</Select.Option>
+                    <Select.Option value="Spinach">Spinach</Select.Option>
+                    <Select.Option value="Tomatoes">Tomatoes</Select.Option>
+                    <Select.Option value="Strawberries">Strawberries</Select.Option>
+                </Select>
                 <DatePicker
                     {...datePickerConfig}
                     id="plantingDate"
@@ -60,9 +67,10 @@ function PlantInfo({
 
                 {isPlantInfoChanged && (
                     <Button
-                    type="primary"
-                    className='info-card-save-button'
-                    onClick={handleSaveChanges}
+                        type="primary"
+                        className='info-card-save-button'
+                        onClick={handleSaveChanges}
+                        disabled={isSaving}
                     >
                     Save
                     </Button>

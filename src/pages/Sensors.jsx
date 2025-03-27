@@ -13,9 +13,11 @@ import {
   fetchUserData,
   calculateDaysSincePlanting,
   getDatePickerConfig,
-  getStatusConfig
+  getStatusConfig,
+  getPlantData
 } from '../services/sensorService';
 import PHLevel from "./components/Sensors/PHLevel";
+import WeatherCard from "./components/Sensors/WeatherCard";
 
 dayjs.extend(customParseFormat);
 
@@ -31,18 +33,31 @@ function Sensors() {
   const [plantingDate, setPlantingDate] = useState(null);
   const [plantName, setPlantName] = useState("");
   const [isPlantInfoChanged, setIsPlantInfoChanged] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
-
+  // States for loading and thresholds
   const [isLoading, setIsLoading] = useState(false);
+  const [thresholds, setThresholds] = useState(null);
 
   // States for conditional rendering
   const [isApiKeyValid, setIsApiKeyValid] = useState(true);
   const [isDeviceOnline, setIsDeviceOnline] = useState(true);
 
   // States for user info
-  // const { selectedApiKey } = useApiKey();
   const [user, setUser] = useState(null);
   const [selectedApiKey, setSelectedApiKey] = useState(null);
+
+  // Fetch thresholds based on plantName
+  useEffect(() => {
+    if (plantName) {
+      const thresholds = getPlantData(plantName);
+      if (!thresholds) {
+        setIsLoading(true); // Set isLoading to true if thresholds are null
+      } else {
+        setThresholds(thresholds);
+      }
+    }
+  }, [plantName]);
 
   // Fetch sensor data effect
   useEffect(() => {
@@ -113,14 +128,15 @@ function Sensors() {
     setIsPlantInfoChanged(true);
   };
 
-  const handlePlantNameChange = (event) => {
-    setPlantName(event.target.value);
+  const handlePlantNameChange = (value) => {
+    setPlantName(value);
     setIsPlantInfoChanged(true);
   };
 
   const handleSaveChanges = async () => {
     const currentUser = auth.currentUser;
     if (currentUser) {
+      setIsSaving(true);
       try {
         await setDoc(doc(db, "users", currentUser.uid), {
           plantName,
@@ -132,6 +148,8 @@ function Sensors() {
         setIsPlantInfoChanged(false);
       } catch (error) {
         message.error('Failed to save plant data:', error);
+      } finally {
+        setIsSaving(false);
       }
     }
   };
@@ -149,20 +167,28 @@ function Sensors() {
 
           <div className="sensor-cards-container">
 
+            <WeatherCard 
+              status={status}
+            />
+              
             <TempHumidCard
               temperature={temperature}
               humidity={humidity}
               status={status}
+              plantName={plantName}
+              thresholds={thresholds}
             />
 
-            <FlowRate
+            {/* <FlowRate
              flowRate={flowRate}
              status={status}
-            />
+            /> */}
 
             <PHLevel 
               pHlevel={pHlevel}
               status={status}
+              plantName={plantName}
+              thresholds={thresholds}
             />
 
             <PlantInfo
@@ -174,6 +200,7 @@ function Sensors() {
               daysSincePlanting={daysSincePlanting}
               isPlantInfoChanged={isPlantInfoChanged}
               handleSaveChanges={handleSaveChanges}
+              isSaving={isSaving}
             />
 
           </div>

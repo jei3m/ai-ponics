@@ -6,6 +6,8 @@ import { useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faLeaf, faNewspaper, faHome, faImage } from '@fortawesome/free-solid-svg-icons';
 import { fetchBlynkKeysData, saveBlynkApiKey, addNewApiKey, deleteApiKey } from '../../services/headerService';
+import { doc, getDoc, onSnapshot } from 'firebase/firestore';
+import { db } from '../../firebase';
 import "../css/Header.css";
 
 const { Option } = Select;
@@ -19,8 +21,8 @@ function Header() {
   const [selectedApiKeyIndex, setSelectedApiKeyIndex] = useState(0);
   const location = useLocation();
   const [selectedApiKey, setSelectedApiKey] = useState(null);
-  // const { setSelectedApiKey } = useApiKey();
   const [loading, setLoading] = useState(false);
+  const [userLocation, setUserLocation] = useState({ city: '', province: '' });
 
   useEffect(() => {
     fetchBlynkKeysData(
@@ -29,6 +31,32 @@ function Header() {
       setSelectedApiKeyIndex,
       setEditableBlynkApiKey,
     );
+    
+    // Fetch user location data
+    const fetchUserLocation = async () => {
+      if (currentUser?.uid) {
+        try {
+          const userDocRef = doc(db, "users", currentUser.uid);
+          const unsubscribe = onSnapshot(userDocRef, (doc) => {
+            if (doc.exists()) {
+              const userData = doc.data();
+              setUserLocation({
+                city: userData.location?.city || '',
+                province: userData.location?.province || '',
+                barangay: userData.location?.barangay || ''
+              });
+            }
+          });
+          
+          // Cleanup subscription on unmount
+          return () => unsubscribe();
+        } catch (error) {
+          console.error("Error fetching user location:", error);
+        }
+      }
+    };
+    
+    fetchUserLocation();
   }, [currentUser]);
   
   useEffect(() => {
@@ -74,25 +102,6 @@ function Header() {
         </div>
 
         <div>
-
-          {location.pathname === '/analyse' || location.pathname === '/forum' || location.pathname.startsWith('/forum/') ? (
-            <a href='/home'>
-              <FontAwesomeIcon icon={faHome} className='forum-icon' />
-            </a>
-          ):null }
-
-          {/* {location.pathname === '/home' || location.pathname === '/forum' || location.pathname.startsWith('/forum/') ? (
-            <a href='/analyse'>
-              <FontAwesomeIcon icon={faImage} className='forum-icon' />
-            </a>
-          ):null } */}
-
-          {location.pathname === '/home' || location.pathname === ('/analyse') ? (
-            <a href='/forum'>
-              <FontAwesomeIcon icon={faNewspaper} className='forum-icon' />
-            </a>
-          ):null }
-
           {currentUser && (
             <FontAwesomeIcon
               icon={faUser}
@@ -114,7 +123,7 @@ function Header() {
         >
           <Avatar
             size={80}
-            src={currentUser ? currentUser.photoURL : 'https://via.placeholder.com/50'}
+            src='/img/profile_placeholder.jpg'
             style={{
               border: '3px solid #006400',
               marginBottom: '10px',
@@ -136,6 +145,12 @@ function Header() {
             <Text strong>Email:</Text>
             <br />
             <Text>{currentUser?.email}</Text>
+          </div>
+
+          <div style={{ marginTop: '1rem' }}>
+            <Text strong>Address:</Text>
+            <br />
+            <Text>{userLocation.barangay}, {userLocation.city}, {userLocation.province}</Text>
           </div>
 
           <div style={{ marginTop: '1rem' }}>

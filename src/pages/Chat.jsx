@@ -27,9 +27,7 @@ import {
 } from '../services/chatService';
 
 import { 
-  MAX_TEMPERATURE, 
-  MIN_TEMPERATURE,
-  fetchSensorData 
+  fetchSensorData,
 } from "../services/sensorService";
 
 const Chat = () => {
@@ -44,6 +42,7 @@ const Chat = () => {
   // Planting Information States
   const [daysSincePlanting, setDaysSincePlanting] = useState(0);
   const [plantName, setPlantName] = useState('');
+  const [userLocation, setUserLocation] = useState({ lat: '', lon: '',   city: '', province: '', barangay: '' });
 
   // API Key States
   const [selectedApiKey, setSelectedApiKey] = useState('');
@@ -52,6 +51,9 @@ const Chat = () => {
   const [loading, setLoading] = useState(false);
   const [sensorDataLoaded, setSensorDataLoaded] = useState(false);
 
+  // Weather Data State
+  const [weatherData, setWeatherData] = useState(null);
+
   // Sensor Data States
   const [humidity, setHumidity] = useState(null);
   const [temperature, setTemperature] = useState(null);
@@ -59,6 +61,14 @@ const Chat = () => {
   const [pHlevel, setpHlevel] = useState(null);
   const [isApiKeyValid, setIsApiKeyValid] = useState(true);
   const [isDeviceOnline, setIsDeviceOnline] = useState(false);
+
+  // Current Date with PH time zone
+  const currentDate = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Manila',
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric'
+  }).format(new Date());
 
   // Fetch sensor data from Blynk API
   const fetchSensorDataFromBlynk = async (selectedApiKey) => {
@@ -74,7 +84,7 @@ const Chat = () => {
     });
     setSensorDataLoaded(true);
   };
-
+  
   // Fetch user data and sensor data
   const { currentUser } = UserAuth();
 
@@ -86,11 +96,46 @@ const Chat = () => {
     fetchUserData(doc, currentUser, db, getDoc, setSensorDataLoaded, setPlantName, setDaysSincePlanting, setSelectedApiKey, fetchSensorDataFromBlynk, message);
   }, [currentUser]);
 
+  // Fetch user location and weather data
+  useEffect(() => {
+    const fetchUserLocationAndWeather = async () => {
+      try {
+        const userDocRef = doc(db, "users", currentUser.uid);
+        const userDoc = await getDoc(userDocRef);
+        
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          const locationData = {
+            lat: userData.location?.coordinates?.lat || '',
+            lon: userData.location?.coordinates?.lon || '',
+            city: userData.location?.city || '',
+            province: userData.location?.province || '',
+            barangay: userData.location?.barangay || ''
+          };
+          setUserLocation(locationData);
+  
+          // Fetch weather data using coordinates
+          if (locationData.lat && locationData.lon) {
+            const weatherRes = await fetch(
+              `https://api.openweathermap.org/data/2.5/weather?lat=${locationData.lat}&lon=${locationData.lon}&units=metric&appid=${process.env.REACT_APP_OPENWEATHER_API_KEY}`
+            );
+            const weatherJson = await weatherRes.json();
+            setWeatherData(weatherJson);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching weather data:", error);
+      }
+    };
+    
+    fetchUserLocationAndWeather();
+  }, [currentUser]);
+  
   // Function for Greeting the User
   useEffect(() => {
-    greetUser(sensorDataLoaded, isApiKeyValid, setMessages, selectedApiKey,isDeviceOnline, temperature, MAX_TEMPERATURE, MIN_TEMPERATURE, plantName, daysSincePlanting, pHlevel, humidity);
+    greetUser(sensorDataLoaded, isApiKeyValid, setMessages, selectedApiKey,isDeviceOnline, temperature, plantName, daysSincePlanting, pHlevel, humidity,weatherData, currentDate);
 
-  }, [sensorDataLoaded, isDeviceOnline, plantName, daysSincePlanting, temperature, pHlevel, humidity, flowRate, isApiKeyValid, selectedApiKey]);
+  }, [sensorDataLoaded, isDeviceOnline, plantName, daysSincePlanting, temperature, pHlevel, humidity, flowRate, isApiKeyValid, selectedApiKey, weatherData, currentDate]);
 
   // AI conversation after greeting
   async function aiRun() {
@@ -111,7 +156,7 @@ const Chat = () => {
       ]);
   
       const previousMessages = messages;
-      const responseStream = generateAIResponse(textPrompt, imageInlineData, plantName, daysSincePlanting, temperature, humidity, pHlevel, previousMessages);
+      const responseStream = generateAIResponse(textPrompt, imageInlineData, plantName, daysSincePlanting, temperature, humidity, pHlevel, weatherData, previousMessages, currentDate, userLocation);
 
       // Create a local variable to store the accumulated text
       let currentText = '';

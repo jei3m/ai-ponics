@@ -1,7 +1,6 @@
 .flex-container {
     width: 100%;
     height: fit-content;
-    margin-top: -14px;
 }
 
 .temphumid-cards-container {
@@ -9,7 +8,6 @@
     max-width: 600px;
     display: flex;
     flex-direction: row;
-    margin-top: -20px;
     border-radius: 10px;
     justify-content: center;
     border: 1px solid #ddd;
