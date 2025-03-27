@@ -46,7 +46,7 @@ AI-Ponics is a web application developed to monitor and manage plants in an aero
 - A weather data service that delivers real-time and forecasted weather information based on user-defined locations. This data is utilized in the Weather Forecast feature and is also integrated into the AI chatbot, allowing users to make informed decisions and optimize their aeroponic system based on current environmental conditions.
 
 **Firebase**
-- A comprehensive backend platform developed by Google, chosen for its services such as user authentication, real-time database management, and cloud storage. Firebase efficiently handles user profiles, stores sensor data, and enables real-time data synchronization across devices, making it an ideal solution for the AI-Ponics web application.
+- A comprehensive backend platform developed by Google, chosen for its services such as user authentication, real-time database management, and cloud storage. Firebase efficiently handles user profiles, and enables real-time data synchronization across devices, making it an ideal solution for the AI-Ponics web application.
 
 ## Parts
 
