@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, Typography } from 'antd';
 import Gauge from './Gauge';
-import { StatusMessage, getPlantThresholds } from '../../../services/sensorService';
+import { StatusMessage } from '../../../services/sensorService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFlask } from '@fortawesome/free-solid-svg-icons';
 import './css/TempStatus.css';

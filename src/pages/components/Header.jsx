@@ -4,9 +4,9 @@ import { EyeInvisibleOutlined, EyeTwoTone, PlusOutlined, SaveOutlined, DeleteOut
 import { UserAuth } from '../../context/AuthContext';
 import { useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faLeaf, faNewspaper, faHome, faImage } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faLeaf } from '@fortawesome/free-solid-svg-icons';
 import { fetchBlynkKeysData, saveBlynkApiKey, addNewApiKey, deleteApiKey } from '../../services/headerService';
-import { doc, getDoc, onSnapshot } from 'firebase/firestore';
+import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '../../firebase';
 import "../css/Header.css";
 
@@ -19,7 +19,9 @@ function Header() {
   const [blynkApiKeys, setBlynkApiKeys] = useState([]);
   const [editableBlynkApiKey, setEditableBlynkApiKey] = useState('');
   const [selectedApiKeyIndex, setSelectedApiKeyIndex] = useState(0);
+  // eslint-disable-next-line
   const location = useLocation();
+  // eslint-disable-next-line
   const [selectedApiKey, setSelectedApiKey] = useState(null);
   const [loading, setLoading] = useState(false);
   const [userLocation, setUserLocation] = useState({ city: '', province: '' });

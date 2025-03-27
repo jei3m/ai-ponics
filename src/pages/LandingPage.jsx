@@ -172,7 +172,7 @@ const LandingPage = () => {
             </div>
           ))}
         </div>
-        <a href='https://github.com/jei3m/ai-ponics' target='_blank'>Learn more about AI-Ponics <FontAwesomeIcon icon={faExternalLink} style={{ marginLeft: '8px' }} /></a>
+        <a href='https://github.com/jei3m/ai-ponics' target='_blank' rel="noreferrer">Learn more about AI-Ponics <FontAwesomeIcon icon={faExternalLink} style={{ marginLeft: '8px' }} /></a>
       </section>
 
       {/* Metrics Section */}

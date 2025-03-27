@@ -17,6 +17,7 @@ import Layout from './layout/Layout';
 import LandingPage from './pages/LandingPage';
 
 function Router() {
+  // eslint-disable-next-line
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 

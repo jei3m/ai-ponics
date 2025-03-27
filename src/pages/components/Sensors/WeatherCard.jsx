@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Typography, Button, Modal, Form, Select, message } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMapMarkerAlt, faWind, faTemperatureHalf, faTint, faCloud } from '@fortawesome/free-solid-svg-icons';
+import { faWind, faTemperatureHalf, faTint, faCloud } from '@fortawesome/free-solid-svg-icons';
 import './css/WeatherCard.css';
 import regionData from '../../../ph-json/region.json';
 import provinceData from '../../../ph-json/province.json';
@@ -32,6 +32,7 @@ function WeatherCard({status}) {
   const [selectedRegion, setSelectedRegion] = useState(null);
   const [selectedProvince, setSelectedProvince] = useState(null);
   const [selectedCity, setSelectedCity] = useState(null);
+  // eslint-disable-next-line
   const [selectedBarangay, setSelectedBarangay] = useState(null);
 
   const fetchWeatherData = async (lat, lon) => {

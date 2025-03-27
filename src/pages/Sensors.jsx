@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { message } from "antd";
 import "./css/Sensors.css";
 import TempHumidCard from "./components/Sensors/TempHumid";
-import FlowRate from "./components/Sensors/FlowRate";
 import PlantInfo from "./components/Sensors/PlantInfo";
 import { db, auth } from "../firebase";
 import { doc, setDoc } from "firebase/firestore";
@@ -26,6 +25,7 @@ function Sensors() {
   // States for sensor data
   const [temperature, setTemperature] = useState(null);
   const [humidity, setHumidity] = useState(null);
+  // eslint-disable-next-line
   const [flowRate, setFlowRate] = useState(null);
   const [pHlevel, setpHlevel] = useState(null);
 

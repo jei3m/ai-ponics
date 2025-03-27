@@ -1,5 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { getSystemInstructions, getImageSystemInstructions } from "../chatbot-config/systemInstructions";
+import { getSystemInstructions } from "../chatbot-config/systemInstructions";
 import {getSystemKnowledge} from "../chatbot-config/systemKnowledge"
 
 const apiKey = process.env.REACT_APP_API_KEY;

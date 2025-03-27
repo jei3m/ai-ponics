@@ -1,5 +1,5 @@
 import React from 'react'
-import { Card, Input, DatePicker, Button, Typography, Select } from 'antd'
+import { Card, DatePicker, Button, Typography, Select } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLeaf } from '@fortawesome/free-solid-svg-icons'
 import { StatusMessage } from '../../../services/sensorService'
