@@ -102,25 +102,6 @@ function Header() {
         </div>
 
         <div>
-
-          {location.pathname === '/analyse' || location.pathname === '/forum' || location.pathname.startsWith('/forum/') ? (
-            <a href='/home'>
-              <FontAwesomeIcon icon={faHome} className='forum-icon' />
-            </a>
-          ):null }
-
-          {/* {location.pathname === '/home' || location.pathname === '/forum' || location.pathname.startsWith('/forum/') ? (
-            <a href='/analyse'>
-              <FontAwesomeIcon icon={faImage} className='forum-icon' />
-            </a>
-          ):null } */}
-
-          {/* {location.pathname === '/home' || location.pathname === ('/analyse') ? (
-            <a href='/forum'>
-              <FontAwesomeIcon icon={faNewspaper} className='forum-icon' />
-            </a>
-          ):null } */}
-
           {currentUser && (
             <FontAwesomeIcon
               icon={faUser}

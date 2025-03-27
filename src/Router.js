@@ -7,11 +7,8 @@ import { auth } from './firebase';
 
 // Pages
 import Chat from './pages/Chat';
-import Forum from './pages/Forum';
-import DetailedView from './pages/ForumDetailed';
 import Sensors from './pages/Sensors';
 import NotFound from './pages/NotFound';
-import DiseaseDetection from './pages/DiseaseDetection';
 
 // Import routes and context
 import PrivateRoutes from './routes/PrivateRoutes';
@@ -62,28 +59,6 @@ function Router() {
         }
       />
 
-      {/* <Route
-        path="/forum"
-        element={
-          <PrivateRoutes>
-            <Layout>
-              <Forum />
-            </Layout>
-          </PrivateRoutes>
-        }
-      />
-      
-      <Route
-        path="/forum/:id"
-        element={
-          <PrivateRoutes>
-            <Layout>
-              <DetailedView />
-            </Layout>
-          </PrivateRoutes>
-        }
-      /> */}
-
       <Route
         path="/loading"
         element={
@@ -92,17 +67,6 @@ function Router() {
           </PrivateRoutes>
         }
       />
-
-      {/* <Route
-        path="/analyse"
-        element={
-          <PrivateRoutes>
-            <Layout>
-              <DiseaseDetection/>
-            </Layout>
-          </PrivateRoutes>
-        }
-      /> */}
         
     </Routes>
   );
