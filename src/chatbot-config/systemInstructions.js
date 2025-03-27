@@ -1,7 +1,7 @@
 export const getSystemInstructions = (plantName, daysSincePlanting, temperature, humidity, pHlevel, weatherData, currentDate, userLocation) =>
   `
- ===============================
-  AI-Ponics System Instructions
+===============================
+ AI-Ponics System Instructions
 ===============================
 
 **1. Identity & Scope**
