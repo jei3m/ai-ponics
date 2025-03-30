@@ -146,13 +146,17 @@ function Header() {
           <div style={{ marginTop: '1rem' }}>
             <Text strong>Email:</Text>
             <br />
-            <Text>{currentUser?.email}</Text>
+            <Text>{currentUser?.email || 'No email provided'}</Text>
           </div>
 
           <div style={{ marginTop: '1rem' }}>
             <Text strong>Address:</Text>
             <br />
-            <Text>{userLocation.barangay}, {userLocation.city}, {userLocation.province}</Text>
+            <Text>
+              {[userLocation.barangay, userLocation.city, userLocation.province]
+                .filter(Boolean)
+                .join(', ') || 'No address provided'}
+            </Text>
           </div>
 
           <div style={{ marginTop: '1rem' }}>
