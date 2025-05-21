@@ -1,3 +1,5 @@
+# AI-Ponics
+
 ![Image](https://github.com/user-attachments/assets/928c6c75-8484-407c-848c-7263147f3f78)
 
 AI-Ponics is a web application developed to monitor and manage plants in an aeroponic system. It utilizes advanced technologies like Gemini AI for image detection and interactive chatbot functionality, Blynk API for real-time sensor monitoring,  OpenWeather API for current weather forecast, and Firebase for backend services, including plant data storage and user authentication.
@@ -8,10 +10,10 @@ AI-Ponics is a web application developed to monitor and manage plants in an aero
 - **Gemini 2.0 Flash** is used to analyze images of plants uploaded by users. It assesses the plant's health and growth, offering insights such as whether the plant is thriving or needs attention. The AI can also detect symptoms of common plant diseases or issues related to nutrition and environmental conditions.
 
 **Real-Time Sensor Monitoring**
-- **Blynk API** integrates various environmental sensors, providing real-time data on factors like temperature, humidity, and other parameters that influence plant growth. This data is accessible through the app’s dashboard, ensuring users can monitor their aeroponic system remotely and act accordingly.
+- **Blynk API** integrates various environmental sensors, providing real-time data on factors like temperature, humidity, and other parameters that influence plant growth. This data is accessible through the appâs dashboard, ensuring users can monitor their aeroponic system remotely and act accordingly.
 
 **Plant Intelligence**
-- A custom knowledge base implemented to enhance the AI chatbot’s responses with precise, data-backed insights on plant care, environmental factors, disease management, and optimal growth strategies for various crops. 
+- A custom knowledge base implemented to enhance the AI chatbotâs responses with precise, data-backed insights on plant care, environmental factors, disease management, and optimal growth strategies for various crops. 
 
 **Weather Forecast**
  - The OpenWeather API is used to provide users with weather forecasts based on their set address. This allows users to anticipate environmental conditions and adjust their aeroponic system accordingly.  This forecast is accessible through the app's dashboard, enabling users to optimize their aeroponic system based on current weather conditions.
@@ -57,13 +59,13 @@ AI-Ponics is a web application developed to monitor and manage plants in an aero
 
 
 ### **DHT22**
-- A temperature and humidity sensor. This is used for monitoring environmental conditions, with a temperature range of -40°C to 80°C and a humidity range of 0% to 100%. While its accuracy is ±0.5°C for temperature and ±1%.
+- A temperature and humidity sensor. This is used for monitoring environmental conditions, with a temperature range of -40Â°C to 80Â°C and a humidity range of 0% to 100%. While its accuracy is Â±0.5Â°C for temperature and Â±1%.
 
 ![Image](https://github.com/user-attachments/assets/23f49f05-ef8f-48cc-85aa-bf335c50f4be)
 
 
 ### **YF-S201**
-- A Hall Effect water flow sensor with a working flow rate of 1 to 30 liters per minute and an accuracy of ±10%, used for monitoring the pump operation of the AI-Ponics system.
+- A Hall Effect water flow sensor with a working flow rate of 1 to 30 liters per minute and an accuracy of Â±10%, used for monitoring the pump operation of the AI-Ponics system.
 
 ![Image](https://github.com/user-attachments/assets/c9811138-0278-4bb1-bf75-0ca1785fb7f3)
 
